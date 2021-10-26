@@ -1,16 +1,31 @@
-import { Router } from 'express';
-import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
+import { Router, Request, Response, NextFunction } from "express";
+import { getRepository } from "typeorm";
+import { User } from "../entity/User";
 
+const indexRouter = Router();
 
-// User-route
-const userRouter = Router();
-userRouter.get('/all', getAllUsers);
-userRouter.post('/add', addOneUser);
-userRouter.put('/update', updateOneUser);
-userRouter.delete('/delete/:id', deleteOneUser);
+indexRouter.get(
+  "/hello",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userRepository = getRepository(User);
 
+    const userList = await userRepository.find();
 
-// Export the base-router
-const baseRouter = Router();
-baseRouter.use('/users', userRouter);
-export default baseRouter;
+    res.json(userList);
+  }
+);
+
+indexRouter.post(
+  "/hello",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userRepository = getRepository(User);
+
+    const user = new User();
+    user.githubId = "test2";
+
+    const result = await userRepository.save(user);
+    res.json(result);
+  }
+);
+
+export default indexRouter;
