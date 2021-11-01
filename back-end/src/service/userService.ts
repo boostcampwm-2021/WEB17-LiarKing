@@ -21,6 +21,6 @@ async function findUser(id: string) {
 }
 
 export default {
-  registerUser,
-  findUser
+  signUpUser,
+  findUser,
 };

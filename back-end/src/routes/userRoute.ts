@@ -16,7 +16,7 @@ userRouter.get(
   '/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
-    const result = await userService.getUserInfo(id);
+    const result = await userService.findUser(id);
     res.json(result);
   }
 );
@@ -30,11 +30,9 @@ userRouter.get(
 
     if (result === undefined) {
       res.json(false);
-    }
-    else if (password !== result.password) {
+    } else if (password !== result.password) {
       res.json(false);
-    }
-    else res.json(result);
+    } else res.json(result);
   }
 );
 
