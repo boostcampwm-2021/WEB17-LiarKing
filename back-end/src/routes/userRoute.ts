@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import userService from '../service/userService';
+import nicknameList from '../store/store';
 
 const userRouter = Router();
 
@@ -37,6 +38,21 @@ userRouter.get(
     } else if (password !== result.password) {
       res.json(false);
     } else res.json(result);
+  }
+);
+
+userRouter.get(
+  '/nickname-check',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const nickname = req.query.nickname;
+
+    if (
+      nicknameList.filter((_nickname) => _nickname === nickname).length === 0
+    ) {
+      res.json(true);
+    } else {
+      res.json(false);
+    }
   }
 );
 
