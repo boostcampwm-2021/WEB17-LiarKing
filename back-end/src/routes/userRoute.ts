@@ -6,17 +6,19 @@ const userRouter = Router();
 userRouter.post(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id, password, nickname } = req.body;
-    const result = await userService.signUpUser(id, password, nickname);
+    const { id, password } = req.body;
+    const result = await userService.signUpUser(id, password);
     res.json(result);
   }
 );
 
 userRouter.get(
-  '/:id',
+  '/info/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
     const result = await userService.findUser(id);
+
+    console.log(id);
     res.json(result);
   }
 );
@@ -26,6 +28,8 @@ userRouter.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.query.id;
     const password = req.query.password;
+
+    console.log(id, password);
     const result = await userService.findUser(id.toString());
 
     if (result === undefined) {

@@ -11,9 +11,6 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
-  nickname: string;
-
   @Column({ default: 0 })
   point: number;
 }
