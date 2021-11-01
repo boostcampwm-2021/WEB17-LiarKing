@@ -1,0 +1,40 @@
+.main-no-login-modal {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  border: 1px #000 solid;
+  border-radius: 15px;
+  box-shadow: 5px 5px 5px 5px rgb(165, 165, 165);
+  background-color: #6d80a6;
+  padding: 30px;
+  width: 200px;
+  height: 100px;
+  left: 40%;
+  top: 35%;
+}
+
+.main-no-login-nickname {
+  border: #000 1px solid;
+  border-radius: 30px;
+  margin: 10px 0;
+  padding: 5px 10px;
+  background-color: #a7bdd9;
+}
+
+.main-no-login-header {
+  margin-left: 10px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.main-no-login-submit {
+  width: 130px;
+  border: none;
+  border-radius: 10px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.main-no-login-modal-hidden {
+  display: none;
+}
