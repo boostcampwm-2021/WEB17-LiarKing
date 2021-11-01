@@ -13,13 +13,14 @@ async function signUpUser(id: string, password: string, nickname: string) {
   return result;
 }
 
-async function getUserInfo(id: string) {
+async function findUser(id: string) {
   const userRepository = getRepository(User);
-  const userInfo = await userRepository.find({ where: { user_id: id } });
-  return userInfo;
+  const foundOne = await userRepository.findOne({ user_id: id });
+
+  return foundOne;
 }
 
 export default {
-  signUpUser,
-  getUserInfo,
+  registerUser,
+  findUser
 };

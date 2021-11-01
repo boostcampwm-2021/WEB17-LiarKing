@@ -21,4 +21,21 @@ userRouter.get(
   }
 );
 
+userRouter.get(
+  '/id-check',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.query.id;
+    const password = req.query.password;
+    const result = await userService.findUser(id.toString());
+
+    if (result === undefined) {
+      res.json(false);
+    }
+    else if (password !== result.password) {
+      res.json(false);
+    }
+    else res.json(result);
+  }
+);
+
 export default userRouter;
