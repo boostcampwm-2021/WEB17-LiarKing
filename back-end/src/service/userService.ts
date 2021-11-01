@@ -7,6 +7,10 @@ async function signUpUser(id: string, password: string) {
   user.user_id = id;
   user.password = password;
 
+  const check = await userRepository.findOne({ user_id: id });
+  if (check) {
+    return false;
+  }
   const result = await userRepository.save(user);
 
   return result;
