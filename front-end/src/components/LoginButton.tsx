@@ -8,7 +8,7 @@ const loginModal = () => {
 const LoginButton = () => {
   return (
     <>
-      <button className="main-login-button" onClick={loginModal}></button>
+      <button className="main-common-button main-login-button" onClick={loginModal}>{'로그인 하고 플레이!'}</button>
       <form className="main-login-modal-hidden" action="/users/id-check" method="GET">
         <div className="main-login-header">아이디</div>
         <input className="main-login-id-password" type="text" name="id" placeholder="아이디를 입력하세요."></input>

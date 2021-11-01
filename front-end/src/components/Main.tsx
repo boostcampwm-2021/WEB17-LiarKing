@@ -1,7 +1,7 @@
+import '../styles/Main.css';
 import NoLoginButton from './NoLoginButton';
 import LoginButton from './LoginButton';
 import JoinButton from './JoinButton';
-import '../styles/Main.css';
 
 window.onclick = (e) => {
   const noLoginModal = document.querySelector('.main-no-login-modal');
@@ -21,9 +21,15 @@ const Main = () => {
   return (
     <div id="main">
       <div className="main-header">Liar Game</div>
-      <NoLoginButton />
-      <LoginButton />
-      <JoinButton />
+      <div className="main-center">
+        <div id="main-character-left" />
+        <div className="main-buttons">
+          <NoLoginButton />
+          <LoginButton />
+          <JoinButton />
+        </div>
+        <div id="main-character-right" />
+      </div>
     </div>
   );
 };

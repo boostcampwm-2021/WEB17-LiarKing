@@ -7,8 +7,6 @@ const JoinModal = () => {
 };
 
 const JoinButton = () => {
-  // const userId = useRef();
-  // const pwd = useRef();
   const [pwdInfo, setPwdInfo] = useState({ pwd: '', pwdCheck: '' });
 
   const changePwd = (e: any) => {
@@ -27,7 +25,7 @@ const JoinButton = () => {
 
   return (
     <>
-      <button className="main-join-button" onClick={JoinModal}></button>
+      <button className="main-join-button" onClick={JoinModal}>{'회원 가입'}</button>
       <form className="main-join-modal-hidden" onSubmit={checkPwd} action="/users" method="POST">
         <div className="main-join-header">아이디</div>
         <input className="main-join-id-password" type="text" name="id" placeholder="아이디를 입력하세요."></input>
