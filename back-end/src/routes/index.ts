@@ -21,7 +21,6 @@ indexRouter.post(
     const userRepository = getRepository(User);
 
     const user = new User();
-    user.githubId = 'test2';
 
     const result = await userRepository.save(user);
     res.json(result);
