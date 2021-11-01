@@ -6,9 +6,17 @@ const userRouter = Router();
 userRouter.post(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.body.id;
-    const password = req.body.password;
-    const result = await userService.registerUser(id, password);
+    const { id, password, nickname } = req.body;
+    const result = await userService.signUpUser(id, password, nickname);
+    res.json(result);
+  }
+);
+
+userRouter.get(
+  '/:id',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await userService.getUserInfo(id);
     res.json(result);
   }
 );

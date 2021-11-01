@@ -14,6 +14,6 @@ export class User {
   @Column()
   nickname: string;
 
-  @Column()
+  @Column({ default: 0 })
   point: number;
 }
