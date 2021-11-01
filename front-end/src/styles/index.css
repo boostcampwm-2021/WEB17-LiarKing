@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 code {
@@ -13,6 +14,15 @@ code {
 }
 
 button {
-  width: 60px;
-  height: 60px;
+  cursor: pointer;
+}
+
+div {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
 }
