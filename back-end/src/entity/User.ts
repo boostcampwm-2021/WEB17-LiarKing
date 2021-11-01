@@ -6,5 +6,11 @@ export class User {
   id: number;
 
   @Column()
-  githubId: string;
+  user_id: string;
+
+  @Column()
+  password: string;
+
+  @Column({ default: 0 })
+  point: number;
 }
