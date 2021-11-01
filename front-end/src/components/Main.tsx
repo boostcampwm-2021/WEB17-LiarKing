@@ -1,17 +1,23 @@
+import '../styles/Main.css';
 import NoLoginButton from './NoLoginButton';
 import LoginButton from './LoginButton';
 import JoinButton from './JoinButton';
-import '../styles/Main.css';
 
 const Main = () => {
-    return (
-        <div id="main">
-            <div className="main-header">Liar Game</div>
-            <NoLoginButton />
-            <LoginButton />
-            <JoinButton />
+  return (
+    <div id="main">
+      <div className="main-header">Liar Game</div>
+      <div className="main-center">
+        <div id="main-character-left" />
+        <div className="main-buttons">
+          <NoLoginButton />
+          <LoginButton />
+          <JoinButton />
         </div>
-    );
-}
+        <div id="main-character-right" />
+      </div>
+    </div>
+  );
+};
 
 export default Main;
