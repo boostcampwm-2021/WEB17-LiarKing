@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import '../styles/JoinButton.css';
 
 const JoinModal = () => {
@@ -7,20 +7,36 @@ const JoinModal = () => {
 };
 
 const JoinButton = () => {
-  const [pwdInfo, setPwdInfo] = useState({ pwd: '', pwdCheck: '' });
+  const [userInfo, setUserInfo] = useState({ id: '', pwd: '', pwdCheck: '' });
+
+  const changeId = (e: any) => {
+    setUserInfo({ ...userInfo, id: e.target.value });
+  };
 
   const changePwd = (e: any) => {
-    setPwdInfo({ ...pwdInfo, pwd: e.target.value });
+    setUserInfo({ ...userInfo, pwd: e.target.value });
   };
 
   const changePwdCheck = (e: any) => {
-    setPwdInfo({ ...pwdInfo, pwdCheck: e.target.value });
+    setUserInfo({ ...userInfo, pwdCheck: e.target.value });
   };
 
-  const checkPwd = (e: any) => {
-    if (pwdInfo['pwd'] !== pwdInfo['pwdCheck']) {
-      e.preventDefault();
-    }
+  const requestToServer = async () => {
+    if (userInfo['pwd'] !== userInfo['pwdCheck']) return; // 오류 메시지 모달창
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: userInfo['id'],
+        password: userInfo['pwd'],
+      }),
+    };
+    const data = await fetch('/users', options);
+    const user = await data.json(); // user = false 일 경우 오류 메시지 모달창
+    console.log(user);
   };
 
   return (
@@ -28,13 +44,15 @@ const JoinButton = () => {
       <button className="main-join-button" onClick={JoinModal}>
         {'회원 가입'}
       </button>
-      <form className="main-join-modal-hidden" onSubmit={checkPwd} action="/users" method="POST">
+      <div className="main-join-modal-hidden">
         <div className="main-join-header">Member Join</div>
-        <input className="main-join-id-password" type="text" name="id" placeholder="아이디를 입력하세요."></input>
-        <input className="main-join-id-password" type="password" name="password" placeholder="비밀번호를 입력하세요." onInput={changePwd}></input>
+        <input className="main-join-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId}></input>
+        <input className="main-join-id-password" type="password" placeholder="비밀번호를 입력하세요." onInput={changePwd}></input>
         <input className="main-join-id-password" type="password" placeholder="비밀번호를 확인해주세요." onInput={changePwdCheck}></input>
-        <input className="main-join-submit" value="Join!" type="submit"></input>
-      </form>
+        <button className="main-join-submit" onClick={requestToServer}>
+          Join!
+        </button>
+      </div>
     </>
   );
 };
