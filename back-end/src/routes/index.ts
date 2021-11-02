@@ -18,7 +18,7 @@ indexRouter.post('/login', async (req: Request, res: Response, next: NextFunctio
   } else if (password !== result.password) {
     res.json(false);
   } else {
-    req.session['uid'] = result.id;
+    req.session['uid'] = result['user_id'];
     res.json(result);
   }
 });
