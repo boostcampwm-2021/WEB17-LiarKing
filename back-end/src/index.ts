@@ -5,6 +5,7 @@ import FileStore from 'session-file-store';
 import dotenv from 'dotenv';
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
+import path from 'path';
 
 import userRouter from './routes/userRoute';
 import indexRouter from './routes';
@@ -15,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-var sessionFileStore = FileStore(session);
+let sessionFileStore = FileStore(session);
 app.use(
   session({
     resave: false,
@@ -30,6 +31,7 @@ app.use(
 );
 app.use('/', indexRouter);
 app.use('/users', userRouter);
+app.use(express.static(path.join(__dirname, '../build')));
 
 const port = Number(process.env.PORT || 5000);
 
