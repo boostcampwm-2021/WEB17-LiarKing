@@ -18,6 +18,7 @@ const JoinButton = () => {
   };
 
   const checkPwd = (e: any) => {
+    console.log(e.target.querySelector('.main-join-id-password').value);
     if (pwdInfo['pwd'] !== pwdInfo['pwdCheck']) {
       e.preventDefault();
     }
