@@ -16,7 +16,7 @@ app.use(morgan('dev'));
 app.use('/', indexRouter);
 app.use('/users', userRouter);
 
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 5000);
 
 createConnection()
   .then(() => {
