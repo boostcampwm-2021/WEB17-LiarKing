@@ -8,14 +8,14 @@
   background-size: 100% 1100%;
   padding: 30px;
   width: 350px;
-  height: 210px;
+  height: 250px;
   left: 50%;
   top: 50%;
   transform: translate(-50%, 0);
 }
 
 .main-login-id-password:first-of-type {
-  margin-top: 45px;
+  margin-top: 70px;
 }
 
 .main-login-id-password {
