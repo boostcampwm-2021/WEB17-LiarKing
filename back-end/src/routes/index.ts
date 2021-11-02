@@ -17,7 +17,10 @@ indexRouter.post('/login', async (req: Request, res: Response, next: NextFunctio
     res.json(false);
   } else if (password !== result.password) {
     res.json(false);
-  } else res.json(result);
+  } else {
+    req.session['uid'] = result.id;
+    res.json(result);
+  }
 });
 
 indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFunction) => {
