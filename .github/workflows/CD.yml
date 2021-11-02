@@ -1,0 +1,39 @@
+name: Node.js CD
+
+on:
+  push:
+    branches: [ release ]
+  pull_request:
+    branches: [ release ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            killall node
+            echo "> node exit"
+            cd WEB17-LiarKing && git pull
+            echo "> git clone update"
+            cd front-end && npm install
+            npm run build
+            echo "> react build"
+            cd ..
+            cd back-end && npm install
+            { nohup npm start > nohub.out < /dev/null & }
+            echo "> server on"
+            exit
