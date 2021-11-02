@@ -35,5 +35,8 @@
 ### ✍️ 스터디 공유
 - [노션 링크](https://diligent-yak-42a.notion.site/J17-e6a96c803671471aad45473f83f1468b)
 
+### 🖥 배포 링크
+- [http://liarking.kro.kr/](http://liarking.kro.kr/)
+
 ### 📌 기타
 - [팀 규칙 및 컨벤션](https://github.com/boostcampwm-2021/WEB17/wiki/%ED%8C%80-%EA%B7%9C%EC%B9%99)
