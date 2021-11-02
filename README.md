@@ -24,6 +24,8 @@
 - [프로젝트 기획서](https://github.com/boostcampwm-2021/WEB17/wiki/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B8%B0%ED%9A%8D%EC%84%9C)
 - [디자인(figma)](https://www.figma.com/file/L87pZSl2LScAcMvAz7hrgX/Web17-%EB%B2%84%EC%8A%A4%EC%97%86%EB%8A%94%ED%8C%80)
 - [백로그](https://docs.google.com/spreadsheets/d/1cC2TxJ4erFBsuq4bkKqv3V4KO6FwedPEPYoUufhIlGM/edit#gid=0)
+- [API 명세(POSTMAN)](https://documenter.getpostman.com/view/18161030/UVByJVs7)
+- [API 명세(구글시트)](https://docs.google.com/spreadsheets/d/1chXj4nxNpR0ixQQptPynn0U-j0YTff6hKcpEC-_AO-U/edit#gid=0)
 
 ### 🛠️ 기술 스택
 ![Node.js](https://img.shields.io/badge/Node.js-v14.18.1-%23339933?style=flat&logo=Node.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-%233178C6?style=flat&logo=TypeScript&logoColor=white) ![Express](https://img.shields.io/badge/Express-v4.16.1-%23000000?style=flat&logo=Express&logoColor=white) 

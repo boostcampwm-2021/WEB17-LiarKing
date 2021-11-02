@@ -16,14 +16,6 @@ async function signUpUser(id: string, password: string) {
   return result;
 }
 
-async function findUser(id: string) {
-  const userRepository = getRepository(User);
-  const foundOne = await userRepository.findOne({ user_id: id });
-
-  return foundOne;
-}
-
 export default {
   signUpUser,
-  findUser,
 };
