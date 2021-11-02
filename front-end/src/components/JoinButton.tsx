@@ -36,7 +36,6 @@ const JoinButton = () => {
     };
     const data = await fetch('/users', options);
     const user = await data.json(); // user = false 일 경우 오류 메시지 모달창
-    console.log(user);
   };
 
   return (

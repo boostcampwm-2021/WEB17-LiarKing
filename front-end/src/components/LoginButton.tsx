@@ -28,9 +28,8 @@ const LoginButton = () => {
         password: userInfo['pwd'],
       }),
     };
-    const data = await fetch('/users/id-check', options);
+    const data = await fetch('/login', options);
     const user = await data.json(); // user = false 일 경우 오류 메시지 모달창
-    console.log(user);
   };
 
   return (

@@ -10,7 +10,7 @@ const NoLoginButton = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
 
   const changeId = (e: any) => {
-    setUserInfo({ ...userInfo, nickname: e.target.value });
+    setUserInfo({ nickname: e.target.value });
   };
 
   const requestToServer = async () => {
