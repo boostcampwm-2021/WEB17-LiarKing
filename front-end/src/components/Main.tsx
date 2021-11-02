@@ -2,6 +2,7 @@ import '../styles/Main.css';
 import NoLoginButton from './NoLoginButton';
 import LoginButton from './LoginButton';
 import JoinButton from './JoinButton';
+import React from 'react';
 
 window.onclick = (e) => {
   const noLoginModal = document.querySelector('.main-no-login-modal');
@@ -17,7 +18,9 @@ window.onclick = (e) => {
   }
 };
 
-const Main = () => {
+type MainProps = { popModal(type: 'alert' | 'warning' | 'error', ment: string): void };
+
+const Main = ({ popModal }: MainProps) => {
   return (
     <div id="main">
       <div className="main-header">Liar Game</div>
@@ -34,4 +37,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default React.memo(Main);
