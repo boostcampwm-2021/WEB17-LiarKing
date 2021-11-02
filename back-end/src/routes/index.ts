@@ -27,6 +27,7 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
   const nickname = req.body.nickname;
 
   if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0) {
+    req.session['nickname'] = nickname;
     res.json(true);
   } else {
     res.json(false);
