@@ -3,36 +3,45 @@
   flex-direction: column;
   position: absolute;
   border: 1px #000 solid;
-  border-radius: 15px;
-  box-shadow: 5px 5px 5px 5px rgb(165, 165, 165);
-  background-color: #6d80a6;
-  padding: 20px 30px 150px;
-  width: 200px;
-  height: 100px;
-  left: 40%;
-  top: 35%;
+  background: linear-gradient(-45deg, rgb(109, 119, 134), rgb(38, 50, 69), rgb(109, 119, 134), rgb(38, 50, 69));
+  animation: gradient 15s linear infinite;
+  background-size: 100% 1100%;
+  padding: 30px;
+  width: 350px;
+  height: 250px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 0);
+}
+
+.main-join-id-password:first-of-type {
+  margin-top: 45px;
 }
 
 .main-join-id-password {
+  width: 300px;
   border: #000 1px solid;
-  border-radius: 30px;
-  margin: 10px 0;
-  padding: 5px 10px;
-  background-color: #a7bdd9;
+  margin: 5px 0;
+  padding: 10px 20px;
 }
 
 .main-join-header {
-  margin-left: 10px;
-  font-size: 15px;
-  font-weight: 800;
+  top: 10px;
+  margin: -20px;
+  padding: 5px 15px;
+  text-align: center;
+  color: #fff;
+  font-size: 22px;
+  text-shadow: 1px 2px 1px gray;
 }
 
 .main-join-submit {
-  width: 70px;
+  width: 250px;
   border: none;
-  border-radius: 5px;
-  margin-left: 120px;
-  padding: 3px;
+  border-radius: 20px;
+  margin: 15px auto;
+  padding: 15px 10px;
+  font-size: 20px;
   cursor: pointer;
 }
 

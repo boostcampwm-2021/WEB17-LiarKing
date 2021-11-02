@@ -35,3 +35,5 @@ temp/
 .env
 ormconfig.json
 .gitmessage
+
+sessions/
