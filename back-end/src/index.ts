@@ -1,7 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
 import session from 'express-session';
-import FileStore from 'session-file-store';
 import dotenv from 'dotenv';
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
@@ -16,7 +15,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-let sessionFileStore = FileStore(session);
 app.use(
   session({
     resave: false,
@@ -26,7 +24,6 @@ app.use(
       httpOnly: true,
       secure: false,
     },
-    store: new sessionFileStore(),
   })
 );
 app.use('/', indexRouter);
