@@ -23,15 +23,4 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            killall node
-            echo "> node exit"
-            cd WEB17-LiarKing && git pull
-            echo "> git clone update"
-            cd front-end && npm install
-            npm run build
-            echo "> react build"
-            cd ..
-            cd back-end && npm install
-            { nohup npm start > nohub.out < /dev/null & }
-            echo "> server on"
-            exit
+            sh deploy.sh
