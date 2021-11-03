@@ -1,9 +1,13 @@
 import './styles/App.css';
 import Main from './components/Main';
+import Lobby from './components/Lobby';
 import Modal from './components/Modal';
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-export const ModalContext = React.createContext(null);
+export const globalContext = React.createContext(null);
+
+const global = { popModal: {}, user: {} };
 
 function App() {
   const [modal, setModal] = useState([]);
@@ -18,11 +22,18 @@ function App() {
     }, 2000);
   };
 
+  global['popModal'] = popModal;
+
   return (
-    <ModalContext.Provider value={popModal}>
-      <Main />
+    <globalContext.Provider value={global}>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Main} />
+          <Route path="/lobby" component={Lobby} />
+        </Switch>
+      </Router>
       {modal}
-    </ModalContext.Provider>
+    </globalContext.Provider>
   );
 }
 

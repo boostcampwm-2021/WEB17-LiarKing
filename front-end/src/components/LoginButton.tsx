@@ -1,10 +1,12 @@
 import '../styles/LoginButton.css';
 import { useState, useContext } from 'react';
-import { ModalContext } from '../App';
+import { globalContext } from '../App';
+import { useHistory } from 'react-router';
 
 const LoginModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '' });
-  const popModal = useContext(ModalContext);
+  const history = useHistory();
+  const { popModal, user } = useContext(globalContext);
 
   const changeId = (e: any) => {
     setUserInfo({ ...userInfo, id: e.target.value });
@@ -29,15 +31,15 @@ const LoginModal = () => {
       return;
     }
 
-    const user = await requestToServer();
+    const userData = await requestToServer();
 
-    if (!user) {
+    if (!userData) {
       popModal('error', '아이디와 비밀번호가 맞지 않습니다.');
       return;
     }
 
-    alert(`로비로 이동! user : ${JSON.stringify(user)}`);
-    //로비로 이동하는 로직 작성.
+    Object.assign(user, userData);
+    history.push('/lobby');
   };
 
   const checkId = (id: string): boolean => {

@@ -2,9 +2,14 @@ import '../styles/Lobby.css';
 import RoomList from './RoomList';
 import Profile from './Profile';
 import LobbyButtons from './LobbyButtons';
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
+import { globalContext } from '../App';
 
 const Lobby = () => {
+  const { user } = useContext(globalContext);
+
+  alert(JSON.stringify(user));
+
   return (
     <div id="lobby">
       <div className="lobby-center-items">
