@@ -1,6 +1,7 @@
 import '../styles/NoLoginButton.css';
 import { useState, useContext } from 'react';
-import { ModalContext } from '../App';
+import { globalContext } from '../App';
+import { useHistory } from 'react-router';
 
 /**
  * 비로그인 모달 컴포넌트
@@ -8,7 +9,8 @@ import { ModalContext } from '../App';
  */
 const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
-  const popModal = useContext(ModalContext);
+  const history = useHistory();
+  const { popModal, user } = useContext(globalContext);
 
   const changeId = (e: any) => {
     setUserInfo({ nickname: e.target.value });
@@ -29,8 +31,9 @@ const NoLoginModal = () => {
       return;
     }
 
-    alert('로비로 이동!');
     //로비로 이동하는 로직 작성.
+    user['nickname'] = userInfo.nickname;
+    history.push('/lobby');
   };
 
   const checkId = (id: string): boolean => {

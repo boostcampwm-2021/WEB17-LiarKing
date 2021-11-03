@@ -1,10 +1,12 @@
 import '../styles/JoinButton.css';
 import { useState, useContext } from 'react';
-import { ModalContext } from '../App';
+import { globalContext } from '../App';
+import { useHistory } from 'react-router';
 
 const JoinModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '', pwdCheck: '' });
-  const popModal = useContext(ModalContext);
+  const history = useHistory();
+  const { popModal, user } = useContext(globalContext);
 
   const changeId = (e: any) => {
     setUserInfo({ ...userInfo, id: e.target.value });
@@ -40,15 +42,15 @@ const JoinModal = () => {
       return;
     }
 
-    const user = await requestToServer();
+    const userData = await requestToServer();
 
-    if (!user) {
+    if (!userData) {
       popModal('error', '이미 만들어진 아이디입니다.');
       return;
     }
 
-    alert(`로비로 이동! user : ${JSON.stringify(user)}`);
-    //로비로 이동하는 로직 작성.
+    Object.assign(user, userData);
+    history.push('/lobby');
   };
 
   const checkId = (id: string): boolean => {
