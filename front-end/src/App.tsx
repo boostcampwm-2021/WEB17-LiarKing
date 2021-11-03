@@ -1,7 +1,9 @@
 import './styles/App.css';
 import Main from './components/Main';
 import Modal from './components/Modal';
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+export const ModalContext = React.createContext(null);
 
 function App() {
   const [modal, setModal] = useState([]);
@@ -17,10 +19,10 @@ function App() {
   };
 
   return (
-    <>
-      <Main popModal={popModal} />
+    <ModalContext.Provider value={popModal}>
+      <Main />
       {modal}
-    </>
+    </ModalContext.Provider>
   );
 }
 
