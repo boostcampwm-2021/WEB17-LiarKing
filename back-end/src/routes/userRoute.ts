@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import userService from '../service/userService';
-import commonService from '../service/commonService';
 
 const userRouter = Router();
 
@@ -12,7 +11,7 @@ userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => 
 
 userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
   const id = req.query.id;
-  const result = await commonService.findUser(id.toString());
+  const result = await userService.getUserInfo(id.toString());
   res.json(result);
 });
 

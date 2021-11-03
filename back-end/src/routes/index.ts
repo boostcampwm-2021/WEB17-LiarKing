@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import nicknameList from '../store/store';
-import commonService from '../service/commonService';
+import loginService from '../service/loginService';
 import path from 'path';
 
 const indexRouter = Router();
@@ -14,16 +14,12 @@ indexRouter.get('/', async (req: Request, res: Response, next: NextFunction) => 
 indexRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   const id = req.body.id;
   const password = req.body.password;
-  const result = await commonService.findUser(id.toString());
+  const result = await loginService.loginVerify(id.toString(), password.toString());
 
-  if (result === undefined) {
-    res.json(false);
-  } else if (password !== result.password) {
-    res.json(false);
-  } else {
-    req.session['uid'] = result['user_id'];
-    res.json(result);
+  if (result !== false) {
+    req.session['uid'] = result;
   }
+  res.json(result);
 });
 
 indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFunction) => {
