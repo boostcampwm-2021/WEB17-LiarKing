@@ -18,9 +18,7 @@ window.onclick = (e) => {
   }
 };
 
-type MainProps = { popModal(type: 'alert' | 'warning' | 'error', ment: string): void };
-
-const Main = ({ popModal }: MainProps) => {
+const Main = () => {
   return (
     <div id="main">
       <div className="main-header">Liar Game</div>
