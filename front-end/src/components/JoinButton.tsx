@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
 import '../styles/JoinButton.css';
+import { useState, useContext } from 'react';
+import { ModalContext } from '../App';
 
 const JoinModal = () => {
-  const hiddenModal = document.querySelector('.main-join-modal-hidden');
-  if (hiddenModal !== null) hiddenModal.className = 'main-join-modal';
-};
-
-const JoinButton = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '', pwdCheck: '' });
+  const popModal = useContext(ModalContext);
 
   const changeId = (e: any) => {
     setUserInfo({ ...userInfo, id: e.target.value });
@@ -19,6 +16,53 @@ const JoinButton = () => {
 
   const changePwdCheck = (e: any) => {
     setUserInfo({ ...userInfo, pwdCheck: e.target.value });
+  };
+
+  const clickPlay = async () => {
+    const idValidation = checkId(userInfo.id);
+
+    if (!idValidation) {
+      popModal('error', '아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.');
+      return;
+    }
+
+    const pwValidation = checkPW(userInfo.pwd);
+
+    if (!pwValidation) {
+      popModal('error', '비밀번호는 영문자 대, 소, 숫자, 특수문자로만 이루어진 8~20글자만 허용됩니다.');
+      return;
+    }
+
+    const pwMatchValidation = checkMatchPW(userInfo.pwd, userInfo.pwdCheck);
+
+    if (!pwMatchValidation) {
+      popModal('error', '비밀번호가 맞지 않습니다.');
+      return;
+    }
+
+    const user = await requestToServer();
+
+    if (!user) {
+      popModal('error', '이미 만들어진 아이디입니다.');
+      return;
+    }
+
+    alert(`로비로 이동! user : ${JSON.stringify(user)}`);
+    //로비로 이동하는 로직 작성.
+  };
+
+  const checkId = (id: string): boolean => {
+    const reg = /[a-zA-Z0-9]{5,20}/g;
+    return reg.test(id);
+  };
+
+  const checkPW = (pw: string): boolean => {
+    const reg = /[a-zA-Z0-9!@#$%^&*-_=+]{8,20}/g;
+    return reg.test(pw);
+  };
+
+  const checkMatchPW = (pw: string, checkPwd: string): boolean => {
+    return pw === checkPwd;
   };
 
   const requestToServer = async () => {
@@ -35,23 +79,42 @@ const JoinButton = () => {
       }),
     };
     const data = await fetch('/users', options);
-    const user = await data.json(); // user = false 일 경우 오류 메시지 모달창
+    const user = await data.json(); // return [object: 유저정보 | false: 아이디 중복]
+
+    return user;
+  };
+
+  return (
+    <div className="main-join-modal">
+      <div className="main-join-header">Member Join</div>
+      <input className="main-join-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId}></input>
+      <input className="main-join-id-password" type="password" placeholder="비밀번호를 입력하세요." onInput={changePwd}></input>
+      <input className="main-join-id-password" type="password" placeholder="비밀번호를 확인해주세요." onInput={changePwdCheck}></input>
+      <button className="main-join-submit" onClick={clickPlay}>
+        Join!
+      </button>
+    </div>
+  );
+};
+
+const JoinButton = () => {
+  const [modal, setModal] = useState([]);
+
+  const onModal = () => {
+    const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
+    setModal([ModalOutLocation, <JoinModal key={1} />]);
+  };
+
+  const offModal = () => {
+    setModal([]);
   };
 
   return (
     <>
-      <button className="main-join-button" onClick={JoinModal}>
+      <button className="main-join-button" onClick={onModal}>
         {'회원 가입'}
       </button>
-      <div className="main-join-modal-hidden">
-        <div className="main-join-header">Member Join</div>
-        <input className="main-join-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId}></input>
-        <input className="main-join-id-password" type="password" placeholder="비밀번호를 입력하세요." onInput={changePwd}></input>
-        <input className="main-join-id-password" type="password" placeholder="비밀번호를 확인해주세요." onInput={changePwdCheck}></input>
-        <button className="main-join-submit" onClick={requestToServer}>
-          Join!
-        </button>
-      </div>
+      {modal}
     </>
   );
 };

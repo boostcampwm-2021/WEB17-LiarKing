@@ -72,5 +72,6 @@
   font-family: Roboto;
   font-weight: 500;
   font-size: 30px;
+  max-width: 600px;
   margin: 0px 60px 30px 60px;
 }

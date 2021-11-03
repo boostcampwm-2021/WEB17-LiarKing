@@ -9,7 +9,7 @@ function App() {
   const [modal, setModal] = useState([]);
 
   const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    const $Modal = <Modal type={type} ment={ment} />;
+    const $Modal = <Modal type={type} ment={ment} key={0} />;
 
     setModal([$Modal]);
 
