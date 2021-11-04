@@ -5,10 +5,11 @@ import Modal from './components/Modal';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import io from 'socket.io-client';
 
 export const globalContext = React.createContext(null);
 
-const global = { popModal: {}, user: {} };
+const global = { popModal: {}, user: {}, socket: io('localhost:5000') };
 
 function App() {
   const [modal, setModal] = useState([]);

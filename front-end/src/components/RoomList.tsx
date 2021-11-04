@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Socket } from 'socket.io-client';
+import { globalContext } from '../App';
 
-const RoomList = ({ socket }: { socket: Socket }) => {
+const RoomList = () => {
+  const socket: Socket = useContext(globalContext);
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
