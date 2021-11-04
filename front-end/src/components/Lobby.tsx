@@ -4,6 +4,7 @@ import Profile from './Profile';
 import LobbyButtons from './LobbyButtons';
 import React, { useContext } from 'react';
 import { globalContext } from '../App';
+import io from 'socket.io-client';
 
 const createProfile = (user: { user_id?: string; point?: number; nickname?: string }): { id: string; point: number; rating: string } => {
   if (!user.user_id) {
@@ -21,6 +22,8 @@ const ratingInfo = (point: number): string => {
   if (point >= 400) return 'Diamond';
 };
 
+const socket = io('localhost:5000');
+
 const Lobby = () => {
   const { user } = useContext(globalContext);
 
@@ -31,7 +34,7 @@ const Lobby = () => {
       <div className="lobby-center-items">
         <div className="lobby-header">Liar Game</div>
         <div className="lobby-rooms">
-          <RoomList />
+          <RoomList socket={socket} />
         </div>
       </div>
       <div className="lobby-right-items">
