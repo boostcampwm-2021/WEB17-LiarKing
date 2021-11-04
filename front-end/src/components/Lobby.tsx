@@ -2,13 +2,17 @@ import '../styles/Lobby.css';
 import RoomList from './RoomList';
 import Profile from './Profile';
 import LobbyButtons from './LobbyButtons';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { Socket } from 'socket.io-client';
 import { globalContext } from '../App';
 
 const Lobby = () => {
-  const { user } = useContext(globalContext);
-
-  alert(JSON.stringify(user));
+  const { socket }: { socket: Socket } = useContext(globalContext);
+  useEffect(() => {
+    socket.on('room create', (data) => {
+      //방으로 페이지 이동 history
+    });
+  }, []);
 
   return (
     <div id="lobby">
