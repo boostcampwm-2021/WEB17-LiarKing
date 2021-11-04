@@ -8,7 +8,7 @@ const Profile = () => {
   const userInfo = {
     userId: user.nickname ? user.nickname : user.user_id,
     userPoint: user.nickname ? 0 : user.point,
-    userRank: user.nickname ? 'unranked' : 'unknown',
+    userRank: user.nickname ? 'unranked' : user.rank,
   };
   useEffect(() => {
     if (profileImage.current) profileImage.current.src = character;

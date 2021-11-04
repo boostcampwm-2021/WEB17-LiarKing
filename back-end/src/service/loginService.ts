@@ -5,7 +5,7 @@ async function loginVerify(id: string, password: string) {
   const userRepository = getRepository(User);
   const foundOne = await userRepository.findOne({ user_id: id });
 
-  if (foundOne.user_id === id && foundOne.password === password) {
+  if (foundOne && foundOne.user_id === id && foundOne.password === password) {
     let rank;
     if (foundOne.point < 100) rank = 'Bronze';
     else if (foundOne.point < 200) rank = 'Silver';
