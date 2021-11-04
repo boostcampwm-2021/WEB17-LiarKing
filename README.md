@@ -46,6 +46,12 @@
 
 - [http://liarking.kro.kr/](http://liarking.kro.kr/)
 
+
+### 🎬 데모 영상 링크
+
+- [1주차 데모 영상](https://youtu.be/fc5xp2E2Q70)
+
+
 ### 📌 기타
 
 - [팀 규칙 및 컨벤션](https://github.com/boostcampwm-2021/WEB17/wiki/%ED%8C%80-%EA%B7%9C%EC%B9%99)
