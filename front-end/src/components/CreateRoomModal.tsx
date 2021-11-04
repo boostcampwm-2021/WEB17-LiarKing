@@ -6,7 +6,7 @@ import { Socket } from 'socket.io-client';
 import { globalContext } from '../App';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
-  const { user, socket }: { user: any; socket: Socket } = useContext(globalContext);
+  const { popModal, user, socket }: { popModal: any; user: any; socket: Socket } = useContext(globalContext);
   const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.id });
 
   const changeTitle = (e: any) => {
@@ -42,7 +42,11 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   };
 
   const createRoom = () => {
-    socket.emit('room create', roomInfo);
+    if (roomInfo.title === '') {
+      popModal('error', '방 제목을 입력해주세요.');
+    } else {
+      socket.emit('room create', roomInfo);
+    }
   };
 
   return (

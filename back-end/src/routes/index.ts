@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import nicknameList from '../store/store';
+import { nicknameList } from '../store/store';
 import loginService from '../service/loginService';
 import path from 'path';
 
