@@ -1,19 +1,21 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import character from '../images/mainChar2.svg';
 
-const Profile = () => {
+type ProfileType = { id: string; point: number; rating: string };
+
+const Profile = ({ id, point, rating }: ProfileType) => {
   const profileImage = useRef(null);
+
   useEffect(() => {
-    console.log(profileImage.current);
     if (profileImage.current) profileImage.current.src = character;
   });
 
   return (
     <div id="profile">
       <img className="profile-character" ref={profileImage}></img>
-      <div className="profile-id">kskim625</div>
-      <div className="profile-point">내 점수 : 500 pt</div>
-      <div className="profile-rank">내 등급 : Gold</div>
+      <div className="profile-id">{id}</div>
+      <div className="profile-point">내 점수 : {point} pt</div>
+      <div className="profile-rank">내 등급 : {rating}</div>
     </div>
   );
 };
