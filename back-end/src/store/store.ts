@@ -1,3 +1,3 @@
-const nicknameList = [];
+export const nicknameList = [];
 
-export default nicknameList;
+export const roomList = new Map();

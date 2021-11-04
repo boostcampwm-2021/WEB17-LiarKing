@@ -11,6 +11,8 @@ import { Server } from 'socket.io';
 import userRouter from './routes/userRoute';
 import indexRouter from './routes';
 
+import { roomList } from './store/store';
+
 dotenv.config();
 
 const app = express();
@@ -20,7 +22,25 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-  console.log('server');
+  console.log('socket connected');
+  socket.join('lobby');
+  socket.emit('room list', roomList);
+  console.log('join lobby');
+  console.log('생성 전 room list', io.sockets.adapter.rooms);
+  socket.on('room create', function (data) {
+    socket.leave('lobby');
+    console.log(data);
+    const roomTitle = data.title;
+    roomList.set(roomTitle, data);
+    io.to('lobby').emit('room list', JSON.stringify(Array.from(roomList)));
+    socket.join(roomTitle);
+    socket.emit('room create', data);
+    //socket.broadcast.emit('lobby', roomList);
+
+    console.log('생성 후 room list', io.sockets.adapter.rooms);
+    const clients = io.sockets.adapter.rooms.get(roomTitle);
+    console.log('방이름', roomTitle, '유저', clients);
+  });
 
   socket.on('join room1', function (data) {
     socket.join('room1');
@@ -37,11 +57,6 @@ io.on('connection', (socket) => {
   socket.on('verify room2', function (data) {
     io.to('room2').emit('room2', 'room2 checked');
   });
-
-  // socket.on('send data', function (data) {
-  //   console.log(data);
-  //   io.to('room1').emit('joined');
-  // });
 });
 
 httpServer.listen(5000);
