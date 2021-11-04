@@ -8,7 +8,7 @@ import { globalContext } from '../App';
 const Lobby = () => {
   const { user } = useContext(globalContext);
 
-  alert(JSON.stringify(user));
+  //alert(JSON.stringify(user));
 
   return (
     <div id="lobby">

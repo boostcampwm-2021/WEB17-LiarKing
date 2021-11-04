@@ -4,7 +4,6 @@ import character from '../images/mainChar2.svg';
 const Profile = () => {
   const profileImage = useRef(null);
   useEffect(() => {
-    console.log(profileImage.current);
     if (profileImage.current) profileImage.current.src = character;
   });
 
