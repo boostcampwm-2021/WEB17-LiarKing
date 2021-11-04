@@ -20,7 +20,7 @@ const RoomList = ({ socket }: { socket: Socket }) => {
         const room = (
           <ul className={`room-list${client.lenght === roomInfo.max ? ' room-full' : ''}`}>
             <div className="room-list-name">{v.title}</div>
-            <div className="room-list-persons">{`${client.lenght} / ${roomInfo.max}`}</div>
+            <div className="room-list-persons">{`${client.length} / ${roomInfo.max}`}</div>
           </ul>
         );
 
