@@ -22,26 +22,30 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-  console.log('socket connected');
+  console.log('connect id:', socket.id);
+
   socket.join('lobby');
+
   socket.on('room list', function () {
-    socket.emit('room list', JSON.stringify(Array.from(roomList)));
+    socket.emit('room list', Array.from(roomList));
   });
-  console.log('join lobby');
-  console.log('생성 전 room list', io.sockets.adapter.rooms);
+
   socket.on('room create', function (data) {
     socket.leave('lobby');
-    console.log(data);
-    const roomTitle = data.title;
-    roomList.set(roomTitle, data);
-    io.to('lobby').emit('room list', JSON.stringify(Array.from(roomList)));
-    socket.join(roomTitle);
-    socket.emit('room create', data);
-    //socket.broadcast.emit('lobby', roomList);
 
-    console.log('생성 후 room list', io.sockets.adapter.rooms);
-    const clients = io.sockets.adapter.rooms.get(roomTitle);
-    console.log('방이름', roomTitle, '유저', clients);
+    const roomTitle = data.title;
+
+    if (!roomList.get(roomTitle)) {
+      roomList.set(roomTitle, Object.assign(data, { client: [] }));
+
+      io.to('lobby').emit('room list', Array.from(roomList));
+
+      socket.join(roomTitle);
+    } else {
+      data = false;
+    }
+
+    socket.emit('room create', data);
   });
 });
 
@@ -70,8 +74,5 @@ const port = Number(process.env.PORT || 5000);
 createConnection()
   .then(() => {
     console.log('database connected');
-    /*app.listen(port, () => {
-      console.log('server start', port);
-    });*/
   })
   .catch((error) => console.log(error));
