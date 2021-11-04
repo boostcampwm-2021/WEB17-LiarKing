@@ -9,7 +9,7 @@ import io from 'socket.io-client';
 
 export const globalContext = React.createContext(null);
 
-const global = { popModal: {}, user: {}, socket: io('localhost:5000') };
+const global = { popModal: {}, user: {}, socket: io(process.env.SOCKET_HOST) };
 
 function App() {
   const [modal, setModal] = useState([]);
