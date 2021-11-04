@@ -4,6 +4,7 @@ import Lobby from './components/Lobby';
 import Modal from './components/Modal';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 export const globalContext = React.createContext(null);
 
@@ -27,10 +28,20 @@ function App() {
   return (
     <globalContext.Provider value={global}>
       <Router>
-        <Switch>
-          <Route exact path="/" component={Main} />
-          <Route path="/lobby" component={Lobby} />
-        </Switch>
+        <Route
+          render={({ location }): any => {
+            return (
+              <TransitionGroup className="transition-group">
+                <CSSTransition key={location.pathname} timeout={300} classNames="page-slider">
+                  <Switch location={location}>
+                    <Route exact path="/" component={Main} />
+                    <Route path="/lobby" component={Lobby} />
+                  </Switch>
+                </CSSTransition>
+              </TransitionGroup>
+            );
+          }}
+        ></Route>
       </Router>
       {modal}
     </globalContext.Provider>
