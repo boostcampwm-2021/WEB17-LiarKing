@@ -24,7 +24,9 @@ const io = new Server(httpServer, {
 io.on('connection', (socket) => {
   console.log('socket connected');
   socket.join('lobby');
-  socket.emit('room list', roomList);
+  socket.on('room list', function () {
+    socket.emit('room list', JSON.stringify(Array.from(roomList)));
+  });
   console.log('join lobby');
   console.log('생성 전 room list', io.sockets.adapter.rooms);
   socket.on('room create', function (data) {
@@ -40,22 +42,6 @@ io.on('connection', (socket) => {
     console.log('생성 후 room list', io.sockets.adapter.rooms);
     const clients = io.sockets.adapter.rooms.get(roomTitle);
     console.log('방이름', roomTitle, '유저', clients);
-  });
-
-  socket.on('join room1', function (data) {
-    socket.join('room1');
-  });
-
-  socket.on('join room2', function (data) {
-    socket.join('room2');
-  });
-
-  socket.on('verify room1', function (data) {
-    io.to('room1').emit('room1', 'room1 checked');
-  });
-
-  socket.on('verify room2', function (data) {
-    io.to('room2').emit('room2', 'room2 checked');
   });
 });
 
