@@ -14,7 +14,7 @@ async function signUpUser(id: string, password: string) {
   const result = await userRepository.save(user);
   delete result.password;
 
-  return result;
+  return Object.assign(result, { point: 0, rank: 'Bronze' });
 }
 
 async function getUserInfo(id: string) {
