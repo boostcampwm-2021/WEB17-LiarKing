@@ -2,7 +2,10 @@ import '../styles/Lobby.css';
 import RoomList from './RoomList';
 import Profile from './Profile';
 import LobbyButtons from './LobbyButtons';
-import React from 'react';
+import React, { useContext } from 'react';
+import io from 'socket.io-client';
+
+const socket = io('localhost:5000');
 
 const Lobby = () => {
   return (
@@ -10,7 +13,7 @@ const Lobby = () => {
       <div className="lobby-center-items">
         <div className="lobby-header">Liar Game</div>
         <div className="lobby-rooms">
-          <RoomList />
+          <RoomList socket={socket} />
         </div>
       </div>
       <div className="lobby-right-items">
