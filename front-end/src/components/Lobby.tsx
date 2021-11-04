@@ -3,14 +3,21 @@ import RoomList from './RoomList';
 import Profile from './Profile';
 import LobbyButtons from './LobbyButtons';
 import React, { useContext, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../App';
 
 const Lobby = () => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket, popModal }: { socket: Socket; popModal: any } = useContext(globalContext);
+  const history = useHistory();
+
   useEffect(() => {
     socket.on('room create', (data) => {
-      //방으로 페이지 이동 history
+      if (data) {
+        history.push('/game');
+      } else {
+        popModal('error', '중복된 방제가 있습니다.');
+      }
     });
   }, []);
 
