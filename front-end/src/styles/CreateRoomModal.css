@@ -1,0 +1,75 @@
+#create-room {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #6d80a6;
+  width: 40vw;
+  height: 60vh;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+  border: #000 2px solid;
+}
+
+.create-room-header {
+  margin: -5vh 0 0 5vw;
+  font-size: 25px;
+  font-weight: 600;
+  text-shadow: 2px 3px 3px gray;
+}
+
+.create-room-sub-header {
+  font-size: 15px;
+  text-shadow: 2px 3px 2px gray;
+  margin: 2vh 0 0 3vw;
+}
+
+.cr-input-box {
+  margin: 0.5vh 0 0 3vw;
+  border: #000 1px solid;
+  padding: 10px;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.cr-name {
+  width: 30vw;
+}
+
+.cr-password {
+  width: 20vw;
+}
+
+.cr-persons,
+.cr-rounds {
+  width: 3vw;
+  text-align: center;
+}
+
+.create-room-buttons {
+  display: flex;
+}
+
+.cr-button:first-of-type {
+  margin: 3vh 0 0 23vw;
+}
+
+.cr-button {
+  width: 80px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  margin: 3vh 0 0 1vw;
+  font-weight: 600;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.create-room-arrow {
+  vertical-align: middle;
+  width: 3vh;
+  height: 3vh;
+  margin-left: 1vw;
+  box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
