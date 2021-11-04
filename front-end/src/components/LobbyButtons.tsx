@@ -6,7 +6,7 @@ const LobbyButtons = () => {
 
   const createRoom = () => {
     const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
-    setCreateModal([ModalOutLocation, <CreateRoomModal key={1} />]);
+    setCreateModal([ModalOutLocation, <CreateRoomModal offModal={offModal} key={1} />]);
   };
 
   const offModal = () => {

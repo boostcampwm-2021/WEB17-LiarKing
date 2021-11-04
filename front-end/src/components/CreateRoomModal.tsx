@@ -1,41 +1,48 @@
 import '../styles/CreateRoomModal.css';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import upArrow from '../images/upArrow.svg';
 import downArorw from '../images/downArrow.svg';
+import { Socket } from 'socket.io-client';
+import { globalContext } from '../App';
 
-const CreateRoomModal = () => {
-  const [roomInfo, setRoomInfo] = useState({ name: '', pwd: '', persons: 0, rounds: 0 });
+const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
+  const { user, socket }: { user: any; socket: Socket } = useContext(globalContext);
+  const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.id });
 
-  const changeName = (e: any) => {
-    setRoomInfo({ ...roomInfo, name: e.target.value });
+  const changeTitle = (e: any) => {
+    setRoomInfo({ ...roomInfo, title: e.target.value });
   };
 
   const changePassword = (e: any) => {
-    setRoomInfo({ ...roomInfo, pwd: e.target.value });
+    setRoomInfo({ ...roomInfo, password: e.target.value });
   };
 
   const increasePersons = () => {
-    if (roomInfo.persons < 8) {
-      setRoomInfo({ ...roomInfo, persons: roomInfo.persons + 1 });
+    if (roomInfo.max < 8) {
+      setRoomInfo({ ...roomInfo, max: roomInfo.max + 1 });
     }
   };
 
   const decreasePersons = () => {
-    if (roomInfo.persons > 0) {
-      setRoomInfo({ ...roomInfo, persons: roomInfo.persons - 1 });
+    if (roomInfo.max > 1) {
+      setRoomInfo({ ...roomInfo, max: roomInfo.max - 1 });
     }
   };
 
   const increaseRounds = () => {
-    if (roomInfo.rounds < 3) {
-      setRoomInfo({ ...roomInfo, rounds: roomInfo.rounds + 1 });
+    if (roomInfo.cycle < 3) {
+      setRoomInfo({ ...roomInfo, cycle: roomInfo.cycle + 1 });
     }
   };
 
   const decreaseRounds = () => {
-    if (roomInfo.rounds > 0) {
-      setRoomInfo({ ...roomInfo, rounds: roomInfo.rounds - 1 });
+    if (roomInfo.cycle > 1) {
+      setRoomInfo({ ...roomInfo, cycle: roomInfo.cycle - 1 });
     }
+  };
+
+  const createRoom = () => {
+    socket.emit('room create', roomInfo);
   };
 
   return (
@@ -43,7 +50,7 @@ const CreateRoomModal = () => {
       <div className="create-room-header">방 생성하기</div>
       <div className="create-room-name">
         <div className="create-room-sub-header">방 제목</div>
-        <input className="cr-name cr-input-box" type="text" placeholder="방 제목을 입력해주세요 (최대 30자)" onInput={changeName}></input>
+        <input className="cr-name cr-input-box" type="text" placeholder="방 제목을 입력해주세요 (최대 30자)" onInput={changeTitle}></input>
       </div>
       <div className="create-room-password">
         <div className="create-room-sub-header">비밀번호</div>
@@ -56,19 +63,23 @@ const CreateRoomModal = () => {
       </div>
       <div className="create-room-persons">
         <div className="create-room-sub-header">최대 플레이어 수</div>
-        <input className="cr-persons cr-input-box" type="text" value={roomInfo.persons + ' / 8'}></input>
+        <input className="cr-persons cr-input-box" type="text" value={roomInfo.max + ' / 8'}></input>
         <img className="create-room-arrow" src={upArrow} onClick={increasePersons}></img>
         <img className="create-room-arrow" src={downArorw} onClick={decreasePersons}></img>
       </div>
       <div className="create-room-rounds">
         <div className="create-room-sub-header">라운드 수</div>
-        <input className="cr-rounds cr-input-box" type="text" value={roomInfo.rounds + ' / 3'}></input>
+        <input className="cr-rounds cr-input-box" type="text" value={roomInfo.cycle + ' / 3'}></input>
         <img className="create-room-arrow" src={upArrow} onClick={increaseRounds}></img>
         <img className="create-room-arrow" src={downArorw} onClick={decreaseRounds}></img>
       </div>
       <div className="create-room-buttons">
-        <button className="create-room-do cr-button">생성하기</button>
-        <button className="create-room-cancel cr-button">닫기</button>
+        <button className="create-room-do cr-button" onClick={createRoom}>
+          생성하기
+        </button>
+        <button className="create-room-cancel cr-button" onClick={offModal}>
+          닫기
+        </button>
       </div>
     </div>
   );
