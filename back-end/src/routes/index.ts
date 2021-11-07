@@ -5,7 +5,7 @@ import path from 'path';
 
 const indexRouter = Router();
 
-indexRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+indexRouter.get('/*', async (req: Request, res: Response, next: NextFunction) => {
   const htmlPath = path.join(__dirname, '../../build/index.html');
 
   res.sendFile(htmlPath);

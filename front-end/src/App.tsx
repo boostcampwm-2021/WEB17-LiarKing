@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import io from 'socket.io-client';
+import Error from './components/Error';
 
 export const globalContext = React.createContext(null);
 
@@ -36,7 +37,8 @@ function App() {
                 <CSSTransition key={location.pathname} timeout={300} classNames="page-slider">
                   <Switch location={location}>
                     <Route exact path="/" component={Main} />
-                    <Route path="/lobby" component={Lobby} />
+                    <Route exact path="/lobby" component={Lobby} />
+                    <Route path="/*" component={Error} />
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>

@@ -16,7 +16,7 @@ const Profile = () => {
 
   return (
     <div id="profile">
-      <img className="profile-character" ref={profileImage}></img>
+      <img className="profile-character" ref={profileImage} alt={'profile-character'}></img>
       <div className="profile-id">{userInfo.userId}</div>
       <div className="profile-point">내 점수 : {userInfo.userPoint}</div>
       <div className="profile-rank">내 등급 : {userInfo.userRank}</div>

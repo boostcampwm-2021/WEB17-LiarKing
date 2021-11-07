@@ -19,7 +19,7 @@ const Lobby = () => {
         popModal('error', '중복된 방제가 있습니다.');
       }
     });
-  }, []);
+  });
 
   return (
     <div id="lobby">
