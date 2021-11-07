@@ -1,11 +1,11 @@
 import '../styles/Lobby.css';
-import RoomList from './RoomList';
-import Profile from './Profile';
-import LobbyButtons from './LobbyButtons';
+import RoomList from '../Lobby/RoomList';
+import Profile from '../Lobby/Profile';
+import LobbyButtons from '../Lobby/LobbyButtons';
 import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
-import { globalContext } from '../App';
+import { globalContext } from '../../App';
 
 const Lobby = () => {
   const { socket, popModal }: { socket: Socket; popModal: any } = useContext(globalContext);

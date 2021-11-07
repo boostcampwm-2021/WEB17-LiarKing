@@ -7,11 +7,10 @@ import { createConnection } from 'typeorm';
 import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import socketUtil from './utils/socket';
 
 import userRouter from './routes/userRoute';
 import indexRouter from './routes';
-
-import { roomList } from './store/store';
 
 dotenv.config();
 
@@ -21,33 +20,7 @@ const io = new Server(httpServer, {
   cors: { origin: '*' },
 });
 
-io.on('connection', (socket) => {
-  console.log('connect id:', socket.id);
-
-  socket.join('lobby');
-
-  socket.on('room list', function () {
-    socket.emit('room list', Array.from(roomList));
-  });
-
-  socket.on('room create', function (data) {
-    socket.leave('lobby');
-
-    const roomTitle = data.title;
-
-    if (!roomList.get(roomTitle)) {
-      roomList.set(roomTitle, Object.assign(data, { client: [] }));
-
-      io.to('lobby').emit('room list', Array.from(roomList));
-
-      socket.join(roomTitle);
-    } else {
-      data = false;
-    }
-
-    socket.emit('room create', data);
-  });
-});
+socketUtil(io);
 
 httpServer.listen(5000);
 
@@ -68,8 +41,6 @@ app.use(
 app.use('/', indexRouter);
 app.use('/users', userRouter);
 app.use(express.static(path.join(__dirname, '../build')));
-
-const port = Number(process.env.PORT || 5000);
 
 createConnection()
   .then(() => {

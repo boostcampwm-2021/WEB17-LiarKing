@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import upArrow from '../images/upArrow.svg';
 import downArorw from '../images/downArrow.svg';
 import { Socket } from 'socket.io-client';
-import { globalContext } from '../App';
+import { globalContext } from '../../App';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { popModal, user, socket }: { popModal: any; user: any; socket: Socket } = useContext(globalContext);

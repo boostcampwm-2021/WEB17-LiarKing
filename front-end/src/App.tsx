@@ -1,12 +1,12 @@
 import './styles/App.css';
-import Main from './components/Main';
-import Lobby from './components/Lobby';
-import Modal from './components/Modal';
+import Main from './components/pages/Main';
+import Lobby from './components/pages/Lobby';
+import Modal from './components/public/Modal';
+import Error from './components/pages/Error';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import io from 'socket.io-client';
-import Error from './components/Error';
 
 export const globalContext = React.createContext(null);
 

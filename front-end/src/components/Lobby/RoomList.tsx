@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { Socket } from 'socket.io-client';
-import { globalContext } from '../App';
+import { globalContext } from '../../App';
 
 const RoomList = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
