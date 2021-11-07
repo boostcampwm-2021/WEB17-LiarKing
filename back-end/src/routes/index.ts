@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { nicknameList } from '../store/store';
-import loginService from '../service/loginService';
+import loginService from '../database/service/loginService';
 import path from 'path';
 
 const indexRouter = Router();
