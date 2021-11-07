@@ -3,14 +3,14 @@ import morgan from 'morgan';
 import session from 'express-session';
 import dotenv from 'dotenv';
 import 'reflect-metadata';
-import { createConnection } from 'typeorm';
 import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import socketUtil from './utils/socket';
+import connection from './database/connection';
 
-import userRouter from './routes/userRoute';
-import indexRouter from './routes';
+import userRouter from './route/userRouter';
+import indexRouter from './route/indexRouter';
 
 dotenv.config();
 
@@ -21,8 +21,6 @@ const io = new Server(httpServer, {
 });
 
 socketUtil(io);
-
-httpServer.listen(5000);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,8 +40,12 @@ app.use('/', indexRouter);
 app.use('/users', userRouter);
 app.use(express.static(path.join(__dirname, '../build')));
 
-createConnection()
-  .then(() => {
+if (process.env.NODE_ENV !== 'test') {
+  connection.create().then(() => {
     console.log('database connected');
-  })
-  .catch((error) => console.log(error));
+
+    httpServer.listen(5000);
+  });
+}
+
+export default app;
