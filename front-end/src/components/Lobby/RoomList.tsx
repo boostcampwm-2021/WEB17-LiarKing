@@ -8,10 +8,10 @@ const RoomList = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [rooms, setRooms] = useState([]);
   const { socket }: { socket: Socket } = useContext(globalContext);
-  const maxRoomList = 10;
+  const MAX_ROOM_LIST = 10;
 
   const increasePage = () => {
-    if (pageNumber * maxRoomList < rooms.length) {
+    if (pageNumber * MAX_ROOM_LIST < rooms.length) {
       setPageNumber(pageNumber + 1);
     }
   };
@@ -36,7 +36,7 @@ const RoomList = () => {
     <div id="room-lists">
       {rooms
         .slice()
-        .splice((pageNumber - 1) * maxRoomList, 10)
+        .splice((pageNumber - 1) * MAX_ROOM_LIST, 10)
         .map((room, i) => {
           const [title, roomInfo] = room;
           const { client, max } = roomInfo;

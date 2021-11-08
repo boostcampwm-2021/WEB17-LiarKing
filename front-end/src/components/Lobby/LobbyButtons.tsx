@@ -1,16 +1,24 @@
 import { useState } from 'react';
 import CreateRoomModal from './CreateRoomModal';
+import ExplainRuleModal from './ExplainRuleModal';
 
 const LobbyButtons = () => {
   const [createModal, setCreateModal] = useState([]);
-
-  const createRoom = () => {
-    const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
-    setCreateModal([ModalOutLocation, <CreateRoomModal offModal={offModal} key={1} />]);
-  };
+  const [ruleModal, setRuleModal] = useState([]);
 
   const offModal = () => {
     setCreateModal([]);
+    setRuleModal([]);
+  };
+
+  const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
+
+  const createRoom = () => {
+    setCreateModal([ModalOutLocation, <CreateRoomModal offModal={offModal} key={1} />]);
+  };
+
+  const explainRules = () => {
+    setRuleModal([ModalOutLocation, <ExplainRuleModal key={1} />]);
   };
 
   return (
@@ -22,7 +30,10 @@ const LobbyButtons = () => {
         게임 생성
       </button>
       {createModal}
-      <button className="lobby-rule-button lobby-button">룰 설명</button>
+      <button className="lobby-rule-button lobby-button" onClick={explainRules}>
+        룰 설명
+      </button>
+      {ruleModal}
     </div>
   );
 };
