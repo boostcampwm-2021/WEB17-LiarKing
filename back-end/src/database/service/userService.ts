@@ -28,12 +28,10 @@ async function getUserInfo(id: string) {
 async function getUsersRanks() {
   try {
     const userRepository = getRepository(User);
-    const users: Array<User> = await userRepository.find({ order: { point: 'DESC' }, take: 5 });
-
-    users.forEach((user: User) => {
-      delete user.id;
-      delete user.password;
-    });
+    const users: Array<User> = await userRepository.query(
+      'SELECT user_id, point, dense_rank() over (order by point desc) as ranking from user where 5'
+    );
+    //const users: Array<User> = await userRepository.find({ order: { point: 'DESC' }, take: 5 });
 
     return users;
   } catch (error) {
