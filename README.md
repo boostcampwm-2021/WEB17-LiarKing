@@ -56,4 +56,5 @@
 
 ### 📌 기타
 
-- [팀 규칙 및 컨벤션](https://github.com/boostcampwm-2021/WEB17/wiki/%ED%8C%80-%EA%B7%9C%EC%B9%99)
+- [팀 규칙](https://github.com/boostcampwm-2021/WEB17/wiki/%ED%8C%80-%EA%B7%9C%EC%B9%99)
+- [컨벤션](https://github.com/boostcampwm-2021/WEB17-LiarKing/wiki/%EC%BB%A8%EB%B2%A4%EC%85%98)

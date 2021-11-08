@@ -3,6 +3,11 @@ import userService from '../database/service/userService';
 
 const userRouter = Router();
 
+userRouter.get('/ranks', async (req: Request, res: Response, next: NextFunction) => {
+  const result = await userService.getUsersRanks();
+  res.json(result);
+});
+
 userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
   const { id, password } = req.body;
   const result = await userService.signUpUser(id, password);

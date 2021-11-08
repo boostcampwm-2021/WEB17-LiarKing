@@ -1,0 +1,49 @@
+#create-rank {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #6d80a6;
+  width: 40vw;
+  height: 60vh;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+  border: #000 2px solid;
+  border-radius: 20px;
+}
+
+.create-rank-header {
+  font-size: 30px;
+  font-weight: 600;
+  text-shadow: 2px 3px 3px gray;
+}
+
+.create-rank-content {
+  display: flex;
+  justify-content: space-between;
+  background-color: #a7bdd9;
+  align-items: center;
+  border: #000 1px solid;
+  border-radius: 20px;
+  width: 35vw;
+  height: 7vh;
+  margin-top: 20px;
+}
+
+.create-rank-rank,
+.create-rank-name,
+.create-rank-point {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.create-rank-rank {
+  margin-left: 30px;
+}
+
+.create-rank-point {
+  margin-right: 30px;
+}
