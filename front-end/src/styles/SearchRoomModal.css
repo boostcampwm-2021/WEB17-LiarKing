@@ -1,0 +1,75 @@
+#search-room {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #6d80a6;
+  width: 40vw;
+  height: 30vh;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+  border: #000 2px solid;
+}
+
+.search-room-header {
+  margin: 0 0 0 5vw;
+  font-size: 25px;
+  font-weight: 600;
+  text-shadow: 2px 3px 3px gray;
+}
+
+.search-room-sub-header {
+  font-size: 15px;
+  text-shadow: 2px 3px 2px gray;
+  margin: 2vh 0 0 3vw;
+}
+
+.sh-input-box {
+  margin: 4vh 0 0 3vw;
+  border: #000 1px solid;
+  padding: 10px;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.sh-name {
+  width: 30vw;
+}
+
+.sh-password {
+  width: 20vw;
+}
+
+.sh-persons,
+.sh-rounds {
+  width: 3vw;
+  text-align: center;
+}
+
+.search-room-buttons {
+  display: flex;
+}
+
+.sh-button:first-of-type {
+  margin: 7vh 0 0 20vw;
+}
+
+.sh-button {
+  width: 80px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  margin: 7vh 0 0 1vw;
+  font-weight: 600;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.search-room-arrow {
+  vertical-align: middle;
+  width: 3vh;
+  height: 3vh;
+  margin-left: 1vw;
+  box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
