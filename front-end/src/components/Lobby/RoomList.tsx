@@ -50,6 +50,7 @@ const RoomList = () => {
         })}
       <div className="room-list-buttons">
         <img className="room-list-arrows" src={leftArrow} onClick={decreasePage}></img>
+        <div className="room-list-numbers">{pageNumber + ' / ' + Math.ceil(rooms.length / 10)}</div>
         <img className="room-list-arrows" src={rightArrow} onClick={increasePage}></img>
       </div>
     </div>

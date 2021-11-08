@@ -152,3 +152,9 @@ ul {
   margin: 0 1vw;
   cursor: pointer;
 }
+
+.room-list-numbers {
+  height: 3vh;
+  vertical-align: middle;
+  font-weight: 600;
+}

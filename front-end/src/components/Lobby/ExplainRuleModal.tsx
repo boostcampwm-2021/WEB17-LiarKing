@@ -57,6 +57,7 @@ const ExplainRuleModal = () => {
       <img className="explain-rule-image" src={ruleImages[String(pageNumber)]} />
       <div className="room-list-buttons">
         <img className="room-list-arrows" src={leftArrow} onClick={decreasePage}></img>
+        <div className="room-list-numbers">{pageNumber + ' / ' + MAX_PAGE_LENGTH}</div>
         <img className="room-list-arrows" src={rightArrow} onClick={increasePage}></img>
       </div>
     </div>
