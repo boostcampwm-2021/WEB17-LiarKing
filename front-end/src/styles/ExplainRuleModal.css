@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   background-color: #6d80a6;
-  width: 60vw;
+  width: 40vw;
   height: 60vh;
   position: absolute;
   left: 50%;
@@ -18,4 +18,10 @@
   text-align: center;
   font-weight: 600;
   word-break: keep-all;
+}
+
+.explain-rule-image {
+  width: 35vw;
+  height: 35vh;
+  margin: 2vh auto;
 }
