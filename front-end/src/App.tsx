@@ -1,6 +1,7 @@
 import './styles/App.css';
 import Main from './components/pages/Main';
 import Lobby from './components/pages/Lobby';
+import Game from './components/pages/Game';
 import Modal from './components/public/Modal';
 import Error from './components/pages/Error';
 import React, { useState } from 'react';
@@ -38,6 +39,7 @@ function App() {
                   <Switch location={location}>
                     <Route exact path="/" component={Main} />
                     <Route exact path="/lobby" component={Lobby} />
+                    <Route exact path="/game" component={Game} />
                     <Route path="/*" component={Error} />
                   </Switch>
                 </CSSTransition>

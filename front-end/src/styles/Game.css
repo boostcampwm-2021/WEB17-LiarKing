@@ -1,0 +1,278 @@
+#game {
+  background-color: rgba(0, 0, 0, 0);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.game-background {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vw;
+  background-image: url('../images/game.png');
+  background-repeat: no-repeat;
+  background-size: 100vw 100vh;
+  z-index: 1;
+}
+
+.game-filter {
+  -webkit-filter: brightness(0.5) blur(10px);
+}
+
+.game-header {
+  display: flex;
+  width: 100vw;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 30px;
+  z-index: 2;
+}
+
+.game-header-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  min-width: 230px;
+  height: 80px;
+  background-color: #a7bdd9;
+  border-radius: 30px;
+  font-family: Roboto;
+  font-size: 40px;
+  font-weight: 600;
+  text-shadow: 4px 6px 4px gray;
+  box-sizing: border-box;
+  padding-bottom: 10px;
+  margin-right: 10px;
+}
+
+.game-header-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-header-button {
+  width: auto;
+  min-width: fit-content;
+  height: 50px;
+  border: none;
+  background-color: #c4c4c4;
+  border-radius: 13px;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 0 20px 3px 20px;
+  margin: 0 20px;
+}
+
+.game-header-button-exit {
+  background-image: url('../images/exit.svg');
+  background-size: 100% 100%;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  margin: 0 20px;
+  cursor: pointer;
+}
+
+.game-header-info {
+  min-width: fit-content;
+  font-family: Roboto;
+  font-size: 25px;
+  font-weight: 600;
+  color: white;
+}
+
+.game-persons {
+  display: flex;
+  width: 100vw;
+  height: 100%;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 80px;
+  z-index: 2;
+}
+
+.game-persons-left,
+.game-persons-right {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-persons-user {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 200px;
+  height: 100px;
+}
+
+.game-persons-user-right {
+  flex-direction: row-reverse;
+}
+
+.game-persons-user-character {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: #6d80a6;
+}
+
+.game-user-id {
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 3px;
+}
+
+.game-user-character {
+  background-image: url('../images/mainChar2.svg');
+  background-size: 100% 100%;
+  width: 60px;
+  height: 60px;
+}
+
+.game-persons-user-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.game-content {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.game-content-select {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #6d80a6;
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.game-content-select-imgbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a7bdd9;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+.game-content-select-word {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Roboto;
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.game-liar {
+  color: red;
+}
+
+.game-content-chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.game-content-chat-history {
+  display: inline-flexbox;
+  position: relative;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  height: 500px;
+  padding-left: 17px;
+  overflow-y: scroll;
+}
+
+.game-content-chat-history::-webkit-scrollbar {
+  visibility: hidden;
+}
+
+.game-chat-box {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 500px;
+  height: 60px;
+  min-height: 60px;
+  border-radius: 30px;
+  box-sizing: border-box;
+  padding: 0 20px 3px 20px;
+  margin-top: 20px;
+}
+
+.game-chat-box-read {
+  background-color: #a7bdd9;
+}
+
+.game-chat-box-send {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e2e5f4;
+}
+
+.game-chat-box-font {
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.game-chat-send-input {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+}
+
+.game-chat-send-button {
+  background-image: url('../images/sendMsg.svg');
+  background-size: 100% 100%;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.game-content-chat-speaker {
+  font-family: Roboto;
+  font-size: 50px;
+  font-weight: 600;
+  color: aliceblue;
+  margin: 20px 0;
+}
+
+.game-content-chat-timer {
+  font-family: Roboto;
+  font-size: 30px;
+  font-weight: 500;
+  color: aliceblue;
+}
