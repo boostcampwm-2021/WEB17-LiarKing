@@ -25,7 +25,24 @@ async function getUserInfo(id: string) {
   return user;
 }
 
+async function getUsersRanks() {
+  try {
+    const userRepository = getRepository(User);
+    const users: Array<User> = await userRepository.find({ order: { point: 'DESC' }, take: 5 });
+
+    users.forEach((user: User) => {
+      delete user.id;
+      delete user.password;
+    });
+
+    return users;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export default {
   signUpUser,
   getUserInfo,
+  getUsersRanks,
 };

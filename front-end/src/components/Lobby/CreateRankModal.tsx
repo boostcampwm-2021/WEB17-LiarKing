@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useState } from 'react';
 import '../../styles/CreateRankModal.css';
 
 const CreateRankModal = ({ offModal }: { offModal(): void }) => {
+  const [ranks, setRanks] = useState([]);
+
+  useEffect(() => {
+    const getRanks = async () => {
+      const ranks: any = await fetch('/users/rank');
+      setRanks(ranks);
+    };
+
+    getRanks();
+  }, []);
+
   return (
     <div id="create-rank">
       <div className="create-rank-header">랭 킹</div>
