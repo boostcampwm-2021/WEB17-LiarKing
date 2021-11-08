@@ -1,4 +1,4 @@
-import '../styles/Modal.css';
+import '../../styles/Modal.css';
 
 type modalParam = { type: 'alert' | 'warning' | 'error'; ment: string };
 

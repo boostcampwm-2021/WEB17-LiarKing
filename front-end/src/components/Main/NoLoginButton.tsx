@@ -1,4 +1,4 @@
-import '../styles/NoLoginButton.css';
+import '../../styles/NoLoginButton.css';
 import { useState, useContext } from 'react';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';

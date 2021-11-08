@@ -1,7 +1,7 @@
-import '../styles/CreateRoomModal.css';
+import '../../styles/CreateRoomModal.css';
 import { useContext, useState } from 'react';
-import upArrow from '../images/upArrow.svg';
-import downArorw from '../images/downArrow.svg';
+import upArrow from '../../images/upArrow.svg';
+import downArorw from '../../images/downArrow.svg';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 
