@@ -80,7 +80,7 @@ const JoinModal = () => {
         password: userInfo['pwd'],
       }),
     };
-    const data = await fetch('/users', options);
+    const data = await fetch('/api/users', options);
     const user = await data.json(); // return [object: 유저정보 | false: 아이디 중복]
 
     return user;
