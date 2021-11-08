@@ -2,13 +2,21 @@ import '../../styles/Lobby.css';
 import RoomList from '../Lobby/RoomList';
 import Profile from '../Lobby/Profile';
 import LobbyButtons from '../Lobby/LobbyButtons';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 
+const filterRooms = (rooms: any, filterWord: String) => {
+  console.log(rooms);
+  if (filterWord === '') return rooms;
+  return rooms.filter((room: any) => room[0].includes(filterWord));
+};
+
 const Lobby = () => {
   const { socket, popModal }: { socket: Socket; popModal: any } = useContext(globalContext);
+  const [rooms, setRooms] = useState([]);
+  const [filterWord, setFilterWord] = useState('');
   const history = useHistory();
 
   useEffect(() => {
@@ -19,19 +27,25 @@ const Lobby = () => {
         popModal('error', '중복된 방제가 있습니다.');
       }
     });
-  });
+
+    socket.on('room list', (roomList) => {
+      setRooms(roomList);
+    });
+
+    socket.emit('room list', null);
+  }, []);
 
   return (
     <div id="lobby">
       <div className="lobby-center-items">
         <div className="lobby-header">Liar Game</div>
         <div className="lobby-rooms">
-          <RoomList />
+          <RoomList rooms={filterRooms(rooms, filterWord)} />
         </div>
       </div>
       <div className="lobby-right-items">
         <Profile />
-        <LobbyButtons />
+        <LobbyButtons setFilterWord={setFilterWord} />
       </div>
     </div>
   );

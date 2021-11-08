@@ -1,22 +1,11 @@
-import { useEffect, useState, useContext } from 'react';
-import { Socket } from 'socket.io-client';
-import { globalContext } from '../../App';
+import { useEffect } from 'react';
 
-const RoomList = () => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
-  const [rooms, setRooms] = useState([]);
-
-  useEffect(() => {
-    socket.on('room list', (roomList) => {
-      setRooms(roomList);
-    });
-
-    socket.emit('room list', null);
-  });
+const RoomList = ({ rooms }: any) => {
+  useEffect(() => {}, []);
 
   return (
     <div id="room-lists">
-      {rooms.map((v, i) => {
+      {rooms.map((v: any, i: any) => {
         const [title, roomInfo] = v;
         const { client, max } = roomInfo;
 
