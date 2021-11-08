@@ -1,4 +1,4 @@
-import '../styles/Main.css';
+import '../../styles/Main.css';
 import NoLoginButton from '../Main/NoLoginButton';
 import LoginButton from '../Main/LoginButton';
 import JoinButton from '../Main/JoinButton';

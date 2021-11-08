@@ -1,4 +1,4 @@
-import '../styles/Lobby.css';
+import '../../styles/Lobby.css';
 import RoomList from '../Lobby/RoomList';
 import Profile from '../Lobby/Profile';
 import LobbyButtons from '../Lobby/LobbyButtons';

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useContext } from 'react';
-import character from '../images/mainChar2.svg';
+import character from '../../images/mainChar2.svg';
 import { globalContext } from '../../App';
 
 const Profile = () => {
