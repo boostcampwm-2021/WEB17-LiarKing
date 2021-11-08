@@ -5,15 +5,11 @@ import ExplainRuleModal from './ExplainRuleModal';
 
 const LobbyButtons = () => {
   const [createModal, setCreateModal] = useState([]);
-  const [ruleModal, setRuleModal] = useState([]);
 
   const offModal = () => {
     setCreateModal([]);
-    setRuleModal([]);
   };
 
-const LobbyButtons = () => {
-  const [createModal, setCreateModal] = useState([]);
   const createRoom = () => {
     const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
     setCreateModal([ModalOutLocation, <CreateRoomModal offModal={offModal} key={1} />]);
@@ -21,16 +17,12 @@ const LobbyButtons = () => {
 
   const explainRules = () => {
     const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
-    setRuleModal([ModalOutLocation, <ExplainRuleModal key={1} />]);
-    
+    setCreateModal([ModalOutLocation, <ExplainRuleModal key={1} />]);
+  };
+
   const createRanking = () => {
     const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
     setCreateModal([ModalOutLocation, <CreateRankModal offModal={offModal} key={2} />]);
-  };
-
-  const offModal = () => {
-    setCreateModal([]);
-    setRuleModal([]);
   };
 
   return (
@@ -47,7 +39,6 @@ const LobbyButtons = () => {
       <button className="lobby-rule-button lobby-button" onClick={explainRules}>
         룰 설명
       </button>
-      {ruleModal}
     </div>
   );
 };
