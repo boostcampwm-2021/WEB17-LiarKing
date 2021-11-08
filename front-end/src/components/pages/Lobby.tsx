@@ -8,7 +8,6 @@ import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 
 const filterRooms = (rooms: any, filterWord: String) => {
-  console.log(rooms);
   if (filterWord === '') return rooms;
   return rooms.filter((room: any) => room[0].includes(filterWord));
 };
@@ -40,7 +39,7 @@ const Lobby = () => {
       <div className="lobby-center-items">
         <div className="lobby-header">Liar Game</div>
         <div className="lobby-rooms">
-          <RoomList rooms={filterRooms(rooms, filterWord)} />
+          <RoomList rooms={filterRooms(rooms, filterWord)} filterWord={filterWord} />
         </div>
       </div>
       <div className="lobby-right-items">

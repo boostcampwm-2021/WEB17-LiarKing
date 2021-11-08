@@ -1,7 +1,11 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { globalContext } from '../../App';
 
-const RoomList = ({ rooms }: any) => {
-  useEffect(() => {}, []);
+const RoomList = ({ rooms, filterWord }: any) => {
+  const { popModal }: { popModal: any } = useContext(globalContext);
+  useEffect(() => {
+    if (rooms.length === 0 && filterWord !== '') popModal('error', '조건을 만족하는 방이 없습니다.');
+  }, [filterWord]);
 
   return (
     <div id="room-lists">
