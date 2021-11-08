@@ -100,6 +100,7 @@ ul {
 #room-lists {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .room-list {
@@ -135,4 +136,25 @@ ul {
   100% {
     background-position: 0% 100%;
   }
+}
+
+.room-list-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 3vh;
+  flex-grow: 1;
+}
+
+.room-list-arrows {
+  width: 3vh;
+  height: 3vh;
+  margin: 0 1vw;
+  cursor: pointer;
+}
+
+.room-list-numbers {
+  height: 3vh;
+  vertical-align: middle;
+  font-weight: 600;
 }
