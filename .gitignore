@@ -38,3 +38,6 @@ ormconfig.json
 
 sessions/
 nohub.out
+
+.jest/
+

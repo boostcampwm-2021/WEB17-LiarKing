@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import upArrow from '../images/upArrow.svg';
 import downArorw from '../images/downArrow.svg';
 import { Socket } from 'socket.io-client';
-import { globalContext } from '../App';
+import { globalContext } from '../../App';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { popModal, user, socket }: { popModal: any; user: any; socket: Socket } = useContext(globalContext);
@@ -67,15 +67,15 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
       </div>
       <div className="create-room-persons">
         <div className="create-room-sub-header">최대 플레이어 수</div>
-        <input className="cr-persons cr-input-box" type="text" value={roomInfo.max + ' / 8'}></input>
-        <img className="create-room-arrow" src={upArrow} onClick={increasePersons}></img>
-        <img className="create-room-arrow" src={downArorw} onClick={decreasePersons}></img>
+        <input className="cr-persons cr-input-box" type="text" defaultValue={roomInfo.max + ' / 8'}></input>
+        <img className="create-room-arrow" src={upArrow} onClick={increasePersons} alt={'room-person-up'}></img>
+        <img className="create-room-arrow" src={downArorw} onClick={decreasePersons} alt={'room-person-down'}></img>
       </div>
       <div className="create-room-rounds">
         <div className="create-room-sub-header">라운드 수</div>
-        <input className="cr-rounds cr-input-box" type="text" value={roomInfo.cycle + ' / 3'}></input>
-        <img className="create-room-arrow" src={upArrow} onClick={increaseRounds}></img>
-        <img className="create-room-arrow" src={downArorw} onClick={decreaseRounds}></img>
+        <input className="cr-rounds cr-input-box" type="text" defaultValue={roomInfo.cycle + ' / 3'}></input>
+        <img className="create-room-arrow" src={upArrow} onClick={increaseRounds} alt={'room-round-up'}></img>
+        <img className="create-room-arrow" src={downArorw} onClick={decreaseRounds} alt={'room-round-down'}></img>
       </div>
       <div className="create-room-buttons">
         <button className="create-room-do cr-button" onClick={createRoom}>

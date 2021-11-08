@@ -1,7 +1,7 @@
 import '../styles/Main.css';
-import NoLoginButton from './NoLoginButton';
-import LoginButton from './LoginButton';
-import JoinButton from './JoinButton';
+import NoLoginButton from '../Main/NoLoginButton';
+import LoginButton from '../Main/LoginButton';
+import JoinButton from '../Main/JoinButton';
 import React from 'react';
 
 const Main = () => {

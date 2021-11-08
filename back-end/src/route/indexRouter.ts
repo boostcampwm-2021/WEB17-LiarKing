@@ -1,15 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { nicknameList } from '../store/store';
-import loginService from '../service/loginService';
+import loginService from '../database/service/loginService';
 import path from 'path';
 
 const indexRouter = Router();
-
-indexRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  const htmlPath = path.join(__dirname, '../../build/index.html');
-
-  res.sendFile(htmlPath);
-});
 
 indexRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   const id = req.body.id;
@@ -32,6 +26,16 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
   } else {
     res.json(false);
   }
+});
+
+indexRouter.get('/test', async (req: Request, res: Response, next: NextFunction) => {
+  res.json('test');
+});
+
+indexRouter.get('/*', async (req: Request, res: Response, next: NextFunction) => {
+  const htmlPath = path.join(__dirname, '../../build/index.html');
+
+  res.sendFile(htmlPath);
 });
 
 export default indexRouter;

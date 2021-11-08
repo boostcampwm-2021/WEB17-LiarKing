@@ -1,0 +1,29 @@
+import loginService from '../database/service/loginService';
+import connection from '../database/connection';
+import { User } from '../database/entity/User';
+
+beforeAll(async () => {
+  await connection.create();
+});
+
+afterAll(async () => {
+  await connection.close();
+});
+
+describe('loginVerify test', () => {
+  test('correct id and password', async () => {
+    const id: string = 'testid1';
+    const password: string = 'testpw1';
+
+    const response = await loginService.loginVerify(id, password);
+    expect(response).toBeTruthy();
+  });
+
+  test('incorrect id and password', async () => {
+    const id: string = 'testid11111111';
+    const password: string = 'testpw1';
+
+    const response = await loginService.loginVerify(id, password);
+    expect(response).toBeFalsy();
+  });
+});
