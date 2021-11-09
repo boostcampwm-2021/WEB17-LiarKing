@@ -15,79 +15,39 @@ const persons = [
   { id: 'dunde', item: '확성기' },
 ];
 
-const action = {
-  type: 'waiting',
+type personType = { id: string; item?: string };
+type $reducerType = {
+  type: string;
+  persons: personType[];
+  select?: { wordEN: string; wordKR: string };
+  chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
+  vote?: { timer: number };
+  result?: { voteResult: string[]; liar: string; gameResult: boolean };
+  liar?: { category: string[]; answer: number; success(): void; fail(): void };
 };
 
-// const action = {
-//   type: 'select',
-//   word: { en: 'liar', kr: '라이어' },
-// };
+const $reducer = (state: any, action: $reducerType) => {
+  const { type, persons, select, chat, vote, result, liar } = action;
 
-// const action = {
-//   type: 'select',
-//   word: { en: 'apple', kr: '사과' },
-// };
+  const bgFilter: boolean = type !== 'waiting';
+  const contentAction = Object.assign({ type }, { ...action });
 
-type chatType = { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
-type wordType = { en: string; kr: string };
-type personType = { id: string; item?: string };
-type $reducerType = { type: string; persons: personType[]; word?: wordType; chat?: chatType };
-
-const $reducer = (state: any, { type, persons, word, chat }: $reducerType) => {
-  switch (type) {
-    case 'waiting':
-      return (
-        <>
-          <section className="game-background"></section>
-          <header className="game-header">
-            <span className="game-header-logo">Liar Game</span>
-            <GameButtons />
-            <span className="game-header-info">(6 / 8) kskim625의 방</span>
-          </header>
-          <section className="game-persons">
-            <GamePersons persons={persons} />
-          </section>
-          <section className="game-content"></section>
-        </>
-      );
-    case 'select':
-      return (
-        <>
-          <section className="game-background"></section>
-          <header className="game-header">
-            <span className="game-header-logo">Liar Game</span>
-            <GameButtons />
-            <span className="game-header-info">(6 / 8) kskim625의 방</span>
-          </header>
-          <section className="game-persons">
-            <GamePersons persons={persons} />
-          </section>
-          <section className="game-content">
-            <GameContent action={{ type, word }} />
-          </section>
-        </>
-      );
-    case 'chat':
-      return (
-        <>
-          <section className="game-background game-filter"></section>
-          <header className="game-header">
-            <span className="game-header-logo">Liar Game</span>
-            <GameButtons />
-            <span className="game-header-info">(6 / 8) kskim625의 방</span>
-          </header>
-          <section className="game-persons">
-            <GamePersons persons={persons} />
-          </section>
-          <section className="game-content">
-            <GameContent action={{ type, chat }} />
-          </section>
-        </>
-      );
-    default:
-      return state;
-  }
+  return (
+    <>
+      <section className={`game-background ${bgFilter && 'game-filter'}`}></section>
+      <header className="game-header">
+        <span className="game-header-logo">Liar Game</span>
+        <GameButtons />
+        <span className="game-header-info">(6 / 8) kskim625의 방</span>
+      </header>
+      <section className="game-persons">
+        <GamePersons persons={persons} />
+      </section>
+      <section className="game-content">
+        <GameContent action={contentAction} />
+      </section>
+    </>
+  );
 };
 
 const Game = () => {
@@ -104,31 +64,20 @@ const Game = () => {
         <GamePersons persons={persons} />
       </section>
       <section className="game-content">
-        <GameContent action={action} />
+        <GameContent action={{ type: 'waiting' }} />
       </section>
     </>
   );
 
   const click = () => {
     $dispatch({
-      type: 'chat',
+      type: 'liar',
       persons,
-      chat: {
-        chatHistory: [
-          'test: message',
-          'test: message2',
-          'test: message2',
-          'test: message2',
-          'test: message2',
-          'test: message2',
-          'test: message2',
-          'test: message2',
-          'test: message2',
-        ],
-        speaker: 'Dunde',
-        timer: 0,
-        changeMessage: (e: any) => console.log(e.target.value),
-        sendMessage: () => console.log('click send message'),
+      liar: {
+        answer: 1,
+        category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
+        fail: () => console.log('실패한!'),
+        success: () => console.log('성공!'),
       },
     });
   };

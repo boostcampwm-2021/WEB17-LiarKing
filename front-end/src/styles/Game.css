@@ -276,3 +276,63 @@
   font-weight: 500;
   color: aliceblue;
 }
+
+.game-content-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  min-width: 450px;
+  min-height: 160px;
+  border-radius: 30px;
+  background-color: #e2e5f4;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+.game-content-title {
+  font-family: Roboto;
+  font-size: 30px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.game-content-title-vote {
+  color: red;
+}
+
+.game-content-ment-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.game-content-ment {
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.game-content-liar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.game-content-liar-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a7bdd9;
+  border: none;
+  border-radius: 30px;
+  width: 120px;
+  font-family: Roboto;
+  font-size: 17px;
+  font-weight: 400;
+  padding: 10px;
+  margin: 10px 10px;
+}
