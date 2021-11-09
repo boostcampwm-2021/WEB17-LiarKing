@@ -1,8 +1,9 @@
 import '../../styles/Game.css';
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
 import GameContent from '../Game/GameContent';
+import { getUserData } from '../../utils/getDataUtil';
 
 //임시 데이터
 const persons = [

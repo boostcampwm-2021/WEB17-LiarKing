@@ -10,7 +10,7 @@ import { useHistory } from 'react-router';
 const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
   const history = useHistory();
-  const { popModal, user } = useContext(globalContext);
+  const { popModal } = useContext(globalContext);
 
   const changeId = (e: any) => {
     setUserInfo({ nickname: e.target.value });
@@ -31,8 +31,6 @@ const NoLoginModal = () => {
       return;
     }
 
-    //로비로 이동하는 로직 작성.
-    user['nickname'] = userInfo.nickname;
     history.push('/lobby');
   };
 
