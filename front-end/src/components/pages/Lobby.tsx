@@ -7,13 +7,17 @@ import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 
-const filterRooms = (rooms: any, filterWord: String) => {
+interface roomInterface {
+  [prop: string]: string;
+}
+
+const filterRooms = (rooms: Array<roomInterface>, filterWord: string) => {
   if (filterWord === '') return rooms;
-  return rooms.filter((room: any) => room[0].includes(filterWord));
+  return rooms.filter((room: roomInterface) => room[0].includes(filterWord));
 };
 
 const Lobby = () => {
-  const { socket, popModal }: { socket: Socket; popModal: any } = useContext(globalContext);
+  const { socket, popModal }: { socket: Socket; popModal: (type: string, ment: string) => {} } = useContext(globalContext);
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
   const history = useHistory();

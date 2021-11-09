@@ -1,5 +1,5 @@
 import '../../styles/LoginButton.css';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';
 
@@ -8,11 +8,11 @@ const LoginModal = () => {
   const history = useHistory();
   const { popModal, user } = useContext(globalContext);
 
-  const changeId = (e: any) => {
+  const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ ...userInfo, id: e.target.value });
   };
 
-  const changePwd = (e: any) => {
+  const changePwd = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ ...userInfo, pwd: e.target.value });
   };
 

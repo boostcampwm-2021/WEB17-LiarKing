@@ -13,10 +13,6 @@ interface ruleInterface {
   [prop: string]: string;
 }
 
-interface ruleImageInterface {
-  [prop: string]: string;
-}
-
 const rules: ruleInterface = {
   1: '1. 제시어 카테고리를 선택합니다.',
   2: '2. 제시어를 확인합니다. 이 때, 라이어에게는 제시어가 공개되지 않습니다.',
@@ -26,7 +22,7 @@ const rules: ruleInterface = {
   6: '6. 라이어가 제시어를 맞히지 못할 경우 일반 플레이어의 승리입니다.',
 };
 
-const ruleImages: ruleImageInterface = {
+const ruleImages: ruleInterface = {
   1: ruleOne,
   2: ruletwo,
   3: ruleThree,

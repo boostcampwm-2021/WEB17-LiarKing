@@ -38,7 +38,7 @@ const socketUtil = (io: Server) => {
     socket.on('room data', function (title: string) {
       const roomInfo = roomList.get(title);
       socket.leave('lobby');
-      roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
+      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
       socket.join(title);
 
       socket.emit('room data', roomList.get(title));

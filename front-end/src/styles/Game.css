@@ -44,12 +44,13 @@
   background-color: #a7bdd9;
   border-radius: 30px;
   font-family: Roboto;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 600;
   text-shadow: 4px 6px 4px gray;
   box-sizing: border-box;
   padding-bottom: 10px;
   margin-right: 10px;
+  box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
 }
 
 .game-header-buttons {
@@ -70,6 +71,8 @@
   font-weight: 600;
   padding: 0 20px 3px 20px;
   margin: 0 20px;
+  text-shadow: 2px 3px 2px gray;
+  box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
 }
 
 .game-header-button-exit {
@@ -129,7 +132,23 @@
   align-items: center;
   width: 100px;
   height: 100px;
-  background-color: #6d80a6;
+  border: 3px #000 solid;
+  background-color: #c1c1bd;
+  background: linear-gradient(-45deg, #c1c1bd, #6d80a6, #c1c1bd, #6d80a6);
+  animation: gradient 15s linear infinite;
+  background-size: 100% 1100%;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
 }
 
 .game-user-id {
@@ -138,6 +157,7 @@
   font-weight: 600;
   color: white;
   margin-bottom: 3px;
+  text-shadow: 4px 6px 4px gray;
 }
 
 .game-user-character {
