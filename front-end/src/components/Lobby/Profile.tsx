@@ -1,14 +1,14 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useContext } from 'react';
 import character from '../../images/mainChar2.svg';
 import { getUserData } from '../../utils/getDataUtil';
+import { globalContext } from '../../App';
 
 const Profile = () => {
   const profileImage = useRef(null);
-
-  const [user, setUser]: [{ user_id: string; point: number; rank: string }, any] = useState({ user_id: 'loading', point: 0, rank: 'loading' });
+  const { user } = useContext(globalContext);
 
   useEffect(() => {
-    getUserData(setUser);
+    if (!user.user_id) getUserData(user);
 
     if (profileImage.current) profileImage.current.src = character;
   }, []);

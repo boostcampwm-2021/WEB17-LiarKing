@@ -10,7 +10,7 @@ import { useHistory } from 'react-router';
 const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
   const history = useHistory();
-  const { popModal } = useContext(globalContext);
+  const { popModal, user } = useContext(globalContext);
 
   const changeId = (e: any) => {
     setUserInfo({ nickname: e.target.value });
@@ -31,6 +31,7 @@ const NoLoginModal = () => {
       return;
     }
 
+    Object.assign(user, { user_id: userInfo.nickname, point: 0, rank: 'unranked' });
     history.push('/lobby');
   };
 
