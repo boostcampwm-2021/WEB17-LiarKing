@@ -1,9 +1,10 @@
 import '../../styles/Game.css';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useContext } from 'react';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
 import GameContent from '../Game/GameContent';
-import { getUserData } from '../../utils/getDataUtil';
+import { globalContext } from '../../App';
+import { Socket } from 'socket.io-client';
 
 //임시 데이터
 const persons = [
@@ -52,6 +53,8 @@ const $reducer = (state: any, action: $reducerType) => {
 };
 
 const Game = () => {
+  const { roomData, socket }: { roomData: { selectedRoomTitle: string }; socket: Socket } = useContext(globalContext);
+
   const [$, $dispatch] = useReducer(
     $reducer,
     <>
@@ -59,7 +62,7 @@ const Game = () => {
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
         <GameButtons />
-        <span className="game-header-info">(6 / 8) kskim625의 방</span>
+        <span className="game-header-info">() 123</span>
       </header>
       <section className="game-persons">
         <GamePersons persons={persons} />
@@ -70,11 +73,18 @@ const Game = () => {
     </>
   );
 
+  useEffect(() => {
+    socket.on('room data', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
+      console.log(roomInfo.title, roomInfo.client);
+    });
+
+    socket.emit('room data', roomData.selectedRoomTitle);
+  }, []);
+
   const click = () => {
     $dispatch({
       type: 'liar',
       persons,
-
       liar: {
         answer: 1,
         category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
