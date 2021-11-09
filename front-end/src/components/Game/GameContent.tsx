@@ -7,7 +7,7 @@ import GameContentVote from './GameContentVote';
 
 type actionType = {
   type: string;
-  select?: { wordEN: string; wordKR: string };
+  select?: { word: string };
   chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
   vote?: { timer: number };
   result?: { voteResult: string[]; liar: string; gameResult: boolean };

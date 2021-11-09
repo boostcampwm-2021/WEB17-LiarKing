@@ -19,7 +19,7 @@ type personType = { id: string; item?: string };
 type $reducerType = {
   type: string;
   persons: personType[];
-  select?: { wordEN: string; wordKR: string };
+  select?: { word: string };
   chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
   vote?: { timer: number };
   result?: { voteResult: string[]; liar: string; gameResult: boolean };
@@ -73,6 +73,7 @@ const Game = () => {
     $dispatch({
       type: 'liar',
       persons,
+
       liar: {
         answer: 1,
         category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
