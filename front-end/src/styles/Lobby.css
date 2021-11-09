@@ -117,6 +117,11 @@ ul {
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
+.room-list-selected {
+  background-color: #000;
+  color: #fff;
+}
+
 .room-list:first-of-type {
   margin-top: 5vh;
 }
