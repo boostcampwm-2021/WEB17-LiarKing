@@ -52,7 +52,7 @@ const NoLoginModal = () => {
       }),
     };
 
-    const data = await fetch('/non-login', options);
+    const data = await fetch('/api/non-login', options);
     const user = await data.json(); // return Boolean, true: 아이디 사용가능, false: 아이디 중복
 
     return user;

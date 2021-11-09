@@ -18,6 +18,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: { origin: '*' },
+  path: '/socket',
 });
 
 socketUtil(io);
@@ -37,8 +38,8 @@ app.use(
   })
 );
 
-app.use('/users', userRouter);
-app.use('/', indexRouter);
+app.use('/api/users', userRouter);
+app.use('/api', indexRouter);
 
 app.use(express.static(path.join(__dirname, '../build')));
 

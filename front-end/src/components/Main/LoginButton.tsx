@@ -63,7 +63,7 @@ const LoginModal = () => {
         password: userInfo['pwd'],
       }),
     };
-    const data = await fetch('/login', options);
+    const data = await fetch('/api/login', options);
     const user = await data.json(); // return [object: 유저정보 | false: 로그인 실패]
 
     return user;

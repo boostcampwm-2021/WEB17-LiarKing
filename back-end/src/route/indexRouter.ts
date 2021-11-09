@@ -28,14 +28,10 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
   }
 });
 
-indexRouter.get('/test', async (req: Request, res: Response, next: NextFunction) => {
-  res.json('test');
-});
+// indexRouter.get('/*', async (req: Request, res: Response, next: NextFunction) => {
+//   const htmlPath = path.join(__dirname, '../../build/index.html');
 
-indexRouter.get('/*', async (req: Request, res: Response, next: NextFunction) => {
-  const htmlPath = path.join(__dirname, '../../build/index.html');
-
-  res.sendFile(htmlPath);
-});
+//   res.sendFile(htmlPath);
+// });
 
 export default indexRouter;

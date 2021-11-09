@@ -22,7 +22,7 @@ const CreateRankModal = ({ offModal }: { offModal(): void }) => {
 
   useEffect(() => {
     const getRanks = async () => {
-      const _ranks: any = await fetch('/users/ranks');
+      const _ranks: any = await fetch('/api/users/ranks');
       const ranks: any = await _ranks.json();
       setRanks(ranks);
     };
