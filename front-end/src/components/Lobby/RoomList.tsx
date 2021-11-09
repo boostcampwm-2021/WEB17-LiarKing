@@ -9,9 +9,8 @@ let selectedRoom = -1;
 
 const RoomList = ({ rooms, filterWord, setRooms }: any) => {
   const [pageNumber, setPageNumber] = useState(1);
-  const { socket, popModal }: { socket: Socket; popModal: any } = useContext(globalContext);
+  const { roomData, socket, popModal }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: any } = useContext(globalContext);
   const MAX_ROOM_LIST = 10;
-
   const increasePage = () => {
     if (pageNumber * MAX_ROOM_LIST < rooms.length) {
       setPageNumber(pageNumber + 1);
@@ -32,8 +31,10 @@ const RoomList = ({ rooms, filterWord, setRooms }: any) => {
     if (selectedRoom !== index) {
       newRooms[index][1]['selected'] = true;
       selectedRoom = index;
+      roomData.selectedRoomTitle = newRooms[index][0];
     } else {
       selectedRoom = -1;
+      roomData.selectedRoomTitle = '';
     }
     setRooms([...newRooms]);
   };
