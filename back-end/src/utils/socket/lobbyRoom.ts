@@ -61,6 +61,22 @@ const sendRoomData = (socket: Socket) => {
   });
 };
 
+const sendRoomExit = (socket: Socket) => {
+  socket.on('room exit', (title: string) => {
+    socket.leave(title);
+    socket.join('lobby');
+
+    const roomInfo = roomList.get(title);
+
+    if (roomInfo && roomInfo.client.length > 1) {
+      const client = roomInfo.client.filter((user: string) => user != socket.id);
+      roomList.set(title, { ...roomInfo, client });
+      socket.to(title).emit('room exit', roomList.get(title));
+    } else {
+      roomList.delete(title);
+    }
+  });
+};
 /**
  * 로비에서 할 소켓 기능 모음
  */
@@ -74,6 +90,8 @@ const lobbyRoom = (socket: Socket) => {
   sendRoomJoin(socket);
 
   sendRoomData(socket);
+
+  sendRoomExit(socket);
 };
 
 export default lobbyRoom;

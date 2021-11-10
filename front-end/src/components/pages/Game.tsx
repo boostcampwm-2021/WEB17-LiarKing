@@ -7,6 +7,7 @@ import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+import { useHistory } from 'react-router';
 
 //임시 데이터
 const persons = [
@@ -31,8 +32,7 @@ type $reducerType = {
 };
 
 const $reducer = (state: any, action: $reducerType) => {
-  const { type, persons, select, chat, vote, result, liar } = action;
-
+  const { type, persons } = action;
   const bgFilter: boolean = type !== 'waiting';
   const contentAction = Object.assign({ type }, { ...action });
 
@@ -56,6 +56,7 @@ const $reducer = (state: any, action: $reducerType) => {
 
 const Game = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
+  const history = useHistory();
   const roomData = useRecoilValue(globalAtom.roomData);
 
   const [$, $dispatch] = useReducer(
@@ -82,6 +83,10 @@ const Game = () => {
     });
 
     socket.emit('room data', roomData.selectedRoomTitle);
+
+    socket.on('room exit', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
+      // 한명 나갔을때
+    });
   }, []);
 
   const click = () => {
