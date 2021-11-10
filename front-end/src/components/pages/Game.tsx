@@ -5,6 +5,8 @@ import GamePersons from '../Game/GamePersons';
 import GameContent from '../Game/GameContent';
 import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
+import { useRecoilValue } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 //임시 데이터
 const persons = [
@@ -53,7 +55,8 @@ const $reducer = (state: any, action: $reducerType) => {
 };
 
 const Game = () => {
-  const { roomData, socket }: { roomData: { selectedRoomTitle: string }; socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: Socket } = useContext(globalContext);
+  const roomData = useRecoilValue(globalAtom.roomData);
 
   const [$, $dispatch] = useReducer(
     $reducer,

@@ -1,7 +1,9 @@
 import '../../styles/NoLoginButton.css';
-import React, { useState, useContext } from 'react';
-import { globalContext } from '../../App';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
+import setModal from '../../utils/setModal';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 /**
  * 비로그인 모달 컴포넌트
@@ -9,8 +11,13 @@ import { useHistory } from 'react-router';
  */
 const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
+  const setModalState = useSetRecoilState(globalAtom.modal);
   const history = useHistory();
-  const { popModal, user } = useContext(globalContext);
+  const setUser = useSetRecoilState(globalAtom.user);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
 
   const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ nickname: e.target.value });
@@ -31,8 +38,10 @@ const NoLoginModal = () => {
       return;
     }
 
-    Object.assign(user, { user_id: userInfo.nickname, point: 0, rank: 'unranked' });
-    history.push('/lobby');
+    setUser({ user_id: userInfo.nickname, point: 0, rank: 'unranked' });
+    setTimeout(() => {
+      history.push('/lobby');
+    }, 1000);
   };
 
   const checkId = (id: string): boolean => {

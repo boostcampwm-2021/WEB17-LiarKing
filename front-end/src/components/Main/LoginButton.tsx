@@ -1,12 +1,19 @@
 import '../../styles/LoginButton.css';
-import React, { useState, useContext } from 'react';
-import { globalContext } from '../../App';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
 const LoginModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '' });
   const history = useHistory();
-  const { popModal, user } = useContext(globalContext);
+  const setUser = useSetRecoilState(globalAtom.user);
+  const setModalState = useSetRecoilState(globalAtom.modal);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
 
   const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ ...userInfo, id: e.target.value });
@@ -38,7 +45,7 @@ const LoginModal = () => {
       return;
     }
 
-    Object.assign(user, userData);
+    setUser(userData);
     history.push('/lobby');
   };
 

@@ -2,31 +2,20 @@ import './styles/App.css';
 import Main from './components/pages/Main';
 import Lobby from './components/pages/Lobby';
 import Game from './components/pages/Game';
-import Modal from './components/public/Modal';
 import Error from './components/pages/Error';
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import globalAtom from './recoilStore/globalAtom';
 
 export const globalContext = React.createContext(null);
 
-const global = { roomData: { selectedRoomTitle: '' }, popModal: {}, user: {}, socket: io(process.env.REAC_APP_SOCKET_HOST, { path: '/socket' }) };
+const global = { socket: io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket' }) };
 
 function App() {
-  const [modal, setModal] = useState([]);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    const $Modal = <Modal type={type} ment={ment} key={0} />;
-
-    setModal([$Modal]);
-
-    setTimeout(() => {
-      setModal([]);
-    }, 2000);
-  };
-
-  global['popModal'] = popModal;
+  const modal = useRecoilValue(globalAtom.modal);
 
   return (
     <globalContext.Provider value={global}>
