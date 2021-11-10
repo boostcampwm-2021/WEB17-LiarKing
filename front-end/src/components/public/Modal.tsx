@@ -8,7 +8,9 @@ enum translate {
   'error' = '오류',
 }
 
-const Modal = ({ type, ment }: modalParam) => {
+const Modal = ({ modalProps }: { modalProps: modalParam }) => {
+  const { type, ment } = modalProps;
+
   return (
     <section className="modal-outter">
       <div id="modal">

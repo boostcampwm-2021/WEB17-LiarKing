@@ -2,6 +2,9 @@ import '../../styles/NoLoginButton.css';
 import React, { useState, useContext } from 'react';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';
+import setModal from '../../utils/setModal';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 /**
  * 비로그인 모달 컴포넌트
@@ -9,8 +12,13 @@ import { useHistory } from 'react-router';
  */
 const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
+  const setModalState = useSetRecoilState(globalAtom.modal);
   const history = useHistory();
-  const { popModal, user } = useContext(globalContext);
+  const { user } = useContext(globalContext);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
 
   const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ nickname: e.target.value });
