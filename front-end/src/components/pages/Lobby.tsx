@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import setModal from '../../utils/setModal';
 
@@ -27,14 +27,20 @@ const Lobby = () => {
 
   const setModalState = useSetRecoilState(globalAtom.modal);
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
+  const { user_id } = useRecoilValue(globalAtom.user);
 
   const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
     setModal(setModalState, { type, ment });
   };
 
   const logout = async () => {
+    console.log(user_id);
     const res = await fetch('/api/logout', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user_id: user_id }),
     });
     if (res) {
       window.location.href = '/';
