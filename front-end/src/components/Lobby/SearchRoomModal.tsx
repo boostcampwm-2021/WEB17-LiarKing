@@ -1,12 +1,12 @@
 import '../../styles/SearchRoomModal.css';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { globalContext } from '../../App';
 
-const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFilterWord: any }) => {
-  const { popModal }: { popModal: any } = useContext(globalContext);
+const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFilterWord: (filterWord: string) => void }) => {
+  const { popModal }: { popModal: (type: string, ment: string) => {} } = useContext(globalContext);
   const [searchWord, setSearchWord] = useState('');
 
-  const changeTitle = (e: any) => {
+  const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
   };
 
@@ -25,7 +25,6 @@ const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFil
       <div className="search-room-name">
         <input className="sh-name sh-input-box" type="text" placeholder="검색할 단어를 입력해주세요 (최대 30자)" onInput={changeTitle}></input>
       </div>
-
       <div className="search-room-buttons">
         <button className="search-room-do sh-button" onClick={searchRoom}>
           검색하기

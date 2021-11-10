@@ -1,5 +1,5 @@
 import '../../styles/NoLoginButton.css';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';
 
@@ -12,7 +12,7 @@ const NoLoginModal = () => {
   const history = useHistory();
   const { popModal, user } = useContext(globalContext);
 
-  const changeId = (e: any) => {
+  const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ nickname: e.target.value });
   };
 

@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import '../../styles/CreateRankModal.css';
+
+interface rankInterface {
+  [prop: string]: string;
+}
 
 const CreateRankModal = ({ offModal }: { offModal(): void }) => {
   const [ranks, setRanks] = useState([]);
@@ -22,8 +26,8 @@ const CreateRankModal = ({ offModal }: { offModal(): void }) => {
 
   useEffect(() => {
     const getRanks = async () => {
-      const _ranks: any = await fetch('/api/users/ranks');
-      const ranks: any = await _ranks.json();
+      const _ranks: Response = await fetch('/api/users/ranks');
+      const ranks: Array<rankInterface> = await _ranks.json();
       setRanks(ranks);
     };
 

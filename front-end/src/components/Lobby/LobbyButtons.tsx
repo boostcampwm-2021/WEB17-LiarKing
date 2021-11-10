@@ -7,9 +7,10 @@ import SearchRoomModal from './SearchRoomModal';
 import CreateRankModal from './CreateRankModal';
 import ExplainRuleModal from './ExplainRuleModal';
 
-const LobbyButtons = ({ setFilterWord }: any) => {
+const LobbyButtons = ({ setFilterWord }: { setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
-  const { roomData, socket, popModal }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: any } = useContext(globalContext);
+  const { roomData, socket, popModal }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: (type: string, ment: string) => {} } =
+    useContext(globalContext);
   const history = useHistory();
 
   const offModal = () => {

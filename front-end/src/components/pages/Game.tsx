@@ -75,7 +75,7 @@ const Game = () => {
 
   useEffect(() => {
     socket.on('room data', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      console.log(roomInfo.title, roomInfo.client);
+      if (roomInfo !== null) console.log(roomInfo.title, roomInfo.client);
     });
 
     socket.emit('room data', roomData.selectedRoomTitle);

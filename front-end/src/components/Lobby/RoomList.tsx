@@ -7,9 +7,27 @@ import rightArrow from '../../images/rightArrow.svg';
 
 let selectedRoom = -1;
 
-const RoomList = ({ rooms, filterWord, setRooms }: any) => {
+interface roomInterface {
+  client: string;
+  max: number;
+  selected: boolean;
+}
+
+interface roomListInterface {
+  rooms: any;
+  filterWord: string;
+  setRooms: (rooms: Array<any>) => void;
+}
+
+interface selectedRoomInterface {
+  [prop: string]: boolean;
+}
+
+const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
+  console.log(rooms);
   const [pageNumber, setPageNumber] = useState(1);
-  const { roomData, socket, popModal }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: any } = useContext(globalContext);
+  const { roomData, socket, popModal }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: (type: string, ment: string) => {} } =
+    useContext(globalContext);
   const MAX_ROOM_LIST = 10;
   const increasePage = () => {
     if (pageNumber * MAX_ROOM_LIST < rooms.length) {
@@ -24,7 +42,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: any) => {
   };
 
   const selectRoom = (index: number) => {
-    let newRooms = rooms.map((room: any) => {
+    let newRooms = rooms.map((room: Array<selectedRoomInterface>) => {
       room[1]['selected'] = false;
       return room;
     });
@@ -58,7 +76,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: any) => {
       {rooms
         .slice()
         .splice((pageNumber - 1) * MAX_ROOM_LIST, 10)
-        .map((room: any, i: number) => {
+        .map((room: Array<roomInterface>, i: number) => {
           const [title, roomInfo] = room;
           const { client, max, selected } = roomInfo;
 
