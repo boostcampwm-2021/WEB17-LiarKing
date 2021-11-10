@@ -26,7 +26,6 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
   } else {
     res.json(false);
   }
-  console.log('@@@', nicknameList);
 });
 
 indexRouter.post('/logout', async (req: Request, res: Response, next: NextFunction) => {
