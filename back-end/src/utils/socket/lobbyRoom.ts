@@ -55,7 +55,6 @@ const sendRoomData = (socket: Socket) => {
     if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
 
     socket.join(title);
-    console.log(roomList.get(title));
 
     socket.emit('room data', roomList.get(title));
   });

@@ -40,12 +40,15 @@ const LoginModal = () => {
 
     const userData = await requestToServer();
 
-    if (!userData) {
+    if (userData.state === 'duplicated') {
+      popModal('error', '이미 로그인되어 있습니다.');
+      return;
+    } else if (userData.state === 'mismatch') {
       popModal('error', '아이디와 비밀번호가 맞지 않습니다.');
       return;
     }
 
-    setUser(userData);
+    setUser(userData.data);
     history.push('/lobby');
   };
 

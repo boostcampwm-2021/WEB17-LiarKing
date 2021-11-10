@@ -10,14 +10,16 @@ indexRouter.post('/login', async (req: Request, res: Response, next: NextFunctio
     const password = req.body.password;
 
     if (idList.includes(id)) {
-      res.json(false);
+      res.json({ state: 'duplicated' });
     } else {
       const result = await loginService.loginVerify(id.toString(), password.toString());
       if (result !== false) {
         req.session['uid'] = result;
         idList.push(result['user_id']);
+        res.json({ state: 'success', data: result });
+      } else {
+        res.json({ state: 'mismatch' });
       }
-      res.json(result);
     }
   } catch (error) {
     console.error(error);
@@ -25,14 +27,17 @@ indexRouter.post('/login', async (req: Request, res: Response, next: NextFunctio
 });
 
 indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFunction) => {
-  const nickname = req.body.nickname;
-
-  if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0) {
-    req.session['nickname'] = nickname;
-    nicknameList.push(nickname);
-    res.json(true);
-  } else {
-    res.json(false);
+  try {
+    const nickname = req.body.nickname;
+    if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0) {
+      req.session['nickname'] = nickname;
+      nicknameList.push(nickname);
+      res.json(true);
+    } else {
+      res.json(false);
+    }
+  } catch (error) {
+    console.error(error);
   }
 });
 
