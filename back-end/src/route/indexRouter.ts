@@ -26,15 +26,17 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
   } else {
     res.json(false);
   }
+  console.log('@@@', nicknameList);
 });
 
 indexRouter.post('/logout', async (req: Request, res: Response, next: NextFunction) => {
+  const nickname = req.body['user_id'];
   try {
-    if (req.session['nickname']) {
+    if (nickname) {
+      const idx = nicknameList.indexOf(nickname);
+      nicknameList.splice(idx, idx + 1);
       req.session.destroy(function () {
         res.json(true);
-        const idx = nicknameList.indexOf(req.session['nickname']);
-        nicknameList.slice(idx, idx + 1);
       });
     } else {
       res.json(false);
