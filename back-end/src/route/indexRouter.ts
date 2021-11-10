@@ -33,6 +33,8 @@ indexRouter.post('/logout', async (req: Request, res: Response, next: NextFuncti
     if (req.session['nickname']) {
       req.session.destroy(function () {
         res.json(true);
+        const idx = nicknameList.indexOf(req.session['nickname']);
+        nicknameList.slice(idx, idx + 1);
       });
     } else {
       res.json(false);
