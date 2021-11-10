@@ -1,19 +1,27 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { nicknameList } from '../store/store';
+import { nicknameList, idList } from '../store/store';
 import loginService from '../database/service/loginService';
-import path from 'path';
 
 const indexRouter = Router();
 
 indexRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.body.id;
-  const password = req.body.password;
-  const result = await loginService.loginVerify(id.toString(), password.toString());
+  try {
+    const id = req.body.id;
+    const password = req.body.password;
 
-  if (result !== false) {
-    req.session['uid'] = result;
+    if (idList.includes(id)) {
+      res.json(false);
+    } else {
+      const result = await loginService.loginVerify(id.toString(), password.toString());
+      if (result !== false) {
+        req.session['uid'] = result;
+        idList.push(result['user_id']);
+      }
+      res.json(result);
+    }
+  } catch (error) {
+    console.error(error);
   }
-  res.json(result);
 });
 
 indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFunction) => {
@@ -29,11 +37,11 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
 });
 
 indexRouter.post('/logout', async (req: Request, res: Response, next: NextFunction) => {
-  const nickname = req.body['user_id'];
   try {
-    if (nickname) {
-      const idx = nicknameList.indexOf(nickname);
-      nicknameList.splice(idx, idx + 1);
+    const userId = req.body['user_id'];
+    if (userId) {
+      idList.splice(idList.indexOf(userId), idList.indexOf(userId) + 1);
+      nicknameList.splice(nicknameList.indexOf(userId), nicknameList.indexOf(userId) + 1);
       req.session.destroy(function () {
         res.json(true);
       });

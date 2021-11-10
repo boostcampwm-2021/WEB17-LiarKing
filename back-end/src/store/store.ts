@@ -1,4 +1,5 @@
 export const nicknameList = [];
+export const idList = [];
 
 export const roomList = new Map();
 
