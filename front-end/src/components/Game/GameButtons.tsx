@@ -11,7 +11,7 @@ const GameButtons = () => {
 
   const exit = () => {
     socket.emit('room exit', selectedRoomTitle);
-    history.goBack();
+    history.replace('/lobby');
   };
 
   return (

@@ -61,6 +61,9 @@ const Lobby = () => {
     });
 
     socket.emit('room list', null);
+
+    socket.emit('lobby entered', user_id);
+
     setRoomData({ ...roomData, selectedRoomTitle: '' });
   }, []);
 

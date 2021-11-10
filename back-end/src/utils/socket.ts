@@ -5,7 +5,7 @@ const socketUtil = (io: Server) => {
   io.on('connection', (socket) => {
     console.log('connect id:', socket.id);
 
-    lobbyRoom(socket);
+    lobbyRoom(socket, io);
   });
 };
 
