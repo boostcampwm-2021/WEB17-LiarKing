@@ -93,6 +93,19 @@
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
 }
 
+.lobby-logout {
+  position: absolute;
+  right: 25px;
+  top: 10px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 2vh;
+  width: 4vw;
+  height: 4vh;
+  font-weight: 600;
+  box-shadow: 5px 10px 10px rgb(0 0 0 / 50%);
+}
+
 ul {
   padding: 0;
 }
@@ -117,6 +130,11 @@ ul {
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
+.room-list-selected {
+  background-color: #000;
+  color: #fff;
+}
+
 .room-list:first-of-type {
   margin-top: 5vh;
 }
@@ -133,8 +151,11 @@ ul {
   0% {
     background-position: 0% 0%;
   }
-  100% {
+  50% {
     background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
   }
 }
 

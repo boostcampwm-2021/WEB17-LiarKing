@@ -6,17 +6,40 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
-const filterRooms = (rooms: any, filterWord: String) => {
+interface roomInterface {
+  [prop: string]: string;
+}
+
+const filterRooms = (rooms: Array<roomInterface>, filterWord: string) => {
   if (filterWord === '') return rooms;
-  return rooms.filter((room: any) => room[0].includes(filterWord));
+  return rooms.filter((room: roomInterface) => room[0].includes(filterWord));
 };
 
 const Lobby = () => {
-  const { socket, popModal }: { socket: Socket; popModal: any } = useContext(globalContext);
+  const { socket }: { socket: Socket } = useContext(globalContext);
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
   const history = useHistory();
+
+  const setModalState = useSetRecoilState(globalAtom.modal);
+  const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
+
+  const logout = async () => {
+    const res = await fetch('/api/logout', {
+      method: 'POST',
+    });
+    if (res) {
+      window.location.href = '/';
+    }
+  };
 
   useEffect(() => {
     socket.on('room create', (data) => {
@@ -32,6 +55,7 @@ const Lobby = () => {
     });
 
     socket.emit('room list', null);
+    setRoomData({ ...roomData, selectedRoomTitle: '' });
   }, []);
 
   return (
@@ -44,8 +68,11 @@ const Lobby = () => {
       </div>
       <div className="lobby-right-items">
         <Profile />
-        <LobbyButtons setFilterWord={setFilterWord} />
+        <LobbyButtons rooms={rooms} setFilterWord={setFilterWord} />
       </div>
+      <button className="lobby-logout" onClick={logout}>
+        로그아웃
+      </button>
     </div>
   );
 };

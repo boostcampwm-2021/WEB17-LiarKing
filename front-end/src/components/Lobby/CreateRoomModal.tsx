@@ -1,19 +1,28 @@
 import '../../styles/CreateRoomModal.css';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
-  const { popModal, user, socket }: { popModal: any; user: any; socket: Socket } = useContext(globalContext);
-  const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.id });
+  const { socket }: { socket: Socket } = useContext(globalContext);
+  const user = useRecoilValue(globalAtom.user);
+  const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.user_id });
+  const setModalState = useSetRecoilState(globalAtom.modal);
 
-  const changeTitle = (e: any) => {
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
+
+  const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
   };
 
-  const changePassword = (e: any) => {
+  const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, password: e.target.value });
   };
 
@@ -67,13 +76,13 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
       </div>
       <div className="create-room-persons">
         <div className="create-room-sub-header">최대 플레이어 수</div>
-        <input className="cr-persons cr-input-box" type="text" defaultValue={roomInfo.max + ' / 8'}></input>
+        <input className="cr-persons cr-input-box" type="text" value={roomInfo.max + ' / 8'} readOnly></input>
         <img className="create-room-arrow" src={upArrow} onClick={increasePersons} alt={'room-person-up'}></img>
         <img className="create-room-arrow" src={downArorw} onClick={decreasePersons} alt={'room-person-down'}></img>
       </div>
       <div className="create-room-rounds">
         <div className="create-room-sub-header">라운드 수</div>
-        <input className="cr-rounds cr-input-box" type="text" defaultValue={roomInfo.cycle + ' / 3'}></input>
+        <input className="cr-rounds cr-input-box" type="text" value={roomInfo.cycle + ' / 3'} readOnly></input>
         <img className="create-room-arrow" src={upArrow} onClick={increaseRounds} alt={'room-round-up'}></img>
         <img className="create-room-arrow" src={downArorw} onClick={decreaseRounds} alt={'room-round-down'}></img>
       </div>
