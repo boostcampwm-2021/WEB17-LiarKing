@@ -3,6 +3,10 @@ export const idList = [];
 
 export const roomList = new Map();
 
+export const socketUser = {};
+
+export const socketRoom = {};
+
 roomList.set('방1', {
   title: '방1',
   password: '',

@@ -56,7 +56,6 @@ const $reducer = (state: any, action: $reducerType) => {
 
 const Game = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
-  const history = useHistory();
   const roomData = useRecoilValue(globalAtom.roomData);
 
   const [$, $dispatch] = useReducer(
@@ -78,12 +77,19 @@ const Game = () => {
   );
 
   useEffect(() => {
-    socket.on('room data', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {});
+    socket.on('room data', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
+      // 입장 후 방 정보를 받아와서 렌더링 하는 코드
+      console.log('누군가 입장했습니다', roomInfo);
+    });
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
     socket.on('room exit', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      // 한명 나갔을때
+      console.log('누군가 방에서 나갔습니다', roomInfo);
+    });
+
+    socket.on('user disconnected', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
+      console.log('누군가 방에서 팅겼습니다', roomInfo);
     });
   }, []);
 
