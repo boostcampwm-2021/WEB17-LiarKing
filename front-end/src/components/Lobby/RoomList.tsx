@@ -59,7 +59,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
     if (selectedRoom !== index) {
       newRooms[index][1]['selected'] = true;
       selectedRoom = index;
-      setRoomData({ ...roomData, selectedRoomTitle: newRooms[index][0] });
+      setRoomData({ ...roomData, selectedRoomTitle: newRooms[index][0], roomPassword: newRooms[index][1].password });
     } else {
       selectedRoom = -1;
       setRoomData({ ...roomData, selectedRoomTitle: '' });
