@@ -1,10 +1,16 @@
 import '../../styles/SearchRoomModal.css';
 import React, { useContext, useState } from 'react';
-import { globalContext } from '../../App';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
 const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFilterWord: (filterWord: string) => void }) => {
-  const { popModal }: { popModal: (type: string, ment: string) => {} } = useContext(globalContext);
   const [searchWord, setSearchWord] = useState('');
+  const setModalState = useSetRecoilState(globalAtom.modal);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);

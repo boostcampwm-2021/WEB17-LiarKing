@@ -12,7 +12,7 @@ import globalAtom from './recoilStore/globalAtom';
 
 export const globalContext = React.createContext(null);
 
-const global = { roomData: { selectedRoomTitle: '' }, popModal: {}, user: {}, socket: io(process.env.REAC_APP_SOCKET_HOST, { path: '/socket' }) };
+const global = { roomData: { selectedRoomTitle: '' }, user: {}, socket: io(process.env.REAC_APP_SOCKET_HOST, { path: '/socket' }) };
 
 function App() {
   const modal = useRecoilValue(globalAtom.modal);

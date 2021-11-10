@@ -4,6 +4,9 @@ import { Socket } from 'socket.io-client';
 
 import leftArrow from '../../images/leftArrow.svg';
 import rightArrow from '../../images/rightArrow.svg';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
 let selectedRoom = -1;
 
@@ -26,9 +29,15 @@ interface selectedRoomInterface {
 const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   console.log(rooms);
   const [pageNumber, setPageNumber] = useState(1);
-  const { roomData, socket, popModal }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: (type: string, ment: string) => {} } =
+  const { roomData, socket }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: (type: string, ment: string) => {} } =
     useContext(globalContext);
   const MAX_ROOM_LIST = 10;
+  const setModalState = useSetRecoilState(globalAtom.modal);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
+
   const increasePage = () => {
     if (pageNumber * MAX_ROOM_LIST < rooms.length) {
       setPageNumber(pageNumber + 1);

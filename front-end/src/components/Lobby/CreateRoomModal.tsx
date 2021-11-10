@@ -4,14 +4,22 @@ import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
 interface userInterface {
   [prop: string]: string;
 }
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
-  const { popModal, user, socket }: { popModal: (type: string, ment: string) => {}; user: userInterface; socket: Socket } = useContext(globalContext);
+  const { user, socket }: { user: userInterface; socket: Socket } = useContext(globalContext);
   const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.id });
+  const setModalState = useSetRecoilState(globalAtom.modal);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
