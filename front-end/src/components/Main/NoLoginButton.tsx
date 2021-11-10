@@ -1,6 +1,5 @@
 import '../../styles/NoLoginButton.css';
-import React, { useState, useContext } from 'react';
-import { globalContext } from '../../App';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import setModal from '../../utils/setModal';
 import { useSetRecoilState } from 'recoil';
@@ -14,7 +13,7 @@ const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
   const setModalState = useSetRecoilState(globalAtom.modal);
   const history = useHistory();
-  const { user } = useContext(globalContext);
+  const setUser = useSetRecoilState(globalAtom.user);
 
   const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
     setModal(setModalState, { type, ment });
@@ -39,7 +38,7 @@ const NoLoginModal = () => {
       return;
     }
 
-    Object.assign(user, { user_id: userInfo.nickname, point: 0, rank: 'unranked' });
+    setUser({ user_id: userInfo.nickname, point: 0, rank: 'unranked' });
     history.push('/lobby');
   };
 

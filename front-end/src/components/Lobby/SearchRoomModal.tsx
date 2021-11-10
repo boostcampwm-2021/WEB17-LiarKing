@@ -1,5 +1,5 @@
 import '../../styles/SearchRoomModal.css';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import setModal from '../../utils/setModal';

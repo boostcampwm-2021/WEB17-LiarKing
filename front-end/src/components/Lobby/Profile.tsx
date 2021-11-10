@@ -1,14 +1,15 @@
-import { useRef, useEffect, useState, useContext } from 'react';
+import { useRef, useEffect } from 'react';
 import character from '../../images/mainChar2.svg';
 import { getUserData } from '../../utils/getDataUtil';
-import { globalContext } from '../../App';
+import { useRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 const Profile = () => {
   const profileImage = useRef(null);
-  const { user } = useContext(globalContext);
+  const [user, setUser] = useRecoilState(globalAtom.user);
 
   useEffect(() => {
-    if (!user.user_id) getUserData(user);
+    if (!user.user_id) getUserData(setUser);
 
     if (profileImage.current) profileImage.current.src = character;
   }, []);
