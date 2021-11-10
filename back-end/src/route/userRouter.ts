@@ -22,7 +22,8 @@ userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => 
 userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
   const id = req.query.id;
   const result = await userService.getUserInfo(id.toString());
-  res.json(result);
+  if (result) res.json(result);
+  else res.json(false);
 });
 
 userRouter.get('/data', async (req: Request, res: Response, next: NextFunction) => {
