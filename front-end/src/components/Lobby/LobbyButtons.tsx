@@ -6,6 +6,7 @@ import CreateRoomModal from './CreateRoomModal';
 import SearchRoomModal from './SearchRoomModal';
 import CreateRankModal from './CreateRankModal';
 import ExplainRuleModal from './ExplainRuleModal';
+import VerfiyPasswordModal from './VerifyPasswordModal';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import setModal from '../../utils/setModal';
@@ -39,7 +40,14 @@ const LobbyButtons = ({ setFilterWord }: { setFilterWord: (filterWord: string) =
 
   const joinRoom = () => {
     const roomTitle = roomData.selectedRoomTitle;
-    socket.emit('room join', roomTitle);
+    const roomPassword = roomData.roomPassword;
+    console.log('password: ', roomPassword);
+    if (roomPassword === '') {
+      socket.emit('room join', roomTitle);
+    } else {
+      const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
+      setCreateModal([ModalOutLocation, <VerfiyPasswordModal offModal={offModal} key={1} />]);
+    }
   };
 
   const explainRules = () => {

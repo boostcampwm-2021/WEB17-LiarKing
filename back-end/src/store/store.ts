@@ -22,7 +22,7 @@ roomList.set('방2', {
 
 roomList.set('방3', {
   title: '방3',
-  password: '',
+  password: '123123',
   max: 8,
   client: [],
   cycle: 1,
