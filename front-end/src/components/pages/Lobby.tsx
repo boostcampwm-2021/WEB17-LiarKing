@@ -32,6 +32,15 @@ const Lobby = () => {
     setModal(setModalState, { type, ment });
   };
 
+  const logout = async () => {
+    const res = await fetch('/api/logout', {
+      method: 'POST',
+    });
+    if (res) {
+      window.location.href = '/';
+    }
+  };
+
   useEffect(() => {
     socket.on('room create', (data) => {
       if (data) {
@@ -61,6 +70,9 @@ const Lobby = () => {
         <Profile />
         <LobbyButtons rooms={rooms} setFilterWord={setFilterWord} />
       </div>
+      <button className="lobby-logout" onClick={logout}>
+        로그아웃
+      </button>
     </div>
   );
 };

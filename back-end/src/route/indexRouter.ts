@@ -28,10 +28,18 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
   }
 });
 
-// indexRouter.get('/*', async (req: Request, res: Response, next: NextFunction) => {
-//   const htmlPath = path.join(__dirname, '../../build/index.html');
-
-//   res.sendFile(htmlPath);
-// });
+indexRouter.post('/logout', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.session['nickname']) {
+      req.session.destroy(function () {
+        res.json(true);
+      });
+    } else {
+      res.json(false);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 export default indexRouter;
