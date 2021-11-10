@@ -11,7 +11,11 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import setModal from '../../utils/setModal';
 
-const LobbyButtons = ({ setFilterWord }: { setFilterWord: (filterWord: string) => void }) => {
+interface roomInterface {
+  [prop: string]: any;
+}
+
+const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
   const { socket }: { socket: Socket } = useContext(globalContext);
 
@@ -39,10 +43,19 @@ const LobbyButtons = ({ setFilterWord }: { setFilterWord: (filterWord: string) =
   };
 
   const joinRoom = () => {
+    let currentRoom = { client: Array, max: -1 };
     const roomTitle = roomData.selectedRoomTitle;
     const roomPassword = roomData.roomPassword;
-    console.log('password: ', roomPassword);
-    if (roomPassword === '') {
+    rooms.map((room: roomInterface) => {
+      if (room[1].title === roomData.selectedRoomTitle) {
+        currentRoom = room[1];
+      }
+    });
+    if (currentRoom.max === -1) {
+      popModal('alert', '방을 선택해주세요.');
+    } else if (currentRoom.client.length === currentRoom.max) {
+      popModal('error', '해당 방은 가득 차서 입장이 불가능합니다.');
+    } else if (roomPassword === ''){
       socket.emit('room join', roomTitle);
     } else {
       const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
