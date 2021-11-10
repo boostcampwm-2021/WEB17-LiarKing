@@ -6,14 +6,16 @@ import CreateRoomModal from './CreateRoomModal';
 import SearchRoomModal from './SearchRoomModal';
 import CreateRankModal from './CreateRankModal';
 import ExplainRuleModal from './ExplainRuleModal';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import setModal from '../../utils/setModal';
 
 const LobbyButtons = ({ setFilterWord }: { setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
-  const { roomData, socket }: { roomData: { selectedRoomTitle: string }; socket: Socket; popModal: (type: string, ment: string) => {} } =
-    useContext(globalContext);
+  const { socket }: { socket: Socket } = useContext(globalContext);
+
+  const roomData = useRecoilValue(globalAtom.roomData);
+
   const history = useHistory();
   const setModalState = useSetRecoilState(globalAtom.modal);
 

@@ -6,6 +6,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
+import setModal from '../../utils/setModal';
 
 interface roomInterface {
   [prop: string]: string;
@@ -17,10 +20,15 @@ const filterRooms = (rooms: Array<roomInterface>, filterWord: string) => {
 };
 
 const Lobby = () => {
-  const { socket, popModal }: { socket: Socket; popModal: (type: string, ment: string) => {} } = useContext(globalContext);
+  const { socket }: { socket: Socket } = useContext(globalContext);
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
   const history = useHistory();
+  const setModalState = useSetRecoilState(globalAtom.modal);
+
+  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
+    setModal(setModalState, { type, ment });
+  };
 
   useEffect(() => {
     socket.on('room create', (data) => {
