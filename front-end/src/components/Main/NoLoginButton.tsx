@@ -39,7 +39,9 @@ const NoLoginModal = () => {
     }
 
     setUser({ user_id: userInfo.nickname, point: 0, rank: 'unranked' });
-    history.push('/lobby');
+    setTimeout(() => {
+      history.push('/lobby');
+    }, 1000);
   };
 
   const checkId = (id: string): boolean => {

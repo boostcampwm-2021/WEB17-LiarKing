@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import setModal from '../../utils/setModal';
 
