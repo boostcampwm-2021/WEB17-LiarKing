@@ -34,7 +34,6 @@ const Lobby = () => {
   };
 
   const logout = async () => {
-    console.log(user_id);
     const res = await fetch('/api/logout', {
       method: 'POST',
       headers: {
@@ -65,6 +64,11 @@ const Lobby = () => {
     socket.emit('lobby entered', user_id);
 
     setRoomData({ ...roomData, selectedRoomTitle: '' });
+
+    return () => {
+      socket.off('room create');
+      socket.off('room list');
+    };
   }, []);
 
   return (

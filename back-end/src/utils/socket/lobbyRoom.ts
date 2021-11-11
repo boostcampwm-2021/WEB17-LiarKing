@@ -31,6 +31,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 
       socket.leave('lobby');
       socket.join(title);
+      console.log('join완료');
 
       socketRoom[socket.id] = title;
     } else {
@@ -62,6 +63,7 @@ const sendRoomData = (socket: Socket, io: Server) => {
     if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
 
     io.to(title).emit('room data', roomList.get(title));
+    console.log(title, roomInfo);
   });
 };
 

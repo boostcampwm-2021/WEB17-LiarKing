@@ -7,7 +7,6 @@ import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import { useHistory } from 'react-router';
 
 //임시 데이터
 const persons = [
@@ -91,6 +90,12 @@ const Game = () => {
     socket.on('user disconnected', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
       console.log('누군가 방에서 팅겼습니다', roomInfo);
     });
+
+    return () => {
+      socket.off('room data');
+      socket.off('room exit');
+      socket.off('user disconnected');
+    };
   }, []);
 
   const click = () => {
