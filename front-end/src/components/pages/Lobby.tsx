@@ -65,6 +65,11 @@ const Lobby = () => {
     socket.emit('lobby entered', user_id);
 
     setRoomData({ ...roomData, selectedRoomTitle: '' });
+
+    return () => {
+      socket.off('room create');
+      socket.off('room list');
+    };
   }, []);
 
   return (

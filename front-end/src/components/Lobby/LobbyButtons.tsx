@@ -78,6 +78,10 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
       if (isEnter) history.push('/game');
       else popModal('error', '방에 입장을 할 수 없습니다.');
     });
+
+    return () => {
+      socket.off('room join');
+    };
   }, []);
 
   return (
