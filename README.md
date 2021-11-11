@@ -53,6 +53,7 @@
 ### 🎬 데모 영상 링크
 
 - [1주차 데모 영상](https://youtu.be/fc5xp2E2Q70)
+- [2주차 데모 영상](https://youtu.be/TXVOE76V43I)
 
 ### 📌 기타
 
