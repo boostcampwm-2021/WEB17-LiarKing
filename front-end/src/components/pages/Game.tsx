@@ -7,7 +7,6 @@ import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import { useHistory } from 'react-router';
 
 //임시 데이터
 const persons = [
@@ -77,20 +76,50 @@ const Game = () => {
   );
 
   useEffect(() => {
-    socket.on('room data', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      // 입장 후 방 정보를 받아와서 렌더링 하는 코드
-      console.log('누군가 입장했습니다', roomInfo);
-    });
+    socket.on(
+      'room data',
+      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
+        const persons = roomInfo.client.map((v) => {
+          return { id: v.name };
+        });
+
+        $dispatch({ type: 'waiting', persons });
+
+        console.log('누군가 입장했습니다', roomInfo);
+      }
+    );
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
-    socket.on('room exit', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      console.log('누군가 방에서 나갔습니다', roomInfo);
-    });
+    socket.on(
+      'room exit',
+      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
+        const persons = roomInfo.client.map((v) => {
+          return { id: v.name };
+        });
 
-    socket.on('user disconnected', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      console.log('누군가 방에서 팅겼습니다', roomInfo);
-    });
+        $dispatch({ type: 'waiting', persons });
+        console.log('누군가 방에서 나갔습니다', roomInfo);
+      }
+    );
+
+    socket.on(
+      'user disconnected',
+      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
+        const persons = roomInfo.client.map((v) => {
+          return { id: v.name };
+        });
+
+        $dispatch({ type: 'waiting', persons });
+        console.log('누군가 방에서 팅겼습니다', roomInfo);
+      }
+    );
+
+    return () => {
+      socket.off('room data');
+      socket.off('room exit');
+      socket.off('user disconnected');
+    };
   }, []);
 
   const click = () => {

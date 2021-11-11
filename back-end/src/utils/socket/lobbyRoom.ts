@@ -59,7 +59,9 @@ const sendRoomData = (socket: Socket, io: Server) => {
   socket.on('room data', (title: string) => {
     const roomInfo = roomList.get(title);
 
-    if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
+    if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
+
+    console.log(roomList.get(title));
 
     io.to(title).emit('room data', roomList.get(title));
   });
@@ -76,7 +78,7 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     const roomInfo = roomList.get(title);
 
     if (roomInfo && roomInfo.client.length > 1) {
-      const client = roomInfo.client.filter((user: string) => user != socket.id);
+      const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       roomList.set(title, { ...roomInfo, client });
       io.to(title).emit('room exit', roomList.get(title));
     } else {
@@ -92,8 +94,9 @@ const sendDisconnect = (socket: Socket, io: Server) => {
   socket.on('disconnect', () => {
     const roomTitle = socketRoom[socket.id];
     const roomInfo = roomList.get(roomTitle);
+
     if (roomTitle && roomInfo) {
-      const client = roomInfo.client.filter((user: string) => user != socket.id);
+      const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       roomList.set(roomTitle, { ...roomInfo, client });
       io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
     }
