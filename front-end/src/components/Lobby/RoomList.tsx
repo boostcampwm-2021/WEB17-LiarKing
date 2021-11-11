@@ -77,6 +77,10 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
     });
 
     socket.emit('room list', null);
+
+    return () => {
+      socket.off('room list');
+    };
   }, []);
 
   useEffect(() => {}, [pageNumber]);

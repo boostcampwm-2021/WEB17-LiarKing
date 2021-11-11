@@ -5,26 +5,24 @@ import GamePersons from '../Game/GamePersons';
 import GameContent from '../Game/GameContent';
 import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+import { getUserData } from '../../utils/getDataUtil';
 
 //임시 데이터
 const persons = [
-  { id: 'kskim625', item: 'item' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
+  { id: 'kskim625', item: '버튼' },
+  { id: 'dunde', item: '버튼' },
+  { id: 'sumin', item: '버튼' },
+  { id: 'hanbin', item: '버튼' },
 ];
 
 type personType = { id: string; item?: string };
 type $reducerType = {
   type: string;
-  persons: personType[];
+  persons: Array<personType>;
   select?: { word: string };
-  chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
+  chat?: { chatHistory: string[]; speaker: string; timer: number };
   vote?: { timer: number };
   result?: { voteResult: string[]; liar: string; gameResult: boolean };
   liar?: { category: string[]; answer: number; success(): void; fail(): void };
@@ -56,40 +54,50 @@ const $reducer = (state: any, action: $reducerType) => {
 const Game = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
-
-  const [$, $dispatch] = useReducer(
-    $reducer,
-    <>
-      <section className="game-background"></section>
-      <header className="game-header">
-        <span className="game-header-logo">Liar Game</span>
-        <GameButtons />
-        <span className="game-header-info">() 123</span>
-      </header>
-      <section className="game-persons">
-        <GamePersons persons={persons} />
-      </section>
-      <section className="game-content">
-        <GameContent action={{ type: 'waiting' }} />
-      </section>
-    </>
-  );
+  const [user, setUser] = useRecoilState(globalAtom.user);
+  const [$, $dispatch] = useReducer($reducer, <></>);
 
   useEffect(() => {
-    socket.on('room data', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      // 입장 후 방 정보를 받아와서 렌더링 하는 코드
-      console.log('누군가 입장했습니다', roomInfo);
-    });
+    if (!user.user_id) getUserData(setUser);
+
+    socket.on(
+      'room data',
+      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
+        const persons = roomInfo.client.map((v) => {
+          return { id: v.name };
+        });
+
+        $dispatch({ type: 'waiting', persons });
+
+        console.log('누군가 입장했습니다', roomInfo);
+      }
+    );
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
-    socket.on('room exit', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      console.log('누군가 방에서 나갔습니다', roomInfo);
-    });
+    socket.on(
+      'room exit',
+      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
+        const persons = roomInfo.client.map((v) => {
+          return { id: v.name };
+        });
 
-    socket.on('user disconnected', (roomInfo: { title: string; password: string; max: number; client: string[]; cycle: number }) => {
-      console.log('누군가 방에서 팅겼습니다', roomInfo);
-    });
+        $dispatch({ type: 'waiting', persons });
+        console.log('누군가 방에서 나갔습니다', roomInfo);
+      }
+    );
+
+    socket.on(
+      'user disconnected',
+      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
+        const persons = roomInfo.client.map((v) => {
+          return { id: v.name };
+        });
+
+        $dispatch({ type: 'waiting', persons });
+        console.log('누군가 방에서 팅겼습니다', roomInfo);
+      }
+    );
 
     return () => {
       socket.off('room data');
@@ -98,24 +106,110 @@ const Game = () => {
     };
   }, []);
 
-  const click = () => {
-    $dispatch({
-      type: 'liar',
-      persons,
-      liar: {
-        answer: 1,
-        category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
-        fail: () => console.log('실패한!'),
-        success: () => console.log('성공!'),
-      },
-    });
+  const click = {
+    waiting: () => {
+      $dispatch({
+        type: 'waiting',
+        persons,
+      });
+    },
+    selectApple: () => {
+      $dispatch({
+        type: 'select',
+        persons,
+        select: { word: '사과' },
+      });
+    },
+    selectLiar: () => {
+      $dispatch({
+        type: 'select',
+        persons,
+        select: { word: '라이어' },
+      });
+    },
+    chat: () => {
+      $dispatch({
+        type: 'chat',
+        persons,
+        chat: {
+          chatHistory: [
+            'dunde: 안녕하세요.',
+            'kskim625: 반갑습니다.',
+            'sumin: ㅎㅇ',
+            'hanbin: ㅎㅇㅎㅇ',
+            'dunde: 안녕하세요.',
+            'kskim625: 반갑습니다.',
+            'sumin: ㅎㅇ',
+            'hanbin: ㅎㅇㅎㅇ',
+          ],
+          speaker: 'sumin',
+          timer: 20,
+        },
+      });
+    },
+    vote: () => {
+      $dispatch({
+        type: 'vote',
+        persons,
+        vote: { timer: 3 },
+      });
+    },
+    resultSuccess: () => {
+      $dispatch({
+        type: 'result',
+        persons,
+        result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
+      });
+    },
+    resultFail: () => {
+      $dispatch({
+        type: 'result',
+        persons,
+        result: { gameResult: false, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 5표', 'sumin 1표'] },
+      });
+    },
+    liar: () => {
+      $dispatch({
+        type: 'liar',
+        persons,
+        liar: {
+          answer: 1,
+          category: [
+            '사과',
+            '딸기',
+            '바나나',
+            '포도',
+            '수박',
+            '멜론',
+            '샤인머스캣',
+            '배',
+            '두리안',
+            '초콜릿',
+            '방어',
+            '우럭',
+            '누룽지',
+            '멀티버스',
+            '닥터스트레인지',
+          ],
+          fail: () => console.log('실패한!'),
+          success: () => console.log('성공!'),
+        },
+      });
+    },
   };
 
   return (
     <div id="game">
-      <button onClick={click} style={{ zIndex: 5 }}>
-        test
-      </button>
+      <div className="test-buttons" style={{ zIndex: 5 }}>
+        <button onClick={click.waiting}>waiting</button>
+        <button onClick={click.selectApple}>select apple</button>
+        <button onClick={click.selectLiar}>select Liar</button>
+        <button onClick={click.chat}>chat</button>
+        <button onClick={click.vote}>vote</button>
+        <button onClick={click.resultSuccess}>result success</button>
+        <button onClick={click.resultFail}>result fail</button>
+        <button onClick={click.liar}>liar</button>
+      </div>
       {$}
     </div>
   );

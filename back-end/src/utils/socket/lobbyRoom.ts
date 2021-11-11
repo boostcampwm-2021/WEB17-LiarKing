@@ -55,7 +55,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
       socket.leave('lobby');
       socket.join(title);
 
-      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
+      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
 
       io.to('lobby').emit('room list', Array.from(roomList));
     }
@@ -82,7 +82,7 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     const roomInfo = roomList.get(title);
 
     if (roomInfo && roomInfo.client.length > 1) {
-      const client = roomInfo.client.filter((user: string) => user != socket.id);
+      const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       roomList.set(title, { ...roomInfo, client });
       io.to(title).emit('room exit', roomList.get(title));
     } else {
@@ -102,7 +102,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
     const roomInfo = roomList.get(roomTitle);
     if (roomTitle && roomInfo && roomInfo.client.includes(socket.id)) {
       const client = roomInfo.client;
-      const newClients = client.filter((user: string) => user != socket.id);
+      const newClients = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       if (newClients.length === 0) {
         roomList.delete(roomTitle);
       } else {
