@@ -20,9 +20,9 @@ const persons = [
 type personType = { id: string; item?: string };
 type $reducerType = {
   type: string;
-  persons: personType[];
+  persons: Array<personType>;
   select?: { word: string };
-  chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
+  chat?: { chatHistory: string[]; speaker: string; timer: number };
   vote?: { timer: number };
   result?: { voteResult: string[]; liar: string; gameResult: boolean };
   liar?: { category: string[]; answer: number; success(): void; fail(): void };
@@ -55,7 +55,6 @@ const Game = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
-
   const [$, $dispatch] = useReducer($reducer, <></>);
 
   useEffect(() => {
@@ -145,8 +144,6 @@ const Game = () => {
           ],
           speaker: 'sumin',
           timer: 20,
-          changeMessage: (e: any) => console.log('메세지 입력!', e.target.value),
-          sendMessage: () => console.log('메세지 보내기!'),
         },
       });
     },
