@@ -31,8 +31,9 @@ const GameContentChat = ({ persons, chat }: { persons: Array<{ id: string; item?
   };
 
   const sendMessage = () => {
-    if (!checkMessage.includes(message)) {
-      socket.emit('send message', { message: message, title: roomData.selectedRoomTitle });
+    if (messageBox.current.value !== '') {
+      setMessage(user.user_id + ': ' + messageBox.current.value);
+      socket.emit('send message', { message: user.user_id + ': ' + messageBox.current.value, title: roomData.selectedRoomTitle });
       messageBox.current.value = '';
     }
   };
@@ -45,6 +46,10 @@ const GameContentChat = ({ persons, chat }: { persons: Array<{ id: string; item?
       setMessage('');
       setMessage(user.user_id);
     });
+
+    return () => {
+      socket.off('send message');
+    };
   }, []);
 
   return (
