@@ -36,7 +36,7 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-v14.18.1-%23339933?style=flat&logo=Node.js&logoColor=%23339933) ![TypeScript](https://img.shields.io/badge/TypeScript-v3.9.1-%233178C6?style=flat&logo=TypeScript&logoColor=%233178C6)
 
-![React](https://img.shields.io/badge/React-v17.0.2-%2361DAFB?style=flat&logo=React&logoColor=%2361DAFB) ![Express](https://img.shields.io/badge/Express-v4.17.1-%23000000?style=flat&logo=Express&logoColor=%23000000) ![MySQL](https://img.shields.io/badge/MySQL-%234479A1?style=flat&logo=MySQL&logoColor=white) ![TypeORM](https://img.shields.io/badge/TypeORM-f36c21?)
+![React](https://img.shields.io/badge/React-v17.0.2-%2361DAFB?style=flat&logo=React&logoColor=%2361DAFB) ![Recoil](https://img.shields.io/badge/Recoil-v0.5.2-3578e5?style=flat&logo=Recoil&logoColor=%2361DAFB) ![Express](https://img.shields.io/badge/Express-v4.17.1-%23000000?style=flat&logo=Express&logoColor=%23000000) ![MySQL](https://img.shields.io/badge/MySQL-%234479A1?style=flat&logo=MySQL&logoColor=white) ![TypeORM](https://img.shields.io/badge/TypeORM-f36c21?)
 
 ![Git](https://img.shields.io/badge/Git-%23F05032?style=flat&logo=Git&logoColor=white) ![Github Actions](https://img.shields.io/badge/Github%20Actions-%232088FF?style=flat&logo=Github%20Actions&logoColor=white) ![NGINX](https://img.shields.io/badge/NGINX-%23009639?style=flat&logo=NGINX&logoColor=white) ![Naver Cloud](https://img.shields.io/badge/Naver_Cloud_Platform-0.0.0-03C75A?logo=Naver)
 

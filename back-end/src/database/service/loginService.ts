@@ -12,6 +12,7 @@ async function loginVerify(id: string, password: string) {
     else if (foundOne.point < 300) rank = 'Gold';
     return { user_id: foundOne.user_id, point: foundOne.point, rank: rank };
   }
+
   return false;
 }
 

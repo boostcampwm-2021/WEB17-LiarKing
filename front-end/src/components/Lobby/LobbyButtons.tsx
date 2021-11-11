@@ -55,7 +55,7 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
       popModal('alert', '방을 선택해주세요.');
     } else if (currentRoom.client.length === currentRoom.max) {
       popModal('error', '해당 방은 가득 차서 입장이 불가능합니다.');
-    } else if (roomPassword === ''){
+    } else if (roomPassword === '') {
       socket.emit('room join', roomTitle);
     } else {
       const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
@@ -78,6 +78,10 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
       if (isEnter) history.push('/game');
       else popModal('error', '방에 입장을 할 수 없습니다.');
     });
+
+    return () => {
+      socket.off('room join');
+    };
   }, []);
 
   return (

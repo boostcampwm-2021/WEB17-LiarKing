@@ -13,6 +13,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const user = useRecoilValue(globalAtom.user);
   const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.user_id });
   const setModalState = useSetRecoilState(globalAtom.modal);
+  const setRoomDataState = useSetRecoilState(globalAtom.roomData);
 
   const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
     setModal(setModalState, { type, ment });
@@ -55,6 +56,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
       popModal('error', '방 제목을 입력해주세요.');
     } else {
       socket.emit('room create', roomInfo);
+      setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
     }
   };
 

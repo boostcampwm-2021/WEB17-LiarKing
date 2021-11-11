@@ -1,3 +1,12 @@
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #6d80a6;
+}
+
 #game {
   background-color: rgba(0, 0, 0, 0);
   width: 100vw;
@@ -176,10 +185,13 @@
 
 .game-content {
   display: flex;
+  align-items: center;
   position: absolute;
+  padding-bottom: 2vh;
+  height: 80vh;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 35%;
+  transform: translate(-50%, -55%);
   z-index: 3;
 }
 
@@ -191,6 +203,7 @@
   background-color: #6d80a6;
   border-radius: 20px;
   padding: 15px;
+  transform: translate(0, 45%);
 }
 
 .game-content-select-imgbox {
@@ -221,38 +234,66 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  transform: translate(0, 38%);
 }
 
 .game-content-chat-history {
-  display: inline-flexbox;
-  position: relative;
+  display: flex;
   flex-direction: column-reverse;
-  justify-content: flex-end;
-  align-items: center;
-  height: 500px;
-  padding-left: 17px;
-  overflow-y: scroll;
-}
-
-.game-content-chat-history::-webkit-scrollbar {
-  visibility: hidden;
+  height: 55vh;
+  overflow: overlay;
+  padding-right: 3vw;
 }
 
 .game-chat-box {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  width: 500px;
-  height: 60px;
-  min-height: 60px;
+  width: 50vw;
+  height: 45px;
   border-radius: 30px;
   box-sizing: border-box;
-  padding: 0 20px 3px 20px;
+  padding: 5px 20px;
   margin-top: 20px;
 }
 
 .game-chat-box-read {
-  background-color: #a7bdd9;
+  width: 47vw;
+  height: 4vh;
+  box-shadow: 2px 3px 3px #585858;
+  overflow: hidden;
+}
+
+.game-chat-box-white {
+  background-color: white;
+}
+
+.game-chat-box-red {
+  background-color: red;
+}
+
+.game-chat-box-orange {
+  background-color: orange;
+}
+
+.game-chat-box-yellow {
+  background-color: yellow;
+}
+
+.game-chat-box-green {
+  background-color: green;
+}
+
+.game-chat-box-blue {
+  background-color: blue;
+}
+
+.game-chat-box-navy {
+  background-color: navy;
+}
+
+.game-chat-box-purple {
+  background-color: purple;
 }
 
 .game-chat-box-send {
@@ -260,15 +301,20 @@
   justify-content: space-between;
   align-items: center;
   background-color: #e2e5f4;
+  box-shadow: 2px 3px 3px #585858;
 }
 
 .game-chat-box-font {
   font-family: Roboto;
   font-size: 20px;
+  padding: 20px;
   font-weight: 400;
+  word-break: break-all;
 }
 
 .game-chat-send-input {
+  width: 80%;
+  height: 80%;
   background-color: rgba(0, 0, 0, 0);
   border: none;
 }
@@ -276,8 +322,8 @@
 .game-chat-send-button {
   background-image: url('../images/sendMsg.svg');
   background-size: 100% 100%;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   border: none;
   background-color: rgba(0, 0, 0, 0);
 }
@@ -308,6 +354,7 @@
   background-color: #e2e5f4;
   box-sizing: border-box;
   padding: 20px;
+  transform: translate(0, 50%);
 }
 
 .game-content-title {

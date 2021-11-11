@@ -1,8 +1,17 @@
-import { Socket } from 'socket.io';
-import { roomList } from '../../store/store';
+import { Server, Socket } from 'socket.io';
+import { idList, nicknameList, roomList, socketUser, socketRoom } from '../../store/store';
 
 /**
- * 로비에서 방 리스트 정보 보내기
+ * 유저가 로비에 입장했다고 알림
+ */
+const sendLobbyEntered = (socket: Socket) => {
+  socket.on('lobby entered', (userId: string) => {
+    socketUser[socket.id] = userId;
+  });
+};
+
+/**
+ * 유저가 방 리스트 요청
  */
 const sendRoomList = (socket: Socket) => {
   socket.on('room list', () => {
@@ -11,57 +20,62 @@ const sendRoomList = (socket: Socket) => {
 };
 
 /**
- * 로비에서 방 생성 결과데이터 보내기
+ * 유저가 방 생성 요청
  */
-const sendRoomCreate = (socket: Socket) => {
+const sendRoomCreate = (socket: Socket, io: Server) => {
   socket.on('room create', function (data) {
-    const roomTitle = data.title;
+    const title = data.title;
 
-    if (!roomList.get(roomTitle)) {
-      roomList.set(roomTitle, Object.assign(data, { client: [] }));
+    if (!roomList.get(title)) {
+      roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id] }] }));
 
       socket.leave('lobby');
-      socket.to('lobby').emit('room list', Array.from(roomList));
+      socket.join(title);
 
-      socket.join(roomTitle);
+      socketRoom[socket.id] = title;
+      io.to('lobby').emit('room list', Array.from(roomList));
+      console.log(roomList);
     } else {
       data = false;
     }
-
     socket.emit('room create', data);
   });
 };
 
 /**
- * 로비에서 방 접속여부 데이터 보내기
+ * 유저가 방 접속 요청
  */
-const sendRoomJoin = (socket: Socket) => {
+const sendRoomJoin = (socket: Socket, io: Server) => {
   socket.on('room join', (title: string) => {
-    //방에 들어갈 수 있으면 true 아니면 false를 주는 코드작성해야함.
+    socketRoom[socket.id] = title;
+    const roomInfo = roomList.get(title);
+    if ((roomInfo && roomInfo.client.length === roomInfo.max) || !roomInfo) {
+      socket.emit('room join', false);
+    } else {
+      socket.emit('room join', true);
+      socket.leave('lobby');
+      socket.join(title);
 
-    socket.emit('room join', true);
+      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
+
+      io.to('lobby').emit('room list', Array.from(roomList));
+    }
   });
 };
 
 /**
- * 로비에서 방 데이터 보내기
+ * 유저가 방에 입장하면서 방 정보 요청
  */
-const sendRoomData = (socket: Socket) => {
+const sendRoomData = (socket: Socket, io: Server) => {
   socket.on('room data', (title: string) => {
-    const roomInfo = roomList.get(title);
-
-    socket.leave('lobby');
-
-    if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, socket.id] });
-
-    socket.join(title);
-    console.log(roomList.get(title));
-
-    socket.emit('room data', roomList.get(title));
+    io.to(title).emit('room data', roomList.get(title));
   });
 };
 
-const sendRoomExit = (socket: Socket) => {
+/**
+ * 유저가 방에서 나간다고 알림
+ */
+const sendRoomExit = (socket: Socket, io: Server) => {
   socket.on('room exit', (title: string) => {
     socket.leave(title);
     socket.join('lobby');
@@ -69,29 +83,66 @@ const sendRoomExit = (socket: Socket) => {
     const roomInfo = roomList.get(title);
 
     if (roomInfo && roomInfo.client.length > 1) {
-      const client = roomInfo.client.filter((user: string) => user != socket.id);
+      const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       roomList.set(title, { ...roomInfo, client });
-      socket.to(title).emit('room exit', roomList.get(title));
+      io.to(title).emit('room exit', roomList.get(title));
     } else {
       roomList.delete(title);
     }
+
+    io.to('lobby').emit('room list', Array.from(roomList));
   });
 };
+
+/**
+ * 유저 강제 종료
+ */
+const sendDisconnect = (socket: Socket, io: Server) => {
+  socket.on('disconnect', () => {
+    const roomTitle = socketRoom[socket.id];
+    const roomInfo = roomList.get(roomTitle);
+
+    if (roomTitle && roomInfo && roomInfo.client.find((v: { socketId: string }) => v.socketId === socket.id)) {
+      const newClients = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
+      if (newClients.length === 0) {
+        roomList.delete(roomTitle);
+      } else {
+        roomList.set(roomTitle, { ...roomInfo, client: newClients });
+        io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+      }
+      io.to('lobby').emit('room list', Array.from(roomList));
+    }
+
+    const userId = socketUser[socket.id];
+    if (userId) {
+      idList.splice(idList.indexOf(userId), idList.indexOf(userId) + 1);
+      nicknameList.splice(nicknameList.indexOf(userId), nicknameList.indexOf(userId) + 1);
+    }
+
+    delete socketRoom[socket.id];
+    delete socketUser[socket.id];
+  });
+};
+
 /**
  * 로비에서 할 소켓 기능 모음
  */
-const lobbyRoom = (socket: Socket) => {
+const lobbyRoom = (socket: Socket, io: Server) => {
   socket.join('lobby');
+
+  sendLobbyEntered(socket);
 
   sendRoomList(socket);
 
-  sendRoomCreate(socket);
+  sendRoomCreate(socket, io);
 
-  sendRoomJoin(socket);
+  sendRoomJoin(socket, io);
 
-  sendRoomData(socket);
+  sendRoomData(socket, io);
 
-  sendRoomExit(socket);
+  sendRoomExit(socket, io);
+
+  sendDisconnect(socket, io);
 };
 
 export default lobbyRoom;
