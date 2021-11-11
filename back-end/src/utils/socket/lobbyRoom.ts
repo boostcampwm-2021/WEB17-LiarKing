@@ -95,9 +95,12 @@ const sendDisconnect = (socket: Socket, io: Server) => {
     const roomTitle = socketRoom[socket.id];
     const roomInfo = roomList.get(roomTitle);
     if (roomTitle && roomInfo) {
-      const client = roomInfo.client.filter((user: string) => user != socket.id);
-      roomList.set(roomTitle, { ...roomInfo, client });
-      io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+      const client = roomInfo.client;
+      if (client.includes(socket.id)) {
+        const newClients = client.filter((user: string) => user != socket.id);
+        roomList.set(roomTitle, { ...roomInfo, client: newClients });
+        io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+      }
     }
 
     const userId = socketUser[socket.id];
