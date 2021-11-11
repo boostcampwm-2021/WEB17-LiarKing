@@ -11,13 +11,10 @@ import { getUserData } from '../../utils/getDataUtil';
 
 //임시 데이터
 const persons = [
-  { id: 'kskim625', item: 'item' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
+  { id: 'kskim625', item: '버튼' },
+  { id: 'dunde', item: '버튼' },
+  { id: 'sumin', item: '버튼' },
+  { id: 'hanbin', item: '버튼' },
 ];
 
 type personType = { id: string; item?: string };
@@ -110,24 +107,112 @@ const Game = () => {
     };
   }, []);
 
-  const click = () => {
-    $dispatch({
-      type: 'liar',
-      persons,
-      liar: {
-        answer: 1,
-        category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
-        fail: () => console.log('실패한!'),
-        success: () => console.log('성공!'),
-      },
-    });
+  const click = {
+    waiting: () => {
+      $dispatch({
+        type: 'waiting',
+        persons,
+      });
+    },
+    selectApple: () => {
+      $dispatch({
+        type: 'select',
+        persons,
+        select: { word: '사과' },
+      });
+    },
+    selectLiar: () => {
+      $dispatch({
+        type: 'select',
+        persons,
+        select: { word: '라이어' },
+      });
+    },
+    chat: () => {
+      $dispatch({
+        type: 'chat',
+        persons,
+        chat: {
+          chatHistory: [
+            'dunde: 안녕하세요.',
+            'kskim625: 반갑습니다.',
+            'sumin: ㅎㅇ',
+            'hanbin: ㅎㅇㅎㅇ',
+            'dunde: 안녕하세요.',
+            'kskim625: 반갑습니다.',
+            'sumin: ㅎㅇ',
+            'hanbin: ㅎㅇㅎㅇ',
+          ],
+          speaker: 'sumin',
+          timer: 20,
+          changeMessage: (e: any) => console.log('메세지 입력!', e.target.value),
+          sendMessage: () => console.log('메세지 보내기!'),
+        },
+      });
+    },
+    vote: () => {
+      $dispatch({
+        type: 'vote',
+        persons,
+        vote: { timer: 3 },
+      });
+    },
+    resultSuccess: () => {
+      $dispatch({
+        type: 'result',
+        persons,
+        result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
+      });
+    },
+    resultFail: () => {
+      $dispatch({
+        type: 'result',
+        persons,
+        result: { gameResult: false, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 5표', 'sumin 1표'] },
+      });
+    },
+    liar: () => {
+      $dispatch({
+        type: 'liar',
+        persons,
+        liar: {
+          answer: 1,
+          category: [
+            '사과',
+            '딸기',
+            '바나나',
+            '포도',
+            '수박',
+            '멜론',
+            '샤인머스캣',
+            '배',
+            '두리안',
+            '초콜릿',
+            '방어',
+            '우럭',
+            '누룽지',
+            '멀티버스',
+            '닥터스트레인지',
+          ],
+          fail: () => console.log('실패한!'),
+          success: () => console.log('성공!'),
+        },
+      });
+    },
   };
 
   return (
     <div id="game">
-      <button onClick={click} style={{ zIndex: 5 }}>
-        test
-      </button>
+      <div className="test-buttons" style={{ zIndex: 5 }}>
+        <button onClick={click.waiting}>waiting</button>
+        <button onClick={click.selectApple}>select apple</button>
+        <button onClick={click.selectLiar}>select Liar</button>
+        <button onClick={click.chat}>chat</button>
+        <button onClick={click.vote}>vote</button>
+        <button onClick={click.resultSuccess}>result success</button>
+        <button onClick={click.resultFail}>result fail</button>
+        <button onClick={click.liar}>liar</button>
+      </div>
       {$}
     </div>
   );
