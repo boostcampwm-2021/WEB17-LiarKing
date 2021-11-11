@@ -1,3 +1,12 @@
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #6d80a6;
+}
+
 #game {
   background-color: rgba(0, 0, 0, 0);
   width: 100vw;
@@ -176,13 +185,13 @@
 
 .game-content {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   position: absolute;
   padding-bottom: 2vh;
   height: 80vh;
   left: 50%;
-  top: 60%;
-  transform: translate(-50%, -50%);
+  top: 35%;
+  transform: translate(-50%, -55%);
   z-index: 3;
 }
 
@@ -194,6 +203,7 @@
   background-color: #6d80a6;
   border-radius: 20px;
   padding: 15px;
+  transform: translate(0, 45%);
 }
 
 .game-content-select-imgbox {
@@ -224,25 +234,15 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  transform: translate(0, 38%);
 }
 
 .game-content-chat-history {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
+  flex-direction: column-reverse;
   height: 55vh;
   overflow: overlay;
   padding-right: 3vw;
-}
-
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  background-color: #6d80a6;
 }
 
 .game-chat-box {
@@ -250,15 +250,16 @@
   justify-content: flex-start;
   align-items: center;
   width: 50vw;
-  height: 5vh;
+  height: 45px;
   border-radius: 30px;
   box-sizing: border-box;
-  padding: 0 20px 3px 20px;
+  padding: 5px 20px;
   margin-top: 20px;
 }
 
 .game-chat-box-read {
   width: 47vw;
+  height: 100%;
   box-shadow: 2px 3px 3px #585858;
 }
 
@@ -319,8 +320,8 @@
 .game-chat-send-button {
   background-image: url('../images/sendMsg.svg');
   background-size: 100% 100%;
-  width: 3vh;
-  height: 3vh;
+  width: 25px;
+  height: 25px;
   border: none;
   background-color: rgba(0, 0, 0, 0);
 }
@@ -351,6 +352,7 @@
   background-color: #e2e5f4;
   box-sizing: border-box;
   padding: 20px;
+  transform: translate(0, 50%);
 }
 
 .game-content-title {
