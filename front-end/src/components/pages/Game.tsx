@@ -1,5 +1,6 @@
 import '../../styles/Game.css';
 import React, { useEffect, useReducer, useContext } from 'react';
+import { useHistory } from 'react-router';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
 import GameContent from '../Game/GameContent';
@@ -52,10 +53,19 @@ const $reducer = (state: any, action: $reducerType) => {
 };
 
 const Game = () => {
+  const history = useHistory();
   const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [$, $dispatch] = useReducer($reducer, <></>);
+
+  window.onpopstate = () => {
+    console.log(window.location.pathname);
+    if (window.location.pathname === '/game') {
+      socket.emit('room exit', roomData.selectedRoomTitle);
+      history.replace('/lobby');
+    }
+  };
 
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
