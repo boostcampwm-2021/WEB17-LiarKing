@@ -34,7 +34,6 @@ const Lobby = () => {
   };
 
   const logout = async () => {
-    console.log(user_id);
     const res = await fetch('/api/logout', {
       method: 'POST',
       headers: {
