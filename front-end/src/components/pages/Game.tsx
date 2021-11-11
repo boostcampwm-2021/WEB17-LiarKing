@@ -60,8 +60,7 @@ const Game = () => {
   const [$, $dispatch] = useReducer($reducer, <></>);
 
   window.onpopstate = () => {
-    console.log(window.location.pathname);
-    if (window.location.pathname === '/game') {
+    if (window.location.pathname === '/lobby') {
       socket.emit('room exit', roomData.selectedRoomTitle);
       history.replace('/lobby');
     }
