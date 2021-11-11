@@ -27,13 +27,14 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     const title = data.title;
 
     if (!roomList.get(title)) {
-      roomList.set(title, Object.assign(data, { client: [socket.id] }));
+      roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id] }] }));
 
       socket.leave('lobby');
       socket.join(title);
 
       socketRoom[socket.id] = title;
       io.to('lobby').emit('room list', Array.from(roomList));
+      console.log(roomList);
     } else {
       data = false;
     }
@@ -100,8 +101,8 @@ const sendDisconnect = (socket: Socket, io: Server) => {
   socket.on('disconnect', () => {
     const roomTitle = socketRoom[socket.id];
     const roomInfo = roomList.get(roomTitle);
-    if (roomTitle && roomInfo && roomInfo.client.includes(socket.id)) {
-      const client = roomInfo.client;
+
+    if (roomTitle && roomInfo && roomInfo.client.find((v: { socketId: string }) => v.socketId === socket.id)) {
       const newClients = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       if (newClients.length === 0) {
         roomList.delete(roomTitle);

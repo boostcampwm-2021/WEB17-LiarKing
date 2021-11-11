@@ -77,7 +77,6 @@ const Game = () => {
         });
 
         $dispatch({ type: 'waiting', persons });
-
         console.log('누군가 입장했습니다', roomInfo);
       }
     );
