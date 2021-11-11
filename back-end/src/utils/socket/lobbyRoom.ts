@@ -27,12 +27,13 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     const title = data.title;
 
     if (!roomList.get(title)) {
-      roomList.set(title, Object.assign(data, { client: [] }));
+      roomList.set(title, Object.assign(data, { client: [socket.id] }));
 
       socket.leave('lobby');
       socket.join(title);
 
       socketRoom[socket.id] = title;
+      io.to('lobby').emit('room list', Array.from(roomList));
     } else {
       data = false;
     }
@@ -43,12 +44,21 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 /**
  * 유저가 방 접속 요청
  */
-const sendRoomJoin = (socket: Socket) => {
+const sendRoomJoin = (socket: Socket, io: Server) => {
   socket.on('room join', (title: string) => {
     socketRoom[socket.id] = title;
-    socket.emit('room join', true);
-    socket.leave('lobby');
-    socket.join(title);
+    const roomInfo = roomList.get(title);
+    if ((roomInfo && roomInfo.client.length === roomInfo.max) || !roomInfo) {
+      socket.emit('room join', false);
+    } else {
+      socket.emit('room join', true);
+      socket.leave('lobby');
+      socket.join(title);
+
+      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
+
+      io.to('lobby').emit('room list', Array.from(roomList));
+    }
   });
 };
 
@@ -57,12 +67,6 @@ const sendRoomJoin = (socket: Socket) => {
  */
 const sendRoomData = (socket: Socket, io: Server) => {
   socket.on('room data', (title: string) => {
-    const roomInfo = roomList.get(title);
-
-    if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
-
-    console.log(roomList.get(title));
-
     io.to(title).emit('room data', roomList.get(title));
   });
 };
@@ -84,6 +88,8 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     } else {
       roomList.delete(title);
     }
+
+    io.to('lobby').emit('room list', Array.from(roomList));
   });
 };
 
@@ -94,11 +100,16 @@ const sendDisconnect = (socket: Socket, io: Server) => {
   socket.on('disconnect', () => {
     const roomTitle = socketRoom[socket.id];
     const roomInfo = roomList.get(roomTitle);
-
-    if (roomTitle && roomInfo) {
-      const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
-      roomList.set(roomTitle, { ...roomInfo, client });
-      io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+    if (roomTitle && roomInfo && roomInfo.client.includes(socket.id)) {
+      const client = roomInfo.client;
+      const newClients = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
+      if (newClients.length === 0) {
+        roomList.delete(roomTitle);
+      } else {
+        roomList.set(roomTitle, { ...roomInfo, client: newClients });
+        io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+      }
+      io.to('lobby').emit('room list', Array.from(roomList));
     }
 
     const userId = socketUser[socket.id];
@@ -124,7 +135,7 @@ const lobbyRoom = (socket: Socket, io: Server) => {
 
   sendRoomCreate(socket, io);
 
-  sendRoomJoin(socket);
+  sendRoomJoin(socket, io);
 
   sendRoomData(socket, io);
 
