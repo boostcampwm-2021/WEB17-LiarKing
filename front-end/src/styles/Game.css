@@ -259,8 +259,9 @@
 
 .game-chat-box-read {
   width: 47vw;
-  height: 100%;
+  height: 4vh;
   box-shadow: 2px 3px 3px #585858;
+  overflow: hidden;
 }
 
 .game-chat-box-white {
@@ -306,6 +307,7 @@
 .game-chat-box-font {
   font-family: Roboto;
   font-size: 20px;
+  padding: 20px;
   font-weight: 400;
   word-break: break-all;
 }
