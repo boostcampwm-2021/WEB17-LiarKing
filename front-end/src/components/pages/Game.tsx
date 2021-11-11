@@ -13,19 +13,19 @@ import { useHistory } from 'react-router';
 const persons = [
   { id: 'kskim625', item: 'item' },
   { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde' },
-  { id: 'dunde', item: '확성기' },
-  { id: 'dunde', item: '확성기' },
+  { id: 'sumin', item: '확성기' },
+  { id: 'hanbin', item: '확성기' },
+  { id: 'aaaaa', item: '' },
+  { id: 'bbbbb', item: '확성기' },
+  { id: 'ccccc', item: '확성기' },
 ];
 
 type personType = { id: string; item?: string };
 type $reducerType = {
   type: string;
-  persons: personType[];
+  persons: Array<personType>;
   select?: { word: string };
-  chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
+  chat?: { chatHistory: string[]; speaker: string; timer: number };
   vote?: { timer: number };
   result?: { voteResult: string[]; liar: string; gameResult: boolean };
   liar?: { category: string[]; answer: number; success(): void; fail(): void };
@@ -71,7 +71,7 @@ const Game = () => {
         <GamePersons persons={persons} />
       </section>
       <section className="game-content">
-        <GameContent action={{ type: 'waiting' }} />
+        <GameContent action={{ type: 'waiting', persons: persons }} />
       </section>
     </>
   );
@@ -93,15 +93,26 @@ const Game = () => {
     });
   }, []);
 
+  // const click = () => {
+  //   $dispatch({
+  //     type: 'liar',
+  //     persons,
+  //     liar: {
+  //       answer: 1,
+  //       category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
+  //       fail: () => console.log('실패한!'),
+  //       success: () => console.log('성공!'),
+  //     },
+  //   });
+  // };
   const click = () => {
     $dispatch({
-      type: 'liar',
+      type: 'chat',
       persons,
-      liar: {
-        answer: 1,
-        category: ['사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나', '사과', '딸기', '바나나'],
-        fail: () => console.log('실패한!'),
-        success: () => console.log('성공!'),
+      chat: {
+        chatHistory: [],
+        speaker: '',
+        timer: 15,
       },
     });
   };

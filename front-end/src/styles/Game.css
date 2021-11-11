@@ -176,9 +176,12 @@
 
 .game-content {
   display: flex;
+  align-items: flex-end;
   position: absolute;
+  padding-bottom: 2vh;
+  height: 80vh;
   left: 50%;
-  top: 50%;
+  top: 60%;
   transform: translate(-50%, -50%);
   z-index: 3;
 }
@@ -224,27 +227,30 @@
 }
 
 .game-content-chat-history {
-  display: inline-flexbox;
-  position: relative;
-  flex-direction: column-reverse;
+  display: flex;
+  flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  height: 500px;
-  padding-left: 17px;
-  overflow-y: scroll;
+  height: 55vh;
+  overflow: overlay;
+  padding-right: 3vw;
 }
 
-.game-content-chat-history::-webkit-scrollbar {
-  visibility: hidden;
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #6d80a6;
 }
 
 .game-chat-box {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  width: 500px;
-  height: 60px;
-  min-height: 60px;
+  width: 50vw;
+  height: 5vh;
   border-radius: 30px;
   box-sizing: border-box;
   padding: 0 20px 3px 20px;
@@ -252,7 +258,40 @@
 }
 
 .game-chat-box-read {
-  background-color: #a7bdd9;
+  width: 47vw;
+  box-shadow: 2px 3px 3px #585858;
+}
+
+.game-chat-box-white {
+  background-color: white;
+}
+
+.game-chat-box-red {
+  background-color: red;
+}
+
+.game-chat-box-orange {
+  background-color: orange;
+}
+
+.game-chat-box-yellow {
+  background-color: yellow;
+}
+
+.game-chat-box-green {
+  background-color: green;
+}
+
+.game-chat-box-blue {
+  background-color: blue;
+}
+
+.game-chat-box-navy {
+  background-color: navy;
+}
+
+.game-chat-box-purple {
+  background-color: purple;
 }
 
 .game-chat-box-send {
@@ -260,15 +299,19 @@
   justify-content: space-between;
   align-items: center;
   background-color: #e2e5f4;
+  box-shadow: 2px 3px 3px #585858;
 }
 
 .game-chat-box-font {
   font-family: Roboto;
   font-size: 20px;
   font-weight: 400;
+  word-break: break-all;
 }
 
 .game-chat-send-input {
+  width: 80%;
+  height: 80%;
   background-color: rgba(0, 0, 0, 0);
   border: none;
 }
@@ -276,8 +319,8 @@
 .game-chat-send-button {
   background-image: url('../images/sendMsg.svg');
   background-size: 100% 100%;
-  width: 30px;
-  height: 30px;
+  width: 3vh;
+  height: 3vh;
   border: none;
   background-color: rgba(0, 0, 0, 0);
 }

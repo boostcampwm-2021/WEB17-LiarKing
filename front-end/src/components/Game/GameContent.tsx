@@ -5,13 +5,14 @@ import GameContentResult from './GameContentResult';
 import GameContentSelect from './GameContentSelect';
 import GameContentVote from './GameContentVote';
 
-type actionType = {
+export type actionType = {
   type: string;
   select?: { word: string };
-  chat?: { chatHistory: string[]; speaker: string; timer: number; changeMessage: any; sendMessage: any };
+  chat?: { chatHistory: string[]; speaker: string; timer: number };
   vote?: { timer: number };
   result?: { voteResult: string[]; liar: string; gameResult: boolean };
   liar?: { category: string[]; answer: number; success(): void; fail(): void };
+  persons: Array<{ id: string; item?: string }>;
 };
 
 const $reducer = (state: any, action: actionType): JSX.Element => {
@@ -23,7 +24,7 @@ const $reducer = (state: any, action: actionType): JSX.Element => {
     case 'select':
       return <GameContentSelect select={select} />;
     case 'chat':
-      return <GameContentChat chat={chat} />;
+      return <GameContentChat persons={action.persons} chat={chat} />;
     case 'vote':
       return <GameContentVote timer={vote.timer} />;
     case 'result':
