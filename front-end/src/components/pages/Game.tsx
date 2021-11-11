@@ -39,7 +39,7 @@ const $reducer = (state: any, action: $reducerType) => {
       <section className={`game-background ${bgFilter && 'game-filter'}`}></section>
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
-        <GameButtons />
+        {!bgFilter && <GameButtons />}
         <span className="game-header-info">(6 / 8) kskim625의 방</span>
       </header>
       <section className="game-persons">
