@@ -41,7 +41,7 @@ const GameContentChat = ({ persons, chat }: { persons: Array<{ id: string; item?
     scroll.current.scrollTop = scroll.current.scrollHeight;
 
     socket.on('send message', (message) => {
-      chatHistory.push(message);
+      chatHistory.unshift(message);
       setMessage('');
       setMessage(user.user_id);
     });
