@@ -62,6 +62,7 @@ const Game = () => {
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
       socket.emit('room exit', roomData.selectedRoomTitle);
+    } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }
   };

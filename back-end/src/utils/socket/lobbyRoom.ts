@@ -34,7 +34,6 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 
       socketRoom[socket.id] = title;
       io.to('lobby').emit('room list', Array.from(roomList));
-      console.log(roomList);
     } else {
       data = false;
     }
