@@ -9,7 +9,8 @@ import ExplainRuleModal from './ExplainRuleModal';
 import VerfiyPasswordModal from './VerifyPasswordModal';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSeletor';
 
 interface roomInterface {
   [prop: string]: any;
@@ -18,15 +19,11 @@ interface roomInterface {
 const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
   const { socket }: { socket: Socket } = useContext(globalContext);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const roomData = useRecoilValue(globalAtom.roomData);
 
   const history = useHistory();
-  const setModalState = useSetRecoilState(globalAtom.modal);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const offModal = () => {
     setCreateModal([]);
@@ -52,9 +49,9 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
       }
     });
     if (currentRoom.max === -1) {
-      popModal('alert', '방을 선택해주세요.');
+      popModal({ type: 'alert', ment: '방을 선택해주세요.' });
     } else if (currentRoom.client.length === currentRoom.max) {
-      popModal('error', '해당 방은 가득 차서 입장이 불가능합니다.');
+      popModal({ type: 'error', ment: '해당 방은 가득 차서 입장이 불가능합니다.' });
     } else if (roomPassword === '') {
       socket.emit('room join', roomTitle);
     } else {
@@ -76,7 +73,7 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
   useEffect(() => {
     socket.on('room join', (isEnter) => {
       if (isEnter) history.push('/game');
-      else popModal('error', '방에 입장을 할 수 없습니다.');
+      else popModal({ type: 'error', ment: '방에 입장을 할 수 없습니다.' });
     });
 
     return () => {

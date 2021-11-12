@@ -8,7 +8,8 @@ import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import globalSelector from '../../recoilStore/globalSeletor';
+import { modalPropsType } from '../public/Modal';
 
 interface roomInterface {
   [prop: string]: string;
@@ -25,13 +26,9 @@ const Lobby = () => {
   const [filterWord, setFilterWord] = useState('');
   const history = useHistory();
 
-  const setModalState = useSetRecoilState(globalAtom.modal);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const { user_id } = useRecoilValue(globalAtom.user);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const logout = async () => {
     const res = await fetch('/api/logout', {
@@ -51,7 +48,7 @@ const Lobby = () => {
       if (data) {
         history.push('/game');
       } else {
-        popModal('error', '중복된 방제가 있습니다.');
+        popModal({ type: 'error', ment: '중복된 방제가 있습니다.' });
       }
     });
 

@@ -6,18 +6,15 @@ import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSeletor';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
   const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.user_id });
-  const setModalState = useSetRecoilState(globalAtom.modal);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
@@ -53,7 +50,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
 
   const createRoom = () => {
     if (roomInfo.title === '') {
-      popModal('error', '방 제목을 입력해주세요.');
+      popModal({ type: 'error', ment: '방 제목을 입력해주세요.' });
     } else {
       socket.emit('room create', roomInfo);
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
