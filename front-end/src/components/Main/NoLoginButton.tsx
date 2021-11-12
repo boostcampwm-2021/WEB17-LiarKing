@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
-import globalSelector from '../../recoilStore/globalSeletor';
+import globalSelector from '../../recoilStore/globalSelector';
 
 /**
  * 비로그인 모달 컴포넌트

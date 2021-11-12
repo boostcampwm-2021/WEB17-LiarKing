@@ -2,7 +2,7 @@ import '../../styles/SearchRoomModal.css';
 import React, { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { modalPropsType } from '../public/Modal';
-import globalSelector from '../../recoilStore/globalSeletor';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFilterWord: (filterWord: string) => void }) => {
   const [searchWord, setSearchWord] = useState('');

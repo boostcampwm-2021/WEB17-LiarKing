@@ -8,7 +8,7 @@ import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import globalSelector from '../../recoilStore/globalSeletor';
+import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 
 interface roomInterface {

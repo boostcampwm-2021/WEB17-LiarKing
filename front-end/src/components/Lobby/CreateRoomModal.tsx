@@ -7,7 +7,7 @@ import { globalContext } from '../../App';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
-import globalSelector from '../../recoilStore/globalSeletor';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);

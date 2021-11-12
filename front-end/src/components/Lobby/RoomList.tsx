@@ -7,7 +7,7 @@ import rightArrow from '../../images/rightArrow.svg';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
-import globalSelector from '../../recoilStore/globalSeletor';
+import globalSelector from '../../recoilStore/globalSelector';
 
 let selectedRoom = -1;
 

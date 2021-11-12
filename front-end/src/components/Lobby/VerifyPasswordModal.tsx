@@ -5,7 +5,7 @@ import { globalContext } from '../../App';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
-import globalSelector from '../../recoilStore/globalSeletor';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
   const [passwordInput, setPassword] = useState('');
