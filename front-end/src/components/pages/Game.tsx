@@ -3,7 +3,7 @@ import React, { useEffect, useReducer, useContext } from 'react';
 import { useHistory } from 'react-router';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
-import GameContent from '../Game/GameContent';
+import GameContent, { actionType } from '../Game/GameContent';
 import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -18,16 +18,7 @@ const persons = [
   { id: 'hanbin', item: '버튼' },
 ];
 
-type personType = { id: string; item?: string };
-type $reducerType = {
-  type: string;
-  persons: Array<personType>;
-  select?: { word: string };
-  chat?: { chatHistory: string[]; speaker: string; timer: number };
-  vote?: { timer: number };
-  result?: { voteResult: string[]; liar: string; gameResult: boolean };
-  liar?: { category: string[]; answer: number; success(): void; fail(): void };
-};
+type $reducerType = actionType;
 
 const $reducer = (state: any, action: $reducerType) => {
   const { type, persons } = action;
