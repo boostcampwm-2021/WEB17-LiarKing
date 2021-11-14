@@ -86,7 +86,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
     <div id="room-lists">
       {rooms
         .slice()
-        .splice((pageNumber - 1) * MAX_ROOM_LIST, 10)
+        .splice((pageNumber - 1) * MAX_ROOM_LIST, MAX_ROOM_LIST)
         .map((room: Array<roomInterface>, i: number) => {
           const [title, roomInfo] = room;
           const { client, max, selected } = roomInfo;
@@ -95,7 +95,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
             <ul
               className={`room-list${client.length === max ? ' room-full' : ''}${selected ? ' room-list-selected' : ''}`}
               onClick={() => {
-                selectRoom(i);
+                selectRoom((pageNumber - 1) * MAX_ROOM_LIST + i);
               }}
               key={i}
             >
