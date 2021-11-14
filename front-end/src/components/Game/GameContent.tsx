@@ -17,7 +17,7 @@ export type actionType = (
 const $reducer = (state: any, action: actionType): JSX.Element => {
   switch (action.type) {
     case 'waiting':
-      return <div></div>;
+      return <></>;
     case 'select':
       return <GameContentSelect select={action.select} />;
     case 'chat':
@@ -34,7 +34,7 @@ const $reducer = (state: any, action: actionType): JSX.Element => {
 };
 
 const GameContent = ({ action }: { action: actionType }) => {
-  const [$, $dispatch] = useReducer($reducer, <div></div>);
+  const [$, $dispatch] = useReducer($reducer, <></>);
 
   useEffect(() => {
     $dispatch(action);
