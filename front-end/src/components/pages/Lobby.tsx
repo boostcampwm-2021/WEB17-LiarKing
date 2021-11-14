@@ -11,13 +11,16 @@ import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 
-interface roomInterface {
-  [prop: string]: string;
-}
+const ROOM_TITLE_IDX = 0;
 
-const filterRooms = (rooms: Array<roomInterface>, filterWord: string) => {
+export type roomType = {
+  0: string;
+  1: { client: Array<string>; cycle: number; max: number; owner: string; password: string; title: string; selected?: boolean };
+};
+
+const filterRooms = (rooms: Array<roomType>, filterWord: string) => {
   if (filterWord === '') return rooms;
-  return rooms.filter((room: roomInterface) => room[0].includes(filterWord));
+  return rooms.filter((room: roomType) => room[ROOM_TITLE_IDX].includes(filterWord));
 };
 
 const Lobby = () => {

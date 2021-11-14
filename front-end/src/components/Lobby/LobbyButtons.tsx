@@ -2,21 +2,20 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+
 import CreateRoomModal from './CreateRoomModal';
 import SearchRoomModal from './SearchRoomModal';
 import CreateRankModal from './CreateRankModal';
 import ExplainRuleModal from './ExplainRuleModal';
 import VerfiyPasswordModal from './VerifyPasswordModal';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+
 import globalAtom from '../../recoilStore/globalAtom';
-import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { modalPropsType } from '../public/Modal';
+import { roomType } from '../pages/Lobby';
 
-interface roomInterface {
-  [prop: string]: any;
-}
-
-const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (filterWord: string) => void }) => {
+const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
   const { socket }: { socket: Socket } = useContext(globalContext);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
@@ -40,12 +39,12 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
   };
 
   const joinRoom = () => {
-    let currentRoom = { client: Array, max: -1 };
+    let currentRoom = { client: new Array(), max: -1 };
     const roomTitle = roomData.selectedRoomTitle;
     const roomPassword = roomData.roomPassword;
-    rooms.map((room: roomInterface) => {
+    rooms.map((room: roomType) => {
       if (room[1].title === roomData.selectedRoomTitle) {
-        currentRoom = room[1];
+        currentRoom.client = room[1].client;
       }
     });
     if (currentRoom.max === -1) {

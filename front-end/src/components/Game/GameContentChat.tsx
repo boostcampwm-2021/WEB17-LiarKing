@@ -16,10 +16,8 @@ const GameContentChat = ({ persons, chat }: { persons: Array<{ id: string; item?
   const { socket }: { socket: Socket } = useContext(globalContext);
 
   const { chatHistory, speaker, timer } = chat;
-  const scroll: any = useRef();
-  const messageBox: any = useRef();
-
-  const checkMessage = [user.user_id, user.user_id + ': '];
+  const scroll = useRef<HTMLDivElement>();
+  const messageBox = useRef<HTMLInputElement>();
 
   const idList: Array<string> = [];
   persons.forEach((person) => {

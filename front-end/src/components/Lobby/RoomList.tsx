@@ -8,23 +8,16 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { roomType } from '../pages/Lobby';
 
 let selectedRoom = -1;
-
-interface roomInterface {
-  client: string;
-  max: number;
-  selected: boolean;
-}
+const ROOM_INFO_IDX = 1;
+const MAX_ROOM_LIST = 10;
 
 interface roomListInterface {
-  rooms: any;
+  rooms: Array<roomType>;
   filterWord: string;
-  setRooms: (rooms: Array<any>) => void;
-}
-
-interface selectedRoomInterface {
-  [prop: string]: boolean;
+  setRooms: (rooms: Array<roomType>) => void;
 }
 
 const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
@@ -33,8 +26,6 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
 
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
-
-  const MAX_ROOM_LIST = 10;
 
   const increasePage = () => {
     if (pageNumber * MAX_ROOM_LIST < rooms.length) {
@@ -49,14 +40,14 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   };
 
   const selectRoom = (index: number) => {
-    let newRooms = rooms.map((room: Array<selectedRoomInterface>) => {
-      room[1]['selected'] = false;
+    let newRooms = rooms.map((room: roomType) => {
+      room[ROOM_INFO_IDX]['selected'] = false;
       return room;
     });
     if (selectedRoom !== index) {
-      newRooms[index][1]['selected'] = true;
+      newRooms[index][ROOM_INFO_IDX]['selected'] = true;
       selectedRoom = index;
-      setRoomData({ ...roomData, selectedRoomTitle: newRooms[index][0], roomPassword: newRooms[index][1].password });
+      setRoomData({ ...roomData, selectedRoomTitle: newRooms[index][ROOM_INFO_IDX].title, roomPassword: newRooms[index][ROOM_INFO_IDX].password });
     } else {
       selectedRoom = -1;
       setRoomData({ ...roomData, selectedRoomTitle: '' });
@@ -87,10 +78,13 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
       {rooms
         .slice()
         .splice((pageNumber - 1) * MAX_ROOM_LIST, MAX_ROOM_LIST)
-        .map((room: Array<roomInterface>, i: number) => {
-          const [title, roomInfo] = room;
-          const { client, max, selected } = roomInfo;
-
+        .map((room: roomType, i: number) => {
+          const [title, client, max, selected] = [
+            room[ROOM_INFO_IDX].title,
+            room[ROOM_INFO_IDX].client,
+            room[ROOM_INFO_IDX].max,
+            room[ROOM_INFO_IDX].selected,
+          ];
           return (
             <ul
               className={`room-list${client.length === max ? ' room-full' : ''}${selected ? ' room-list-selected' : ''}`}
