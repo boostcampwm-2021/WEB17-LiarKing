@@ -3,12 +3,13 @@ import { useRecoilValue } from 'recoil';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import globalAtom from '../../recoilStore/globalAtom';
+import { clientType } from './GamePersons';
 
 type propsType = { chatHistory: string[]; speaker: string; timer: number };
 
 const chatColor = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
 
-const GameContentChat = ({ persons, chat }: { persons: Array<{ id: string; item?: string }>; chat: propsType }) => {
+const GameContentChat = ({ clients, chat }: { clients: clientType[]; chat: propsType }) => {
   const user = useRecoilValue(globalAtom.user);
   const roomData = useRecoilValue(globalAtom.roomData);
 
@@ -20,8 +21,8 @@ const GameContentChat = ({ persons, chat }: { persons: Array<{ id: string; item?
   const messageBox = useRef<HTMLInputElement>();
 
   const idList: Array<string> = [];
-  persons.forEach((person) => {
-    idList.push(person.id);
+  clients.forEach((client) => {
+    idList.push(client.name);
   });
 
   const changeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {

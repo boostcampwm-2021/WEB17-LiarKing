@@ -11,10 +11,12 @@ import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
 
 type $reducerType = actionType;
-type gameRoomType = { max: number; client: number; title: string } & GameButtonsPropsType;
+type gameRoomType = roomInfoType & GameButtonsPropsType;
 
 const $reducer = (state: any, action: $reducerType & gameRoomType) => {
-  const { type, persons, max, client, title, isOwner, gameSetting, gameStart, gameReady } = action;
+  const { type, max, client, title, isOwner, roomTitle } = action;
+  const clientNumber = client.length;
+
   const bgFilter: boolean = type !== 'waiting';
   const contentAction = Object.assign({ type }, { ...action });
 
@@ -23,14 +25,14 @@ const $reducer = (state: any, action: $reducerType & gameRoomType) => {
       <section className={`game-background ${bgFilter && 'game-filter'}`}></section>
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
-        {!bgFilter && isOwner && <GameButtons isOwner={isOwner} gameSetting={gameSetting} gameStart={gameStart} />}
-        {!bgFilter && !isOwner && <GameButtons isOwner={isOwner} gameReady={gameReady} />}
+        {!bgFilter && isOwner && <GameButtons isOwner={isOwner} roomTitle={roomTitle} isAllReady={action.isAllReady} />}
+        {!bgFilter && !isOwner && <GameButtons isOwner={isOwner} roomTitle={roomTitle} isReady={action.isReady} />}
         <span className="game-header-info">
-          ({client} / {max}) {title}
+          ({clientNumber} / {max}) {title}
         </span>
       </header>
       <section className="game-persons">
-        <GamePersons persons={persons} />
+        <GamePersons clients={client} />
       </section>
       <section className="game-content">
         <GameContent action={contentAction} />
@@ -39,7 +41,7 @@ const $reducer = (state: any, action: $reducerType & gameRoomType) => {
   );
 };
 
-type roomInfoType = {
+export type roomInfoType = {
   title: string;
   password: string;
   max: number;
@@ -64,16 +66,6 @@ const Game = () => {
     }
   };
 
-  const gameButtonEvents = {
-    gameReady: () => {
-      socket.emit('user ready', roomInfo.title);
-    },
-
-    gameSetting: () => {},
-
-    gameStart: () => {},
-  };
-
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
 
@@ -94,15 +86,21 @@ const Game = () => {
   useEffect(() => {
     if (!roomInfo) return;
 
-    const persons = roomInfo.client.map((v) => {
-      return { id: v.name, state: v.state };
-    });
+    const { owner, client, title } = roomInfo;
 
-    const isOwner = roomInfo.owner === user.user_id;
+    const GameButtonsProps = {
+      isOwner: owner === user.user_id,
+      roomTitle: title,
+    };
 
-    const gameButtonsProps = { isOwner, ...gameButtonEvents };
+    Object.assign(
+      GameButtonsProps,
+      GameButtonsProps.isOwner
+        ? { isAllReady: client.filter((v) => v.state === 'ready').length === client.length - 1 }
+        : { isReady: client.find((v) => v.name === user.user_id).state === 'ready' }
+    );
 
-    $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title, ...gameButtonsProps });
+    $dispatch({ type: 'waiting', ...roomInfo, ...GameButtonsProps });
   }, [roomInfo]);
 
   // const click = {
