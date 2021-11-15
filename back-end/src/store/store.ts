@@ -1,7 +1,17 @@
 export const nicknameList = [];
 export const idList = [];
 
-export const roomList = new Map();
+export const roomList: Map<
+  string,
+  {
+    title: string;
+    password: string;
+    max: number;
+    client: { socketId: string; name: string; state: string }[];
+    cycle: number;
+    owner: string;
+  }
+> = new Map();
 
 export const socketUser = {};
 

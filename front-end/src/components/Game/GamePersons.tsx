@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react';
 
-type personType = { id: string; item?: string; etc?: any };
+export type personType = { id: string; state: string };
 
 const GamePersons = ({ persons }: { persons: personType[] }) => {
   const [person, setPerson] = useState(new Array(8).fill(<div />));
+
+  const getStateComponent = (state: string) => {
+    switch (state) {
+      case 'ready':
+        return <div className="persons-ready">READY!</div>;
+      default:
+        return <></>;
+    }
+  };
 
   useEffect(() => {
     setPerson(
@@ -14,7 +23,7 @@ const GamePersons = ({ persons }: { persons: personType[] }) => {
               <div className="game-user-id">{persons[i]?.id ?? ''}</div>
               <div className={persons[i] ? 'game-user-character' : ''} />
             </div>
-            <div className="game-persons-user-item">{persons[i]?.item ?? ''}</div>
+            <div className="game-persons-user-item">{getStateComponent(persons[i]?.state ?? '')}</div>
           </>
         );
       })
