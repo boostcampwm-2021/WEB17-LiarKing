@@ -4,7 +4,10 @@ import { useRecoilValue } from 'recoil';
 import { globalContext } from '../../App';
 import globalAtom from '../../recoilStore/globalAtom';
 
-const GameButtons = () => {
+export type GameButtonsPropsType = { isOwner: boolean; gameSetting?: () => void; gameStart?: () => void; gameReady?: () => void };
+
+const GameButtons = (props: GameButtonsPropsType) => {
+  const { isOwner } = props;
   const history = useHistory();
   const { socket } = useContext(globalContext);
   const { selectedRoomTitle } = useRecoilValue(globalAtom.roomData);
@@ -16,9 +19,21 @@ const GameButtons = () => {
 
   return (
     <div className="game-header-buttons">
-      <button className="game-header-button">게임 설정</button>
-      <button className="game-header-button">준비 완료</button>
-      <button className="game-header-button">게임 시작</button>
+      {isOwner && (
+        <button className="game-header-button" onClick={props.gameSetting}>
+          게임 설정
+        </button>
+      )}
+      {isOwner && (
+        <button className="game-header-button" onClick={props.gameStart}>
+          게임 시작
+        </button>
+      )}
+      {!isOwner && (
+        <button className="game-header-button" onClick={props.gameReady}>
+          준비 완료
+        </button>
+      )}
       <div className="game-header-button-exit" onClick={exit} />
     </div>
   );
