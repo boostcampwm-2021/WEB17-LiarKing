@@ -7,7 +7,6 @@ const globalSelector = {
     key: 'popModal',
     get: ({ get }) => get(globalAtom.modal),
     set: ({ set }, modalprops: modalPropsType) => {
-      console.log(globalAtom.modal);
       set(globalAtom.modal, <Modal modalProps={modalprops} />);
     },
   }),

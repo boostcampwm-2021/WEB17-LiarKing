@@ -68,7 +68,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
  */
 const sendRoomData = (socket: Socket, io: Server) => {
   socket.on('room data', (title: string) => {
-    io.to(title).emit('room data', roomList.get(title));
+    io.to(title).emit('room data', { roomInfo: roomList.get(title), tag: 'default' });
   });
 };
 
@@ -85,7 +85,7 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     if (roomInfo && roomInfo.client.length > 1) {
       const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       roomList.set(title, { ...roomInfo, client });
-      io.to(title).emit('room exit', roomList.get(title));
+      io.to(title).emit('room data', { roomInfo: roomList.get(title), tag: 'room exit' });
     } else {
       roomList.delete(title);
     }
@@ -108,7 +108,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
         roomList.delete(roomTitle);
       } else {
         roomList.set(roomTitle, { ...roomInfo, client: newClients });
-        io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+        io.to(roomTitle).emit('room data', { roomInfo: roomList.get(roomTitle), tag: 'user disconnected' });
       }
       io.to('lobby').emit('room list', Array.from(roomList));
     }

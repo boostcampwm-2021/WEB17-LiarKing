@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { roomList, socketUser } from '../../store/store';
+import { roomList } from '../../store/store';
 
 /**
  * 유저가 레디버튼을 클릭 하였을 때 상태를 서버에서 전파
@@ -7,8 +7,6 @@ import { roomList, socketUser } from '../../store/store';
 const sendUserReady = (socket: Socket, io: Server) => {
   socket.on('user ready', (title: string) => {
     const roomInfo = roomList.get(title);
-
-    console.log(roomList.get(title));
 
     roomInfo.client = roomInfo.client.map((v: { socketId: string; state: string; name: string }) => {
       if (v.socketId === socket.id) {
@@ -23,7 +21,7 @@ const sendUserReady = (socket: Socket, io: Server) => {
 
     roomList.set(title, roomInfo);
 
-    io.to(title).emit('user ready', roomInfo);
+    io.to(title).emit('room data', { roomInfo: roomInfo, tag: 'user ready' });
   });
 };
 

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-export type personType = { id: string; state: string };
+export type clientType = { name: string; state: string };
 
-const GamePersons = ({ persons }: { persons: personType[] }) => {
-  const [person, setPerson] = useState(new Array(8).fill(<div />));
+const GamePersons = ({ clients }: { clients: clientType[] }) => {
+  const [client, setClient] = useState(new Array(8).fill(<div />));
 
   const getStateComponent = (state: string) => {
     switch (state) {
@@ -15,25 +15,25 @@ const GamePersons = ({ persons }: { persons: personType[] }) => {
   };
 
   useEffect(() => {
-    setPerson(
-      person.map((v, i) => {
+    setClient(
+      client.map((v, i) => {
         return (
           <>
             <div className="game-persons-user-character">
-              <div className="game-user-id">{persons[i]?.id ?? ''}</div>
-              <div className={persons[i] ? 'game-user-character' : ''} />
+              <div className="game-user-id">{clients[i]?.name ?? ''}</div>
+              <div className={clients[i] ? 'game-user-character' : ''} />
             </div>
-            <div className="game-persons-user-item">{getStateComponent(persons[i]?.state ?? '')}</div>
+            <div className="game-persons-user-item">{getStateComponent(clients[i]?.state ?? '')}</div>
           </>
         );
       })
     );
-  }, [persons]);
+  }, [clients]);
 
   return (
     <>
       <div className="game-persons-left">
-        {person
+        {client
           .filter((v, i) => i < 4)
           .map((v, i) => (
             <div className="game-persons-user game-persons-user-left" key={i}>
@@ -42,7 +42,7 @@ const GamePersons = ({ persons }: { persons: personType[] }) => {
           ))}
       </div>
       <div className="game-persons-right">
-        {person
+        {client
           .filter((v, i) => i >= 4)
           .map((v, i) => (
             <div className="game-persons-user game-persons-user-right" key={i}>
