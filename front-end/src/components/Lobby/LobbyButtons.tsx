@@ -15,6 +15,8 @@ import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 import { roomType } from '../pages/Lobby';
 
+const ROOM_INFO_IDX = 1;
+
 const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
   const { socket }: { socket: Socket } = useContext(globalContext);
@@ -43,8 +45,9 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
     const roomTitle = roomData.selectedRoomTitle;
     const roomPassword = roomData.roomPassword;
     rooms.map((room: roomType) => {
-      if (room[1].title === roomData.selectedRoomTitle) {
-        currentRoom.client = room[1].client;
+      if (room[ROOM_INFO_IDX].title === roomData.selectedRoomTitle) {
+        currentRoom.client = room[ROOM_INFO_IDX].client;
+        currentRoom.max = room[ROOM_INFO_IDX].max;
       }
     });
     if (currentRoom.max === -1) {
