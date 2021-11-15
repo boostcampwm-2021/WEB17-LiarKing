@@ -77,37 +77,17 @@ const Game = () => {
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
 
-    socket.on('room data', (roomInfo: roomInfoType) => {
-      setRoomInfo(roomInfo);
+    socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
+      console.log('tag:', tag);
+      console.log('roomInfo:', roomInfo);
 
-      console.log('누군가 입장했습니다', roomInfo);
+      setRoomInfo(roomInfo);
     });
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
-    socket.on('room exit', (roomInfo: roomInfoType) => {
-      setRoomInfo(roomInfo);
-
-      console.log('누군가 방에서 나갔습니다', roomInfo);
-    });
-
-    socket.on('user disconnected', (roomInfo: roomInfoType) => {
-      setRoomInfo(roomInfo);
-
-      console.log('누군가 방에서 팅겼습니다', roomInfo);
-    });
-
-    socket.on('user ready', (roomInfo: roomInfoType) => {
-      setRoomInfo(roomInfo);
-
-      console.log('누군가 레디버튼을 클릭했습니다.');
-    });
-
     return () => {
       socket.off('room data');
-      socket.off('room exit');
-      socket.off('user disconnected');
-      socket.off('user ready');
     };
   }, []);
 
