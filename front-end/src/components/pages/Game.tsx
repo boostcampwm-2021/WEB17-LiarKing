@@ -20,8 +20,8 @@ const persons = [
 
 type $reducerType = actionType;
 
-const $reducer = (state: any, action: $reducerType) => {
-  const { type, persons } = action;
+const $reducer = (state: any, action: $reducerType & { max: number; client: number; title: string }) => {
+  const { type, persons, max, client, title } = action;
   const bgFilter: boolean = type !== 'waiting';
   const contentAction = Object.assign({ type }, { ...action });
 
@@ -31,7 +31,9 @@ const $reducer = (state: any, action: $reducerType) => {
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
         {!bgFilter && <GameButtons />}
-        <span className="game-header-info">(6 / 8) kskim625의 방</span>
+        <span className="game-header-info">
+          ({client} / {max}) {title}
+        </span>
       </header>
       <section className="game-persons">
         <GamePersons persons={persons} />
@@ -68,7 +70,7 @@ const Game = () => {
           return { id: v.name };
         });
 
-        $dispatch({ type: 'waiting', persons });
+        $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title });
         console.log('누군가 입장했습니다', roomInfo);
       }
     );
@@ -82,7 +84,7 @@ const Game = () => {
           return { id: v.name };
         });
 
-        $dispatch({ type: 'waiting', persons });
+        $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title });
         console.log('누군가 방에서 나갔습니다', roomInfo);
       }
     );
@@ -94,7 +96,7 @@ const Game = () => {
           return { id: v.name };
         });
 
-        $dispatch({ type: 'waiting', persons });
+        $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title });
         console.log('누군가 방에서 팅겼습니다', roomInfo);
       }
     );
@@ -106,101 +108,101 @@ const Game = () => {
     };
   }, []);
 
-  const click = {
-    waiting: () => {
-      $dispatch({
-        type: 'waiting',
-        persons,
-      });
-    },
-    selectApple: () => {
-      $dispatch({
-        type: 'select',
-        persons,
-        select: { word: '사과' },
-      });
-    },
-    selectLiar: () => {
-      $dispatch({
-        type: 'select',
-        persons,
-        select: { word: '라이어' },
-      });
-    },
-    chat: () => {
-      $dispatch({
-        type: 'chat',
-        persons,
-        chat: {
-          chatHistory: [
-            'dunde: 안녕하세요.',
-            'kskim625: 반갑습니다.',
-            'sumin: ㅎㅇ',
-            'hanbin: ㅎㅇㅎㅇ',
-            'dunde: 안녕하세요.',
-            'kskim625: 반갑습니다.',
-            'sumin: ㅎㅇ',
-            'hanbin: ㅎㅇㅎㅇ',
-          ],
-          speaker: 'sumin',
-          timer: 20,
-        },
-      });
-    },
-    vote: () => {
-      $dispatch({
-        type: 'vote',
-        persons,
-        vote: { timer: 3 },
-      });
-    },
-    resultSuccess: () => {
-      $dispatch({
-        type: 'result',
-        persons,
-        result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
-      });
-    },
-    resultFail: () => {
-      $dispatch({
-        type: 'result',
-        persons,
-        result: { gameResult: false, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 5표', 'sumin 1표'] },
-      });
-    },
-    liar: () => {
-      $dispatch({
-        type: 'liar',
-        persons,
-        liar: {
-          answer: 1,
-          category: [
-            '사과',
-            '딸기',
-            '바나나',
-            '포도',
-            '수박',
-            '멜론',
-            '샤인머스캣',
-            '배',
-            '두리안',
-            '초콜릿',
-            '방어',
-            '우럭',
-            '누룽지',
-            '멀티버스',
-            '닥터스트레인지',
-          ],
-          fail: () => console.log('실패한!'),
-          success: () => console.log('성공!'),
-        },
-      });
-    },
-  };
+  // const click = {
+  //   waiting: () => {
+  //     $dispatch({
+  //       type: 'waiting',
+  //       persons,
+  //     });
+  //   },
+  //   selectApple: () => {
+  //     $dispatch({
+  //       type: 'select',
+  //       persons,
+  //       select: { word: '사과' },
+  //     });
+  //   },
+  //   selectLiar: () => {
+  //     $dispatch({
+  //       type: 'select',
+  //       persons,
+  //       select: { word: '라이어' },
+  //     });
+  //   },
+  //   chat: () => {
+  //     $dispatch({
+  //       type: 'chat',
+  //       persons,
+  //       chat: {
+  //         chatHistory: [
+  //           'dunde: 안녕하세요.',
+  //           'kskim625: 반갑습니다.',
+  //           'sumin: ㅎㅇ',
+  //           'hanbin: ㅎㅇㅎㅇ',
+  //           'dunde: 안녕하세요.',
+  //           'kskim625: 반갑습니다.',
+  //           'sumin: ㅎㅇ',
+  //           'hanbin: ㅎㅇㅎㅇ',
+  //         ],
+  //         speaker: 'sumin',
+  //         timer: 20,
+  //       },
+  //     });
+  //   },
+  //   vote: () => {
+  //     $dispatch({
+  //       type: 'vote',
+  //       persons,
+  //       vote: { timer: 3 },
+  //     });
+  //   },
+  //   resultSuccess: () => {
+  //     $dispatch({
+  //       type: 'result',
+  //       persons,
+  //       result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
+  //     });
+  //   },
+  //   resultFail: () => {
+  //     $dispatch({
+  //       type: 'result',
+  //       persons,
+  //       result: { gameResult: false, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 5표', 'sumin 1표'] },
+  //     });
+  //   },
+  //   liar: () => {
+  //     $dispatch({
+  //       type: 'liar',
+  //       persons,
+  //       liar: {
+  //         answer: 1,
+  //         category: [
+  //           '사과',
+  //           '딸기',
+  //           '바나나',
+  //           '포도',
+  //           '수박',
+  //           '멜론',
+  //           '샤인머스캣',
+  //           '배',
+  //           '두리안',
+  //           '초콜릿',
+  //           '방어',
+  //           '우럭',
+  //           '누룽지',
+  //           '멀티버스',
+  //           '닥터스트레인지',
+  //         ],
+  //         fail: () => console.log('실패한!'),
+  //         success: () => console.log('성공!'),
+  //       },
+  //     });
+  //   },
+  // };
 
   return (
     <div id="game">
-      <div className="test-buttons" style={{ zIndex: 5 }}>
+      {/* <div className="test-buttons" style={{ zIndex: 5 }}>
         <button onClick={click.waiting}>waiting</button>
         <button onClick={click.selectApple}>select apple</button>
         <button onClick={click.selectLiar}>select Liar</button>
@@ -209,7 +211,7 @@ const Game = () => {
         <button onClick={click.resultSuccess}>result success</button>
         <button onClick={click.resultFail}>result fail</button>
         <button onClick={click.liar}>liar</button>
-      </div>
+      </div> */}
       {$}
     </div>
   );
