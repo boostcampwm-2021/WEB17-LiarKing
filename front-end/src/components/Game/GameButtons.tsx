@@ -34,7 +34,6 @@ const GameButtons = (props: GameButtonsPropsType) => {
         <button className="game-header-button" onClick={roomSettings}>
           게임 설정
         </button>
-        {settingsModal}
       )}
       {isOwner && (
         <button className="game-header-button" onClick={props.gameStart}>
@@ -47,6 +46,7 @@ const GameButtons = (props: GameButtonsPropsType) => {
         </button>
       )}
       <div className="game-header-button-exit" onClick={exit} />
+      {settingsModal}
     </div>
   );
 };
