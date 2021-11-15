@@ -6,7 +6,8 @@ import leftArrow from '../../images/leftArrow.svg';
 import rightArrow from '../../images/rightArrow.svg';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSelector';
 
 let selectedRoom = -1;
 
@@ -31,13 +32,9 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
 
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const MAX_ROOM_LIST = 10;
-  const setModalState = useSetRecoilState(globalAtom.modal);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const increasePage = () => {
     if (pageNumber * MAX_ROOM_LIST < rooms.length) {
@@ -68,7 +65,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   };
 
   useEffect(() => {
-    if (rooms.length === 0 && filterWord !== '') popModal('error', '조건을 만족하는 방이 없습니다.');
+    if (rooms.length === 0 && filterWord !== '') popModal({ type: 'error', ment: '조건을 만족하는 방이 없습니다.' });
   }, [filterWord]);
 
   useEffect(() => {

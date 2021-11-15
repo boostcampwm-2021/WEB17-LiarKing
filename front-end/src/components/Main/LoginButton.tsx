@@ -3,17 +3,14 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const LoginModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '' });
   const history = useHistory();
   const setUser = useSetRecoilState(globalAtom.user);
-  const setModalState = useSetRecoilState(globalAtom.modal);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ ...userInfo, id: e.target.value });
@@ -27,24 +24,24 @@ const LoginModal = () => {
     const idValidation = checkId(userInfo.id);
 
     if (!idValidation) {
-      popModal('error', '아이디를 다시 확인해 주세요.');
+      popModal({ type: 'error', ment: '아이디를 다시 확인해 주세요.' });
       return;
     }
 
     const pwValidation = checkPW(userInfo.pwd);
 
     if (!pwValidation) {
-      popModal('error', '비밀번호를 다시 확인해 주세요.');
+      popModal({ type: 'error', ment: '비밀번호를 다시 확인해 주세요.' });
       return;
     }
 
     const userData = await requestToServer();
 
     if (userData.state === 'duplicated') {
-      popModal('error', '이미 로그인되어 있습니다.');
+      popModal({ type: 'error', ment: '이미 로그인되어 있습니다.' });
       return;
     } else if (userData.state === 'mismatch') {
-      popModal('error', '아이디와 비밀번호가 맞지 않습니다.');
+      popModal({ type: 'error', ment: '아이디와 비밀번호가 맞지 않습니다.' });
       return;
     }
 
