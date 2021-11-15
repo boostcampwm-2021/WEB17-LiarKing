@@ -27,7 +27,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     const title = data.title;
 
     if (!roomList.get(title)) {
-      roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id] }] }));
+      roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id], state: '' }] }));
 
       socket.leave('lobby');
       socket.join(title);
@@ -55,7 +55,8 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
       socket.leave('lobby');
       socket.join(title);
 
-      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
+      if (roomInfo)
+        roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id], state: '' }] });
 
       io.to('lobby').emit('room list', Array.from(roomList));
     }

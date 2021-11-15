@@ -12,10 +12,9 @@ export type actionType = (
   | { type: 'vote'; vote: { timer: number } }
   | { type: 'result'; result: { voteResult: string[]; liar: string; gameResult: boolean } }
   | { type: 'liar'; liar: { category: string[]; answer: number; success(): void; fail(): void } }
-) & { persons: Array<{ id: string; item?: string }> };
+) & { persons: Array<{ id: string; state: string }> };
 
 const $reducer = (state: JSX.Element, action: actionType): JSX.Element => {
-  console.log(state);
   switch (action.type) {
     case 'waiting':
       return <></>;

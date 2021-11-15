@@ -1,7 +1,7 @@
 import '../../styles/Game.css';
-import React, { useEffect, useReducer, useContext } from 'react';
+import React, { useEffect, useReducer, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
-import GameButtons from '../Game/GameButtons';
+import GameButtons, { GameButtonsPropsType } from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
 import GameContent, { actionType } from '../Game/GameContent';
 import { globalContext } from '../../App';
@@ -10,18 +10,11 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
 
-//임시 데이터
-const persons = [
-  { id: 'kskim625', item: '버튼' },
-  { id: 'dunde', item: '버튼' },
-  { id: 'sumin', item: '버튼' },
-  { id: 'hanbin', item: '버튼' },
-];
-
 type $reducerType = actionType;
+type gameRoomType = { max: number; client: number; title: string } & GameButtonsPropsType;
 
-const $reducer = (state: any, action: $reducerType & { max: number; client: number; title: string }) => {
-  const { type, persons, max, client, title } = action;
+const $reducer = (state: any, action: $reducerType & gameRoomType) => {
+  const { type, persons, max, client, title, isOwner, gameSetting, gameStart, gameReady } = action;
   const bgFilter: boolean = type !== 'waiting';
   const contentAction = Object.assign({ type }, { ...action });
 
@@ -30,7 +23,8 @@ const $reducer = (state: any, action: $reducerType & { max: number; client: numb
       <section className={`game-background ${bgFilter && 'game-filter'}`}></section>
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
-        {!bgFilter && <GameButtons />}
+        {!bgFilter && isOwner && <GameButtons isOwner={isOwner} gameSetting={gameSetting} gameStart={gameStart} />}
+        {!bgFilter && !isOwner && <GameButtons isOwner={isOwner} gameReady={gameReady} />}
         <span className="game-header-info">
           ({client} / {max}) {title}
         </span>
@@ -45,11 +39,21 @@ const $reducer = (state: any, action: $reducerType & { max: number; client: numb
   );
 };
 
+type roomInfoType = {
+  title: string;
+  password: string;
+  max: number;
+  client: { socketId: string; name: string; state: string }[];
+  cycle: number;
+  owner: string;
+} | null;
+
 const Game = () => {
   const history = useHistory();
   const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
+  const [roomInfo, setRoomInfo]: [roomInfoType, React.Dispatch<React.SetStateAction<roomInfoType>>] = useState(null);
   const [$, $dispatch] = useReducer($reducer, <></>);
 
   window.onpopstate = () => {
@@ -60,53 +64,66 @@ const Game = () => {
     }
   };
 
+  const gameButtonEvents = {
+    gameReady: () => {
+      socket.emit('user ready', roomInfo.title);
+    },
+
+    gameSetting: () => {},
+
+    gameStart: () => {},
+  };
+
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
 
-    socket.on(
-      'room data',
-      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
-        const persons = roomInfo.client.map((v) => {
-          return { id: v.name };
-        });
+    socket.on('room data', (roomInfo: roomInfoType) => {
+      setRoomInfo(roomInfo);
 
-        $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title });
-        console.log('누군가 입장했습니다', roomInfo);
-      }
-    );
+      console.log('누군가 입장했습니다', roomInfo);
+    });
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
-    socket.on(
-      'room exit',
-      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
-        const persons = roomInfo.client.map((v) => {
-          return { id: v.name };
-        });
+    socket.on('room exit', (roomInfo: roomInfoType) => {
+      setRoomInfo(roomInfo);
 
-        $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title });
-        console.log('누군가 방에서 나갔습니다', roomInfo);
-      }
-    );
+      console.log('누군가 방에서 나갔습니다', roomInfo);
+    });
 
-    socket.on(
-      'user disconnected',
-      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
-        const persons = roomInfo.client.map((v) => {
-          return { id: v.name };
-        });
+    socket.on('user disconnected', (roomInfo: roomInfoType) => {
+      setRoomInfo(roomInfo);
 
-        $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title });
-        console.log('누군가 방에서 팅겼습니다', roomInfo);
-      }
-    );
+      console.log('누군가 방에서 팅겼습니다', roomInfo);
+    });
+
+    socket.on('user ready', (roomInfo: roomInfoType) => {
+      setRoomInfo(roomInfo);
+
+      console.log('누군가 레디버튼을 클릭했습니다.');
+    });
 
     return () => {
       socket.off('room data');
       socket.off('room exit');
       socket.off('user disconnected');
+      socket.off('user ready');
     };
   }, []);
+
+  useEffect(() => {
+    if (!roomInfo) return;
+
+    const persons = roomInfo.client.map((v) => {
+      return { id: v.name, state: v.state };
+    });
+
+    const isOwner = roomInfo.owner === user.user_id;
+
+    const gameButtonsProps = { isOwner, ...gameButtonEvents };
+
+    $dispatch({ type: 'waiting', persons, max: roomInfo.max, client: roomInfo.client.length, title: roomInfo.title, ...gameButtonsProps });
+  }, [roomInfo]);
 
   // const click = {
   //   waiting: () => {
@@ -200,21 +217,7 @@ const Game = () => {
   //   },
   // };
 
-  return (
-    <div id="game">
-      {/* <div className="test-buttons" style={{ zIndex: 5 }}>
-        <button onClick={click.waiting}>waiting</button>
-        <button onClick={click.selectApple}>select apple</button>
-        <button onClick={click.selectLiar}>select Liar</button>
-        <button onClick={click.chat}>chat</button>
-        <button onClick={click.vote}>vote</button>
-        <button onClick={click.resultSuccess}>result success</button>
-        <button onClick={click.resultFail}>result fail</button>
-        <button onClick={click.liar}>liar</button>
-      </div> */}
-      {$}
-    </div>
-  );
+  return <div id="game">{$}</div>;
 };
 
 export default React.memo(Game);
