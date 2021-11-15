@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 type personType = { id: string; item?: string; etc?: any };
 
-const GamePersons = ({ persons }: { persons: personType[] }) => {
+const GamePersons = ({ persons, setVoteUser }: { persons: personType[]; setVoteUser: any }) => {
+  const [selectedPerson, setVotePerson] = useState(-1);
   const [person, setPerson] = useState(new Array(8).fill(<div />));
+  const [voteTo, setVoteTo] = useRecoilState(globalAtom.voteUser);
 
   useEffect(() => {
     setPerson(
@@ -14,12 +18,23 @@ const GamePersons = ({ persons }: { persons: personType[] }) => {
               <div className="game-user-id">{persons[i]?.id ?? ''}</div>
               <div className={persons[i] ? 'game-user-character' : ''} />
             </div>
-            <div className="game-persons-user-item">{persons[i]?.item ?? ''}</div>
+            <div className="game-persons-user-item">
+              <img
+                className={i === selectedPerson ? 'vote-box-select' : 'vote-box'}
+                src={persons[i]?.item ?? ''}
+                onClick={() => {
+                  console.log(i);
+                  setVoteTo(i);
+                  setVoteUser(i);
+                  setVotePerson(i);
+                }}
+              />
+            </div>
           </>
         );
       })
     );
-  }, [persons]);
+  }, [persons, selectedPerson]);
 
   return (
     <>

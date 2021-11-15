@@ -4,6 +4,7 @@ const globalAtom = {
   user: atom({ key: 'user', default: { user_id: '', point: 0, rank: '' } }),
   roomData: atom({ key: 'roomData', default: { selectedRoomTitle: '', roomPassword: '' } }),
   modal: atom({ key: 'modal', default: <></> }),
+  voteUser: atom({ key: 'voteTo', default: -1 }),
 };
 
 export default globalAtom;

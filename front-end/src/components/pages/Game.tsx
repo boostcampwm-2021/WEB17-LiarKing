@@ -1,5 +1,5 @@
 import '../../styles/Game.css';
-import React, { useEffect, useReducer, useContext } from 'react';
+import React, { useEffect, useReducer, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
@@ -9,19 +9,20 @@ import { Socket } from 'socket.io-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
+import voteBox from '../../images/voteBox.svg';
 
 //임시 데이터
 const persons = [
-  { id: 'kskim625', item: '버튼' },
-  { id: 'dunde', item: '버튼' },
-  { id: 'sumin', item: '버튼' },
-  { id: 'hanbin', item: '버튼' },
+  { id: 'kskim625', item: voteBox },
+  { id: 'dunde', item: voteBox },
+  { id: 'sumin', item: voteBox },
+  { id: 'hanbin', item: voteBox },
 ];
 
 type $reducerType = actionType;
 
-const $reducer = (state: any, action: $reducerType) => {
-  const { type, persons } = action;
+const $reducer = (state: any, action: $reducerType & any) => {
+  const { type, persons, setVoteUser } = action;
   const bgFilter: boolean = type !== 'waiting';
   const contentAction = Object.assign({ type }, { ...action });
 
@@ -34,7 +35,7 @@ const $reducer = (state: any, action: $reducerType) => {
         <span className="game-header-info">(6 / 8) kskim625의 방</span>
       </header>
       <section className="game-persons">
-        <GamePersons persons={persons} />
+        <GamePersons persons={persons} setVoteUser={setVoteUser} />
       </section>
       <section className="game-content">
         <GameContent action={contentAction} />
@@ -49,6 +50,8 @@ const Game = () => {
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [$, $dispatch] = useReducer($reducer, <></>);
+  const [voteUser, setVoteUser] = useState(-1);
+  const voteTo = useRecoilValue(globalAtom.voteUser);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -99,12 +102,23 @@ const Game = () => {
       }
     );
 
+    socket.on('start vote', (time: number) => {
+      console.log('setState', voteUser);
+      console.log('recoil', voteTo);
+      $dispatch({
+        type: 'vote',
+        persons,
+        vote: { timer: time },
+        setVoteUser,
+      });
+    });
+
     return () => {
       socket.off('room data');
       socket.off('room exit');
       socket.off('user disconnected');
     };
-  }, []);
+  }, [voteTo]);
 
   const click = {
     waiting: () => {
@@ -148,11 +162,7 @@ const Game = () => {
       });
     },
     vote: () => {
-      $dispatch({
-        type: 'vote',
-        persons,
-        vote: { timer: 3 },
-      });
+      socket.emit('end game', roomData.selectedRoomTitle);
     },
     resultSuccess: () => {
       $dispatch({

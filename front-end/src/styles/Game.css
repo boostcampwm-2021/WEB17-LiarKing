@@ -113,6 +113,14 @@
   z-index: 2;
 }
 
+.vote-box {
+  cursor: pointer;
+}
+
+.vote-box-select {
+  background-color: red;
+}
+
 .game-persons-left,
 .game-persons-right {
   display: flex;
