@@ -11,7 +11,7 @@ enum translate {
   'error' = '오류',
 }
 
-const Modal = ({ modalProps }: { modalProps: modalPropsType | any }) => {
+const Modal = ({ modalProps }: { modalProps: modalPropsType }) => {
   const { type, ment }: modalPropsType = modalProps;
   const setModal = useSetRecoilState(globalAtom.modal);
 
