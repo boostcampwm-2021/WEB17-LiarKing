@@ -1,19 +1,30 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import globalAtom from '../../recoilStore/globalAtom';
 import { RTC_MESSAGE } from '../../utils/constants';
 
-type personType = { id: string; item?: string; etc?: any };
+type clientType = { name: string; state: string; socketId: string };
 
-const GameTalk = ({ persons }: { persons: personType[] }) => {
+const Video = ({ stream, muted }: { stream: MediaStream; muted: boolean }) => {
+  const ref = useRef(null);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (ref.current) ref.current.srcObject = stream;
+    if (muted) setIsMuted(muted);
+  });
+
+  return <video ref={ref} muted={isMuted} autoPlay playsInline width="360"></video>;
+};
+
+const GameTalk = ({ clients }: { clients: clientType[] }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
-  const { selectedRoomTitle } = useRecoilValue(globalAtom.roomData);
-  const localVideo = useRef<HTMLVideoElement>(null);
-  const remoteVideo = useRef<HTMLVideoElement>(null);
+  const [users, setUsers] = useState([]);
 
-  let pcs: { [socketId: string]: RTCPeerConnection };
+  const localVideo = useRef<HTMLVideoElement>(null);
+
+  let pcs: { [toSocketId: string]: RTCPeerConnection };
+  let localStream: MediaStream;
 
   const pc_config = {
     iceServers: [
@@ -23,23 +34,33 @@ const GameTalk = ({ persons }: { persons: personType[] }) => {
     ],
   };
 
-  const newPC = new RTCPeerConnection(pc_config);
-
   const init = async () => {
-    socket.on(RTC_MESSAGE.OFFER, async (sdp: RTCSessionDescription) => {
-      await createAnswer(sdp);
-    });
-
-    socket.on(RTC_MESSAGE.ANSWER, async (sdp: RTCSessionDescription) => {
-      await newPC.setRemoteDescription(new RTCSessionDescription(sdp));
-    });
-
-    socket.on(RTC_MESSAGE.CANDIDATE, async (candidate: RTCIceCandidateInit) => {
-      await newPC.addIceCandidate(new RTCIceCandidate(candidate));
-    });
+    await registerSocketHandler();
 
     await getUserMedia();
-    await createOffer();
+
+    await startConnect();
+  };
+
+  const registerSocketHandler = async () => {
+    socket.on(RTC_MESSAGE.OFFER, async ({ sdp, fromSocketId }) => {
+      createPeerConnection(socket.id, fromSocketId, localStream);
+      await createAnswer(sdp, socket.id, fromSocketId);
+    });
+
+    socket.on(RTC_MESSAGE.ANSWER, async ({ sdp, fromSocketId }) => {
+      let pc: RTCPeerConnection = pcs[fromSocketId];
+      if (pc) {
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      }
+    });
+
+    socket.on(RTC_MESSAGE.CANDIDATE, async ({ candidate, fromSocketId }) => {
+      let pc: RTCPeerConnection = pcs[fromSocketId];
+      if (pc) {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
   };
 
   const getUserMedia = async () => {
@@ -50,36 +71,78 @@ const GameTalk = ({ persons }: { persons: personType[] }) => {
 
     localVideo.current.srcObject = stream;
 
-    stream.getTracks().forEach((track) => {
-      newPC.addTrack(track, stream);
-    });
-
-    newPC.onicecandidate = (e) => {
-      if (e.candidate) {
-        socket.emit('rtc candidate', { candidate: e.candidate, title: selectedRoomTitle });
-      }
-    };
-    newPC.ontrack = (ev) => {
-      remoteVideo.current.srcObject = ev.streams[0];
-    };
+    localStream = stream;
   };
 
-  const createPeerConnection = (userId: any) => {
+  const startConnect = async () => {
+    const clientsExceptMe = clients.filter((c) => c.socketId != socket.id);
+
+    await Promise.all(
+      clientsExceptMe.map((c) => {
+        createPeerConnection(socket.id, c.socketId, localStream);
+        return createOffer(socket.id, c.socketId);
+      })
+    );
+  };
+
+  const createPeerConnection = (fromSocketId: string, toSocketId: string, localStream: MediaStream) => {
     let pc = new RTCPeerConnection(pc_config);
 
-    persons.forEach((p) => {});
-  };
-  const createOffer = async () => {
-    const sdp = await newPC.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
-    await newPC.setLocalDescription(new RTCSessionDescription(sdp));
-    socket.emit('rtc offer', { sdp, title: selectedRoomTitle });
+    pcs = { ...pcs, [toSocketId]: pc };
+
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        socket.emit('rtc candidate', {
+          candidate: e.candidate,
+          fromSocketId,
+          toSocketId,
+        });
+      }
+    };
+
+    pc.ontrack = (e) => {
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== toSocketId));
+      setUsers((prevUsers) => [...prevUsers, { id: toSocketId, stream: e.streams[0] }]);
+    };
+
+    if (localStream) {
+      localStream.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+    }
   };
 
-  const createAnswer = async (sdp: RTCSessionDescription) => {
-    await newPC.setRemoteDescription(new RTCSessionDescription(sdp));
-    const sdpAnswer = await newPC.createAnswer({ offerToReceiveVideo: true, offerToReceiveAudio: true });
-    await newPC.setLocalDescription(new RTCSessionDescription(sdpAnswer));
-    socket.emit('rtc answer', { sdp: sdpAnswer, title: selectedRoomTitle });
+  const createOffer = async (fromSocketId: string, toSocketId: string) => {
+    let pc: RTCPeerConnection = pcs[toSocketId];
+    if (pc) {
+      const sdp = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+      });
+      pc.setLocalDescription(new RTCSessionDescription(sdp));
+      socket.emit('rtc offer', {
+        sdp,
+        fromSocketId,
+        toSocketId,
+      });
+    }
+  };
+
+  const createAnswer = async (sdp: RTCSessionDescription, fromSocketId: string, toSocketId: string) => {
+    let pc: RTCPeerConnection = pcs[toSocketId];
+    if (pc) {
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      const sdpAnswer = await pc.createAnswer({
+        offerToReceiveVideo: true,
+        offerToReceiveAudio: true,
+      });
+      pc.setLocalDescription(new RTCSessionDescription(sdpAnswer));
+      socket.emit('rtc answer', {
+        sdp,
+        fromSocketId,
+        toSocketId,
+      });
+    }
   };
 
   useEffect(() => {
@@ -95,14 +158,11 @@ const GameTalk = ({ persons }: { persons: personType[] }) => {
   return (
     <>
       <div>
-        <video id="localVideo" playsInline autoPlay width="480px" ref={localVideo}></video>
-        <video id="remoteVideo" playsInline autoPlay width="480px" ref={remoteVideo}></video>
+        <video id="localVideo" playsInline autoPlay width="360" ref={localVideo}></video>
       </div>
-      <div>
-        <button id="startButton">Start</button>
-        <button id="callButton">Call</button>
-        <button id="hangupButton">Hang Up</button>
-      </div>
+      {users.map((user, index) => {
+        return <Video key={index} stream={user.stream} muted={false}></Video>;
+      })}
     </>
   );
 };

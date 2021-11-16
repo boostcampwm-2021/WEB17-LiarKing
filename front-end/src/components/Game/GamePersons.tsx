@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import GameChatBox from './GameChatBox';
 import GameTalk from './GameTalk';
 
-export type clientType = { name: string; state: string };
+export type clientType = { name: string; state: string; socketId: string };
 
 const GamePersons = ({ clients }: { clients: clientType[] }) => {
   const [client, setClient] = useState(new Array(8).fill(<div />));
@@ -43,7 +43,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
             </div>
           ))}
       </div>
-      <GameTalk persons={person}></GameTalk>
+      <GameTalk clients={clients}></GameTalk>
       <div className="game-persons-right">
         {client
           .filter((v, i) => i >= 4)

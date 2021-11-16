@@ -13,7 +13,7 @@ import { getUserData } from '../../utils/getDataUtil';
 type $reducerType = actionType & roomInfoType;
 
 const $reducer = (state: any, action: $reducerType) => {
-  const { type, client, max, title } = action;
+  const { type, max, client, title } = action;
   const clientNumber = client.length;
   const bgFilter: boolean = type !== 'waiting';
   const buttons =
