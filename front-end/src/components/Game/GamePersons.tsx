@@ -21,8 +21,13 @@ const GamePersons = ({ persons }: { persons: personType[] }) => {
                 className={i === selectedPerson ? 'vote-box-select' : 'vote-box'}
                 src={persons[i]?.item ?? ''}
                 onClick={() => {
-                  voteInfo.voteTo = i;
-                  setVotePerson(i);
+                  if (i !== voteInfo.voteTo) {
+                    voteInfo.voteTo = i;
+                    setVotePerson(i);
+                  } else {
+                    voteInfo.voteTo = -1;
+                    setVotePerson(-1);
+                  }
                 }}
               />
             </div>

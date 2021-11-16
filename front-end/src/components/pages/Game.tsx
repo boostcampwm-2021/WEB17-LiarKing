@@ -104,7 +104,11 @@ const Game = () => {
 
     socket.on('start vote', (time: number) => {
       if (time === -1) {
-        socket.emit('vote result', { index: voteInfo.voteTo, name: persons[voteInfo.voteTo].id, roomtitle: roomData.selectedRoomTitle });
+        if (voteInfo.voteTo === -1) {
+          socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
+        } else {
+          socket.emit('vote result', { index: voteInfo.voteTo, name: persons[voteInfo.voteTo].id, roomtitle: roomData.selectedRoomTitle });
+        }
       } else if (voteInfo.isFixed === false) {
         $dispatch({
           type: 'vote',
@@ -114,12 +118,11 @@ const Game = () => {
       }
     });
 
-    socket.on('end vote', (voteResult: any) => {
-      console.log(voteResult);
+    socket.on('end vote', (voteResult: string[]) => {
       $dispatch({
         type: 'result',
         persons,
-        result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
+        result: { gameResult: true, liar: 'sumin', voteResult: voteResult },
       });
     });
 

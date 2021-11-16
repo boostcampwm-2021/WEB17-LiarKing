@@ -25,14 +25,18 @@ const endVote = (socket: Socket, io: Server) => {
       voteCount[roomtitle] = 0;
     }
     voteCount[roomtitle] += 1;
-    if (!voteResult[name]) {
+    if (!voteResult[roomtitle][name]) {
       voteResult[roomtitle][name] = 1;
     } else {
       voteResult[roomtitle][name] += 1;
     }
 
     if (roomPeopleNum === voteCount[roomtitle]) {
-      io.to(roomtitle).emit('end vote', voteResult[roomtitle]);
+      let resultArray = [];
+      for (const [key, value] of Object.entries(voteResult[roomtitle])) {
+        resultArray.push(key + ' ' + value + '표');
+      }
+      io.to(roomtitle).emit('end vote', resultArray);
     }
   });
 };
