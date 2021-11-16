@@ -76,10 +76,15 @@ const Game = () => {
       setRoomInfo(roomInfo);
     });
 
+    socket.on('word data', ({ category }: { category: string }) => {
+      console.log('category:', category);
+    });
+
     socket.emit('room data', roomData.selectedRoomTitle);
 
     return () => {
       socket.off('room data');
+      socket.off('word data');
     };
   }, []);
 
