@@ -3,6 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import globalAtom from '../../recoilStore/globalAtom';
+import { RTC_MESSAGE } from '../../utils/constants';
 
 const GameTalk = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
@@ -11,11 +12,6 @@ const GameTalk = () => {
   const remoteVideo = useRef<HTMLVideoElement>(null);
   const pc_config = {
     iceServers: [
-      // {
-      //   urls: 'stun:[STUN_IP]:[PORT]',
-      //   'credentials': '[YOR CREDENTIALS]',
-      //   'username': '[USERNAME]'
-      // },
       {
         urls: 'stun:stun.l.google.com:19302',
       },

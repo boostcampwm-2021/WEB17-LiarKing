@@ -1,23 +1,26 @@
 import { Server, Socket } from 'socket.io';
 
-// 다른 user들에게 offer를 보냄 (자신의 RTCSessionDescription)
+const RTC_MESSAGE = {
+  OFFER: 'rtc offer',
+  ANSWER: 'rtc answer',
+  CANDIDATE: 'rtc candidate',
+};
+
 const sendOffer = (socket: Socket, io: Server) => {
-  socket.on('rtc offer', ({ sdp, title }) => {
-    socket.broadcast.to(title).emit('rtc offer', sdp);
+  socket.on(RTC_MESSAGE.OFFER, ({ sdp, fromSocketId, toSocketId }) => {
+    socket.to(toSocketId).emit(RTC_MESSAGE.OFFER, { sdp, fromSocketId, toSocketId });
   });
 };
 
-// offer를 보낸 user에게 answer을 보냄 (자신의 RTCSessionDescription)
 const sendAnswer = (socket: Socket, io: Server) => {
-  socket.on('rtc answer', ({ sdp, title }) => {
-    socket.broadcast.to(title).emit('rtc answer', sdp);
+  socket.on(RTC_MESSAGE.ANSWER, ({ sdp, fromSocketId, toSocketId }) => {
+    socket.to(toSocketId).emit(RTC_MESSAGE.ANSWER, { sdp, fromSocketId, toSocketId });
   });
 };
 
-// 자신의 ICECandidate 정보를 signal(offer 또는 answer)을 주고 받은 상대에게 전달
 const sendCandidate = (socket: Socket, io: Server) => {
-  socket.on('rtc candidate', ({ candidate, title }) => {
-    socket.broadcast.to(title).emit('rtc candidate', candidate);
+  socket.on(RTC_MESSAGE.CANDIDATE, ({ candidate, fromSocketId, toSocketId }) => {
+    socket.to(toSocketId).emit(RTC_MESSAGE.CANDIDATE, { candidate, fromSocketId, toSocketId });
   });
 };
 
