@@ -23,36 +23,35 @@ const GameTalk = ({ clients }: { clients: clientType[] }) => {
 
   const localVideo = useRef<HTMLVideoElement>(null);
 
-  let pcs: { [toSocketId: string]: RTCPeerConnection };
+  let pcs: { [toSocketId: string]: RTCPeerConnection } = {};
   let localStream: MediaStream;
 
-  const pc_config = {
+  const pcConfig = {
     iceServers: [
       {
         urls: 'stun:stun.l.google.com:19302',
       },
+      { urls: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' },
     ],
   };
 
   const init = async () => {
     await registerSocketHandler();
 
-    await getUserMedia();
+    await setMyRTC();
 
-    await startConnect();
+    await startPeerConnection();
   };
 
   const registerSocketHandler = async () => {
     socket.on(RTC_MESSAGE.OFFER, async ({ sdp, fromSocketId }) => {
-      createPeerConnection(socket.id, fromSocketId, localStream);
+      createPeerConnection(socket.id, fromSocketId);
       await createAnswer(sdp, socket.id, fromSocketId);
     });
 
     socket.on(RTC_MESSAGE.ANSWER, async ({ sdp, fromSocketId }) => {
-      let pc: RTCPeerConnection = pcs[fromSocketId];
-      if (pc) {
-        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-      }
+      const pc: RTCPeerConnection = pcs[fromSocketId];
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
     });
 
     socket.on(RTC_MESSAGE.CANDIDATE, async ({ candidate, fromSocketId }) => {
@@ -63,7 +62,7 @@ const GameTalk = ({ clients }: { clients: clientType[] }) => {
     });
   };
 
-  const getUserMedia = async () => {
+  const setMyRTC = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
@@ -74,25 +73,25 @@ const GameTalk = ({ clients }: { clients: clientType[] }) => {
     localStream = stream;
   };
 
-  const startConnect = async () => {
+  const startPeerConnection = async () => {
     const clientsExceptMe = clients.filter((c) => c.socketId != socket.id);
 
     await Promise.all(
       clientsExceptMe.map((c) => {
-        createPeerConnection(socket.id, c.socketId, localStream);
+        createPeerConnection(socket.id, c.socketId);
         return createOffer(socket.id, c.socketId);
       })
     );
   };
 
-  const createPeerConnection = (fromSocketId: string, toSocketId: string, localStream: MediaStream) => {
-    let pc = new RTCPeerConnection(pc_config);
+  const createPeerConnection = (fromSocketId: string, toSocketId: string) => {
+    const pc = new RTCPeerConnection(pcConfig);
 
     pcs = { ...pcs, [toSocketId]: pc };
 
     pc.onicecandidate = (e) => {
       if (e.candidate) {
-        socket.emit('rtc candidate', {
+        socket.emit(RTC_MESSAGE.CANDIDATE, {
           candidate: e.candidate,
           fromSocketId,
           toSocketId,
@@ -102,43 +101,41 @@ const GameTalk = ({ clients }: { clients: clientType[] }) => {
 
     pc.ontrack = (e) => {
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== toSocketId));
-      setUsers((prevUsers) => [...prevUsers, { id: toSocketId, stream: e.streams[0] }]);
+      setUsers((prevUsers) => [...prevUsers, { id: toSocketId, stream: new MediaStream([e.track]) }]);
     };
 
     if (localStream) {
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
-      });
+      localStream.getTracks().forEach((track) => pc.addTrack(track));
     }
   };
 
   const createOffer = async (fromSocketId: string, toSocketId: string) => {
     let pc: RTCPeerConnection = pcs[toSocketId];
     if (pc) {
-      const sdp = await pc.createOffer({
+      const sdpOffer = await pc.createOffer({
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
       });
-      pc.setLocalDescription(new RTCSessionDescription(sdp));
-      socket.emit('rtc offer', {
-        sdp,
+      pc.setLocalDescription(new RTCSessionDescription(sdpOffer));
+      socket.emit(RTC_MESSAGE.OFFER, {
+        sdp: sdpOffer,
         fromSocketId,
         toSocketId,
       });
     }
   };
 
-  const createAnswer = async (sdp: RTCSessionDescription, fromSocketId: string, toSocketId: string) => {
+  const createAnswer = async (sdpOffer: RTCSessionDescription, fromSocketId: string, toSocketId: string) => {
     let pc: RTCPeerConnection = pcs[toSocketId];
     if (pc) {
-      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      await pc.setRemoteDescription(new RTCSessionDescription(sdpOffer));
       const sdpAnswer = await pc.createAnswer({
         offerToReceiveVideo: true,
         offerToReceiveAudio: true,
       });
       pc.setLocalDescription(new RTCSessionDescription(sdpAnswer));
-      socket.emit('rtc answer', {
-        sdp,
+      socket.emit(RTC_MESSAGE.ANSWER, {
+        sdp: sdpAnswer,
         fromSocketId,
         toSocketId,
       });
@@ -149,9 +146,9 @@ const GameTalk = ({ clients }: { clients: clientType[] }) => {
     init();
 
     return () => {
-      socket.off('rtc offer');
-      socket.off('rtc answer');
-      socket.off('rtc candidate');
+      socket.off(RTC_MESSAGE.OFFER);
+      socket.off(RTC_MESSAGE.ANSWER);
+      socket.off(RTC_MESSAGE.CANDIDATE);
     };
   }, []);
 
