@@ -18,7 +18,7 @@ const $reducer = (state: any, action: $reducerType & gameRoomType) => {
   const clientNumber = client.length;
 
   const bgFilter: boolean = type !== 'waiting';
-  const contentAction = Object.assign({ type }, { ...action });
+  const contentAction = Object.assign({ type }, action);
 
   return (
     <>

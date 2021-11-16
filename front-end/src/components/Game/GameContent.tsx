@@ -12,7 +12,7 @@ export type actionType =
   | { type: 'chat'; chat: { chatHistory: string[]; speaker: string; timer: number } }
   | { type: 'vote'; vote: { timer: number } }
   | { type: 'result'; result: { voteResult: string[]; liar: string; gameResult: boolean } }
-  | { type: 'liar'; liar: { category: string[]; answer: number; success(): void; fail(): void } };
+  | { type: 'liar'; liar: { category: string[]; answer: number; success: () => void; fail: () => void } };
 
 const $reducer = (state: JSX.Element, action: actionType & roomInfoType): JSX.Element => {
   switch (action.type) {
