@@ -13,6 +13,8 @@ export const roomList: Map<
   }
 > = new Map();
 
+export const roomSecrets: Map<string, { liarName: string; words: string[]; answerWord: string; vote: { name: string; count: number }[] }> = new Map();
+
 export const socketUser = {};
 
 export const socketRoom = {};

@@ -1,8 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { globalContext } from '../../App';
-import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 
@@ -10,11 +9,10 @@ import GameRoomSettings from './GameRoomSettings';
 export type GameButtonsPropsType = { isOwner: boolean; isAllReady?: boolean; isReady?: boolean; roomTitle: string };
 
 const GameButtons = (props: GameButtonsPropsType) => {
-  const { isOwner } = props;
+  const { isOwner, roomTitle } = props;
   const history = useHistory();
   const [settingsModal, setSettingsModal] = useState([]);
   const { socket } = useContext(globalContext);
-  const { selectedRoomTitle } = useRecoilValue(globalAtom.roomData);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const offModal = () => {
@@ -22,7 +20,7 @@ const GameButtons = (props: GameButtonsPropsType) => {
   };
 
   const exit = () => {
-    socket.emit('room exit', selectedRoomTitle);
+    socket.emit('room exit', roomTitle);
     history.replace('/lobby');
   };
 
@@ -36,7 +34,10 @@ const GameButtons = (props: GameButtonsPropsType) => {
       popModal({ type: 'error', ment: '아직 준비가 되지않은 플레이어가 있습니다.' });
       return;
     }
-    //game 시작하기 버튼
+
+    const category: string[] = ['과일', '탈것'];
+
+    socket.emit('word data', { category, roomTitle });
   };
 
   const roomGameReady = () => {

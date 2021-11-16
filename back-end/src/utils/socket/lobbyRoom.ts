@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { idList, nicknameList, roomList, socketUser, socketRoom } from '../../store/store';
+import { idList, nicknameList, roomList, socketUser, socketRoom, roomSecrets } from '../../store/store';
 
 /**
  * 유저가 로비에 입장했다고 알림
@@ -28,6 +28,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 
     if (!roomList.get(title)) {
       roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id], state: '' }] }));
+      roomSecrets.set(title, { liarName: '', answerWord: '', vote: [], words: [] });
 
       socket.leave('lobby');
       socket.join(title);
@@ -47,7 +48,9 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 const sendRoomJoin = (socket: Socket, io: Server) => {
   socket.on('room join', (title: string) => {
     socketRoom[socket.id] = title;
+
     const roomInfo = roomList.get(title);
+
     if ((roomInfo && roomInfo.client.length === roomInfo.max) || !roomInfo) {
       socket.emit('room join', false);
     } else {

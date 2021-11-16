@@ -18,7 +18,7 @@ const $reducer = (state: any, action: $reducerType & gameRoomType) => {
   const clientNumber = client.length;
 
   const bgFilter: boolean = type !== 'waiting';
-  const contentAction = Object.assign({ type }, { ...action });
+  const contentAction = Object.assign({ type }, action);
 
   return (
     <>
@@ -76,10 +76,15 @@ const Game = () => {
       setRoomInfo(roomInfo);
     });
 
+    socket.on('word data', ({ category }: { category: string }) => {
+      console.log('category:', category);
+    });
+
     socket.emit('room data', roomData.selectedRoomTitle);
 
     return () => {
       socket.off('room data');
+      socket.off('word data');
     };
   }, []);
 
