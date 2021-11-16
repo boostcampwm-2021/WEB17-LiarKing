@@ -39,9 +39,9 @@ const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
         updateCategory = { category: c.category, include: c.include ? false : true };
       }
     });
-    let newCategory = categories.slice();
+    const newCategory = categories.slice();
     newCategory.splice(idx, 1, updateCategory);
-    setCategory([...newCategory]);
+    setCategory(newCategory);
   };
 
   const increasePersons = () => {
