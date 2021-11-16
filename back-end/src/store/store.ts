@@ -10,6 +10,7 @@ export const roomList: Map<
     client: { socketId: string; name: string; state: string }[];
     cycle: number;
     owner: string;
+    state: string;
   }
 > = new Map();
 
@@ -26,6 +27,7 @@ roomList.set('방1', {
   client: [],
   cycle: 1,
   owner: '주인장',
+  state: 'waiting',
 });
 
 roomList.set('방2', {
@@ -35,6 +37,7 @@ roomList.set('방2', {
   client: [],
   cycle: 1,
   owner: '주인장',
+  state: 'waiting',
 });
 
 roomList.set('방3', {
@@ -44,4 +47,5 @@ roomList.set('방3', {
   client: [],
   cycle: 1,
   owner: '주인장',
+  state: 'waiting',
 });

@@ -6,7 +6,7 @@ import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 
 import GameRoomSettings from './GameRoomSettings';
-export type GameButtonsPropsType = { isOwner: boolean; isAllReady?: boolean; isReady?: boolean; roomTitle: string };
+type GameButtonsPropsType = { isOwner: boolean; isAllReady?: boolean; isReady?: boolean; roomTitle: string };
 
 const GameButtons = (props: GameButtonsPropsType) => {
   const { isOwner, roomTitle } = props;

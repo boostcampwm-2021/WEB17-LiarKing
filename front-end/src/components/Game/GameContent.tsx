@@ -7,7 +7,7 @@ import GameContentSelect from './GameContentSelect';
 import GameContentVote from './GameContentVote';
 
 export type actionType =
-  | { type: 'waiting' }
+  | { type: 'waiting'; waiting: { isOwner: boolean; isAllReady?: boolean; isReady?: boolean } }
   | { type: 'select'; select: { word: string } }
   | { type: 'chat'; chat: { chatHistory: string[]; speaker: string; timer: number } }
   | { type: 'vote'; vote: { timer: number } }
