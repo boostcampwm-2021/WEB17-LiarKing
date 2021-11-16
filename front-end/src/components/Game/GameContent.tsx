@@ -9,7 +9,7 @@ export type actionType = (
   | { type: 'waiting' }
   | { type: 'select'; select: { word: string } }
   | { type: 'chat'; chat: { chatHistory: string[]; speaker: string; timer: number } }
-  | { type: 'vote'; vote: { timer: number } }
+  | { type: 'vote'; vote: { timer: number; setFix: any } }
   | { type: 'result'; result: { voteResult: string[]; liar: string; gameResult: boolean } }
   | { type: 'liar'; liar: { category: string[]; answer: number; success(): void; fail(): void } }
 ) & { persons: Array<{ id: string; item?: string }> };
@@ -24,7 +24,7 @@ const $reducer = (state: JSX.Element, action: actionType): JSX.Element => {
     case 'chat':
       return <GameContentChat persons={action.persons} chat={action.chat} />;
     case 'vote':
-      return <GameContentVote timer={action.vote.timer} />;
+      return <GameContentVote timer={action.vote.timer} setFix={action.vote.setFix} />;
     case 'result':
       return <GameContentResult result={action.result} />;
     case 'liar':

@@ -10,6 +10,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
 import voteBox from '../../images/voteBox.svg';
+import { voteInfo } from '../Game/store';
 
 //임시 데이터
 const persons = [
@@ -21,8 +22,8 @@ const persons = [
 
 type $reducerType = actionType;
 
-const $reducer = (state: any, action: $reducerType & any) => {
-  const { type, persons, setVoteUser } = action;
+const $reducer = (state: any, action: $reducerType) => {
+  const { type, persons } = action;
   const bgFilter: boolean = type !== 'waiting';
   const contentAction = Object.assign({ type }, { ...action });
 
@@ -35,7 +36,7 @@ const $reducer = (state: any, action: $reducerType & any) => {
         <span className="game-header-info">(6 / 8) kskim625의 방</span>
       </header>
       <section className="game-persons">
-        <GamePersons persons={persons} setVoteUser={setVoteUser} />
+        <GamePersons persons={persons} />
       </section>
       <section className="game-content">
         <GameContent action={contentAction} />
@@ -46,12 +47,11 @@ const $reducer = (state: any, action: $reducerType & any) => {
 
 const Game = () => {
   const history = useHistory();
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: Socket; voteTo: number } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [$, $dispatch] = useReducer($reducer, <></>);
-  const [voteUser, setVoteUser] = useState(-1);
-  const voteTo = useRecoilValue(globalAtom.voteUser);
+  const [isFixed, setIsFixed] = useState(false);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -103,13 +103,23 @@ const Game = () => {
     );
 
     socket.on('start vote', (time: number) => {
-      console.log('setState', voteUser);
-      console.log('recoil', voteTo);
+      if (time === -1) {
+        socket.emit('vote result', { index: voteInfo.voteTo, name: persons[voteInfo.voteTo].id, roomtitle: roomData.selectedRoomTitle });
+      } else if (voteInfo.isFixed === false) {
+        $dispatch({
+          type: 'vote',
+          persons,
+          vote: { timer: time, setFix: setIsFixed },
+        });
+      }
+    });
+
+    socket.on('end vote', (voteResult: any) => {
+      console.log(voteResult);
       $dispatch({
-        type: 'vote',
+        type: 'result',
         persons,
-        vote: { timer: time },
-        setVoteUser,
+        result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
       });
     });
 
@@ -117,8 +127,9 @@ const Game = () => {
       socket.off('room data');
       socket.off('room exit');
       socket.off('user disconnected');
+      socket.off('start vote');
     };
-  }, [voteTo]);
+  }, [isFixed]);
 
   const click = {
     waiting: () => {

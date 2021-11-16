@@ -114,11 +114,13 @@
 }
 
 .vote-box {
+  width: 40px;
   cursor: pointer;
 }
 
 .vote-box-select {
-  background-color: red;
+  width: 40px;
+  filter: invert(100%);
 }
 
 .game-persons-left,
@@ -410,4 +412,17 @@
   font-weight: 400;
   padding: 10px;
   margin: 10px 10px;
+}
+
+.game-content-vote-submit {
+  font-size: 17px;
+  font-weight: bold;
+  background-color: #a7bdd9;
+  border-radius: 10px;
+  margin-top: 10%;
+  padding: 10%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  cursor: pointer;
+  border: 2px solid black;
 }
