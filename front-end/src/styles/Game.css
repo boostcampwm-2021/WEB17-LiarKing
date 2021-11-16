@@ -131,6 +131,28 @@
   align-items: center;
 }
 
+.game-wait-chat-box {
+  position: absolute;
+  top: 95%;
+  left: 25%;
+}
+
+.game-wait-chat-hidden {
+  display: none;
+}
+
+.game-wait-chat-input {
+  width: 50vw;
+  height: 3vh;
+  padding: 0.2vh 1vw;
+}
+
+.game-wait-send-button {
+  position: absolute;
+  left: 95%;
+  transform: translate(0, 20%);
+}
+
 .game-persons-user {
   display: flex;
   justify-content: flex-start;

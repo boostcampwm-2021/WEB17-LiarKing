@@ -4,6 +4,14 @@ const sendChatMessage = (socket: Socket, io: Server) => {
   socket.on('send message', (messageInfo: { message: string; title: string }) => {
     io.to(messageInfo.title).emit('send message', messageInfo.message);
   });
+
+  socket.on('wait room message', (messageInfo: { userId: string; message: string; title: string; clientIdx: number }) => {
+    io.to(messageInfo.title).emit('wait room message', {
+      userId: messageInfo.userId,
+      message: messageInfo.message,
+      clientIdx: messageInfo.clientIdx,
+    });
+  });
 };
 
 /**

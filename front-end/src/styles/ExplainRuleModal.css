@@ -11,6 +11,7 @@
   transform: translate(-50%, -50%);
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   border: #000 2px solid;
+  z-index: 100;
 }
 
 .explain-rule-explanation {
