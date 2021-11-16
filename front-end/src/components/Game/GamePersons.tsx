@@ -43,7 +43,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
             </div>
           ))}
       </div>
-      <GameTalk></GameTalk>
+      <GameTalk persons={person}></GameTalk>
       <div className="game-persons-right">
         {client
           .filter((v, i) => i >= 4)

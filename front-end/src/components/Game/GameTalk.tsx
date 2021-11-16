@@ -5,11 +5,16 @@ import { globalContext } from '../../App';
 import globalAtom from '../../recoilStore/globalAtom';
 import { RTC_MESSAGE } from '../../utils/constants';
 
-const GameTalk = () => {
+type personType = { id: string; item?: string; etc?: any };
+
+const GameTalk = ({ persons }: { persons: personType[] }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const { selectedRoomTitle } = useRecoilValue(globalAtom.roomData);
   const localVideo = useRef<HTMLVideoElement>(null);
   const remoteVideo = useRef<HTMLVideoElement>(null);
+
+  let pcs: { [socketId: string]: RTCPeerConnection };
+
   const pc_config = {
     iceServers: [
       {
@@ -21,15 +26,15 @@ const GameTalk = () => {
   const newPC = new RTCPeerConnection(pc_config);
 
   const init = async () => {
-    socket.on('rtc offer', async (sdp: RTCSessionDescription) => {
+    socket.on(RTC_MESSAGE.OFFER, async (sdp: RTCSessionDescription) => {
       await createAnswer(sdp);
     });
 
-    socket.on('rtc answer', async (sdp: RTCSessionDescription) => {
+    socket.on(RTC_MESSAGE.ANSWER, async (sdp: RTCSessionDescription) => {
       await newPC.setRemoteDescription(new RTCSessionDescription(sdp));
     });
 
-    socket.on('rtc candidate', async (candidate: RTCIceCandidateInit) => {
+    socket.on(RTC_MESSAGE.CANDIDATE, async (candidate: RTCIceCandidateInit) => {
       await newPC.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
@@ -59,6 +64,11 @@ const GameTalk = () => {
     };
   };
 
+  const createPeerConnection = (userId: any) => {
+    let pc = new RTCPeerConnection(pc_config);
+
+    persons.forEach((p) => {});
+  };
   const createOffer = async () => {
     const sdp = await newPC.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
     await newPC.setLocalDescription(new RTCSessionDescription(sdp));
