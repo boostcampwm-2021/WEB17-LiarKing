@@ -9,6 +9,8 @@ import { Socket } from 'socket.io-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
+import voteBox from '../../images/voteBox.svg';
+import { voteInfo } from '../Game/store';
 
 type $reducerType = actionType & roomInfoType;
 
@@ -56,11 +58,13 @@ export type roomInfoType = {
 
 const Game = () => {
   const history = useHistory();
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: Socket; voteTo: number } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
   const [$, $dispatch] = useReducer($reducer, <></>);
+  const [isFixed, setIsFixed] = useState(false);
+  let clients: any;
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -76,7 +80,7 @@ const Game = () => {
     socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
       console.log('tag:', tag);
       console.log('roomInfo:', roomInfo);
-
+      clients = roomInfo.client;
       const { owner, client, title } = roomInfo;
 
       const waiting = {
@@ -103,18 +107,65 @@ const Game = () => {
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
+    socket.on('start vote', (time: number) => {
+      if (time === -1) {
+        if (voteInfo.voteTo === -1) {
+          socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
+        } else {
+          socket.emit('vote result', { index: voteInfo.voteTo, name: clients[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
+        }
+      } else if (voteInfo.isFixed === false) {
+        $dispatch({
+          type: 'vote',
+          vote: { timer: time, setFix: setIsFixed },
+          title: '',
+          password: '',
+          max: 0,
+          client: [],
+          cycle: 0,
+          owner: '',
+          state: 'vote',
+        });
+      }
+    });
+
+    socket.on('end vote', (voteResult: string[]) => {
+      $dispatch({
+        type: 'result',
+        result: { gameResult: true, liar: 'sumin', voteResult: voteResult },
+        title: '',
+        password: '',
+        max: 0,
+        client: [],
+        cycle: 0,
+        owner: '',
+        state: 'vote',
+      });
+    });
+
     return () => {
       socket.off('room data');
       socket.off('word data');
+      socket.off('room exit');
+      socket.off('user disconnected');
+      socket.off('start vote');
     };
-  }, []);
+  }, [isFixed]);
 
   useEffect(() => {
     if (!action) return;
     $dispatch(action);
   }, [action]);
 
-  return <div id="game">{$}</div>;
+  const click = () => {
+    socket.emit('end game', roomData.selectedRoomTitle);
+  };
+  return (
+    <div id="game">
+      <button onClick={click}>투표 테스트</button>
+      {$}
+    </div>
+  );
 };
 
 export default React.memo(Game);
