@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import { RTC_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketConstants';
+import { RTC_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 import GameTalkAudio from './GameTalkAudio';
+import { clientsType } from '../../utils/typeDefinitions';
 
-type clientType = { name: string; state: string; socketId: string };
-
-const GameTalk = ({ clients }: { clients: clientType[] }) => {
+const GameTalk = ({ clients }: { clients: clientsType[] }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const [users, setUsers] = useState([]);
   const localAudio = useRef<HTMLVideoElement>(null);
