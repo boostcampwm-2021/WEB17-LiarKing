@@ -7,8 +7,9 @@
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
   padding: 30px;
-  width: 350px;
-  height: 250px;
+  width: 450px;
+  height: 320px;
+  align-items: center;
   left: 50%;
   top: 50%;
   transform: translate(-50%, 0);
@@ -26,7 +27,7 @@
 
 .main-no-login-header {
   top: 10px;
-  margin: -20px;
+  margin: -15px;
   padding: 5px 15px;
   text-align: center;
   color: #fff;
@@ -35,9 +36,9 @@
 }
 
 .main-no-login-nickname {
-  width: 300px;
+  width: 360px;
   border: #000 1px solid;
-  margin: 90px 0 20px 0;
+  margin: 75px 0 20px 0;
   padding: 10px 20px;
 }
 
