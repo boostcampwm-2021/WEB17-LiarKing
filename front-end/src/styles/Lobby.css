@@ -6,6 +6,7 @@
   height: 100vh;
   display: flex;
   align-items: center;
+  object-fit: cover;
 }
 
 .lobby-center-items {
