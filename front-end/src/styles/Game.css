@@ -137,10 +137,6 @@
   left: 25%;
 }
 
-.game-wait-chat-hidden {
-  display: none;
-}
-
 .game-wait-chat-input {
   width: 50vw;
   height: 3vh;
@@ -191,16 +187,12 @@
   }
 }
 
-@keyframes appear {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.game-wait-chat-hidden {
+  display: none;
+}
+
+.my-bubble-box {
+  color: #6d80a6;
 }
 
 .game-user-id {
