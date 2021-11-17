@@ -10,7 +10,7 @@ const startVote = (socket: Socket, io: Server) => {
     for (let cnt = 0; cnt <= VOTE_TIME_OUT + 1; cnt++) {
       let leftSecond = VOTE_TIME_OUT - cnt;
       setTimeout(() => {
-        io.to(title).emit('start vote', leftSecond);
+        io.to(title).emit('on vote', leftSecond);
       }, 1000 * cnt);
     }
   });

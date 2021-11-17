@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { voteInfo } from './store';
 import GameChatBox from './GameChatBox';
+import voteBox from '../../images/voteBox.svg';
 
 export type clientType = { name: string; state: string };
 
@@ -16,7 +17,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
         return (
           <img
             className={idx === selectedPerson ? 'vote-box-select' : 'vote-box'}
-            src={clients[idx]?.state ?? ''}
+            src={clients[idx]?.state === 'vote' ? voteBox : ''}
             onClick={() => {
               if (idx !== voteInfo.voteTo) {
                 voteInfo.voteTo = idx;

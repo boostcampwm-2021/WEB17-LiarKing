@@ -9,7 +9,6 @@ import { Socket } from 'socket.io-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
-import voteBox from '../../images/voteBox.svg';
 import { voteInfo } from '../Game/store';
 
 type $reducerType = actionType & roomInfoType;
@@ -107,7 +106,8 @@ const Game = () => {
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
-    socket.on('start vote', (time: number) => {
+    socket.on('on vote', (time: number) => {
+      clients.map((client: any) => (client.state = 'vote'));
       if (time === -1) {
         if (voteInfo.voteTo === -1) {
           socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
@@ -115,14 +115,15 @@ const Game = () => {
           socket.emit('vote result', { index: voteInfo.voteTo, name: clients[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
         }
       } else if (voteInfo.isFixed === false) {
-        $dispatch({
+        console.log('in vote');
+        setAction({
           type: 'vote',
           vote: { timer: time, setFix: setIsFixed },
           title: '',
           password: '',
-          max: 0,
-          client: [],
-          cycle: 0,
+          max: 8,
+          client: [...clients],
+          cycle: 1,
           owner: '',
           state: 'vote',
         });
@@ -130,14 +131,14 @@ const Game = () => {
     });
 
     socket.on('end vote', (voteResult: string[]) => {
-      $dispatch({
+      setAction({
         type: 'result',
         result: { gameResult: true, liar: 'sumin', voteResult: voteResult },
         title: '',
         password: '',
-        max: 0,
-        client: [],
-        cycle: 0,
+        max: 8,
+        client: [...clients],
+        cycle: 1,
         owner: '',
         state: 'vote',
       });
@@ -160,9 +161,12 @@ const Game = () => {
   const click = () => {
     socket.emit('end game', roomData.selectedRoomTitle);
   };
+
   return (
     <div id="game">
-      <button onClick={click}>투표 테스트</button>
+      <div className="test-buttons" style={{ zIndex: 5 }}>
+        <button onClick={click}>vote</button>
+      </div>
       {$}
     </div>
   );
