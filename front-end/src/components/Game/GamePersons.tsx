@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { voteInfo } from './store';
+import GameChatBox from './GameChatBox';
 
 export type clientType = { name: string; state: string };
 
@@ -68,6 +69,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
             </div>
           ))}
       </div>
+      <GameChatBox clients={clients} />
     </>
   );
 };

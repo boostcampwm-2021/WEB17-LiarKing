@@ -13,6 +13,7 @@
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   border: #000 2px solid;
   border-radius: 20px;
+  z-index: 99;
 }
 
 .create-rank-header {
