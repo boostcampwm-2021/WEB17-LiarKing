@@ -32,7 +32,7 @@ const sendUserReady = (socket: Socket, io: Server) => {
  * 해당 roomSecrets에 저장한다. 그 후, 클라이언트에게 선정된 카테고리를 넘긴다.
  */
 const sendSelectWords = (socket: Socket, io: Server) => {
-  socket.on('word data', async ({ category, roomTitle }: { category: string[]; roomTitle: string }) => {
+  socket.on('word select', async ({ category, roomTitle }: { category: string[]; roomTitle: string }) => {
     const categoryFix = shuffle(category, 1).pop();
 
     const words = await getRandomWords(categoryFix);
@@ -40,12 +40,35 @@ const sendSelectWords = (socket: Socket, io: Server) => {
     const answerWord = shuffle(words, 1).pop();
 
     const roomSecret = roomSecrets.get(roomTitle);
+    const roomInfo = roomList.get(roomTitle);
 
-    console.log(answerWord);
+    const liar = shuffle(roomInfo.client, 1).pop();
 
-    roomSecrets.set(roomTitle, { ...roomSecret, words, answerWord });
+    roomSecrets.set(roomTitle, { ...roomSecret, words, answerWord, liar });
+    roomList.set(roomTitle, {
+      ...roomInfo,
+      client: roomInfo.client.map((v) => {
+        v.state = '';
+        return v;
+      }),
+      state: 'select',
+    });
 
-    io.to(roomTitle).emit('word data', { category: categoryFix });
+    io.to(roomTitle).emit('word select', { category: categoryFix, roomInfo: roomList.get(roomTitle) });
+  });
+};
+
+const sendWords = (socket: Socket, io: Server) => {
+  socket.on('get word', ({ roomTitle }: { roomTitle: string }) => {
+    const WAITING_TIME = 3 * 1000;
+
+    const roomSecret = roomSecrets.get(roomTitle);
+
+    const word = roomSecret.liar.socketId === socket.id ? '라이어' : roomSecret.answerWord;
+
+    setTimeout(() => {
+      socket.emit('get word', { word, roomInfo: roomList.get(roomTitle) });
+    }, WAITING_TIME);
   });
 };
 
@@ -55,6 +78,7 @@ const sendSelectWords = (socket: Socket, io: Server) => {
 const gameRoom = (socket: Socket, io: Server) => {
   sendUserReady(socket, io);
   sendSelectWords(socket, io);
+  sendWords(socket, io);
 };
 
 export default gameRoom;
