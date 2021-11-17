@@ -2,6 +2,7 @@ import '../../styles/Lobby.css';
 import RoomList from '../Lobby/RoomList';
 import Profile from '../Lobby/Profile';
 import LobbyButtons from '../Lobby/LobbyButtons';
+import LightBulb from '../Lobby/LightBulb';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
@@ -83,9 +84,10 @@ const Lobby = () => {
         <Profile />
         <LobbyButtons rooms={rooms} setFilterWord={setFilterWord} />
       </div>
-      <button className="lobby-logout" onClick={logout}>
+      <button className="lobby-button lobby-logout" onClick={logout}>
         로그아웃
       </button>
+      <LightBulb />
     </div>
   );
 };
