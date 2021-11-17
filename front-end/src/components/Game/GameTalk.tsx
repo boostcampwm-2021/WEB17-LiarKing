@@ -1,17 +1,22 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef, useCallback } from 'react';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { RTC_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 import GameTalkAudio from './GameTalkAudio';
 import { clientsType } from '../../utils/typeDefinitions';
+import { useRecoilValue } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 const GameTalk = ({ clients }: { clients: clientsType[] }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
+  const roomData = useRecoilValue(globalAtom.roomData);
   const [users, setUsers] = useState([]);
   const localAudio = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  //const [localStream, setLocalStream] = useState<MediaStream>();
   let localStream: MediaStream;
+  //const [peerConnections, setPeerConnections] = useState<{ [prop: string]: RTCPeerConnection }>({});
   let peerConnections: { [prop: string]: RTCPeerConnection } = {};
-
   const pcConfig = {
     iceServers: [
       {
@@ -21,7 +26,7 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
     ],
   };
 
-  const init = async () => {
+  const initRTC = async () => {
     await registerSocketHandler();
 
     await setMyRTC();
@@ -128,8 +133,28 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
     }
   };
 
+  const toggleAudio = useCallback(
+    (event: any) => {
+      localStream.getTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+    },
+    [localStream]
+  );
+
+  const sendMyTurn = (event: any) => {
+    const roomTitle = roomData.selectedRoomTitle;
+    socket.emit('myturn', { roomTitle });
+  };
+
   useEffect(() => {
-    init();
+    initRTC();
+
+    socket.on('myturn', () => {
+      localStream.getTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+    });
 
     socket.on(ROOM_MEESSAGE.EXIT, ({ socketId }) => {
       peerConnections[socketId].close();
@@ -142,16 +167,19 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
       socket.off(RTC_MESSAGE.ANSWER);
       socket.off(RTC_MESSAGE.CANDIDATE);
       socket.off(ROOM_MEESSAGE.EXIT);
+      socket.off('myturn');
     };
   }, []);
 
   return (
     <>
+      <button onClick={toggleAudio}>나만끄기</button>
+      <button onClick={sendMyTurn}>나빼고다끄기</button>
       <div>
-        <video className="game-audio" playsInline autoPlay width="0" ref={localAudio}></video>
+        <video className="game-audio" playsInline autoPlay width="100" ref={localAudio}></video>
       </div>
       {users.map((user, index) => {
-        return <GameTalkAudio key={index} stream={user.stream} muted={false}></GameTalkAudio>;
+        return <GameTalkAudio key={index} stream={user.stream}></GameTalkAudio>;
       })}
     </>
   );

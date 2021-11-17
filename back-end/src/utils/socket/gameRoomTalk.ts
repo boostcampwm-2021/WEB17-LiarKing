@@ -24,12 +24,20 @@ const sendCandidate = (socket: Socket, io: Server) => {
   });
 };
 
+const sendMyTurn = (socket: Socket, io: Server) => {
+  socket.on('myturn', ({ roomTitle }) => {
+    socket.broadcast.to(roomTitle).emit('myturn');
+  });
+};
+
 const gameRoomTalk = (socket: Socket, io: Server) => {
   sendOffer(socket, io);
 
   sendAnswer(socket, io);
 
   sendCandidate(socket, io);
+
+  sendMyTurn(socket, io);
 };
 
 export default gameRoomTalk;
