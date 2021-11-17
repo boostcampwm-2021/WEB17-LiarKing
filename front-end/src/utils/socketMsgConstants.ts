@@ -4,4 +4,8 @@ const RTC_MESSAGE = {
   CANDIDATE: 'rtc candidate',
 };
 
-export { RTC_MESSAGE };
+const ROOM_MEESSAGE = {
+  EXIT: 'room exit',
+};
+
+export { RTC_MESSAGE, ROOM_MEESSAGE };

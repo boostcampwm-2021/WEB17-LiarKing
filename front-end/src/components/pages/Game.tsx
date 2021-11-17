@@ -57,7 +57,7 @@ export type roomInfoType = {
 
 const Game = () => {
   const history = useHistory();
-  const { socket }: { socket: Socket; voteTo: number } = useContext(globalContext);
+  const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
