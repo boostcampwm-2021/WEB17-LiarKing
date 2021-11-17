@@ -97,15 +97,25 @@ const Game = () => {
       setAction(Object.assign(actionData, roomInfo));
     });
 
-    socket.on('word data', ({ category }: { category: string }) => {
+    socket.on('word select', ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
       console.log('category:', category);
+
+      setAction({ type: 'select', select: { word: category }, ...roomInfo });
+
+      socket.emit('get word', { roomTitle: roomData.selectedRoomTitle });
+    });
+
+    socket.on('get word', ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
+      console.log('word:', word);
+
+      setAction({ type: 'select', select: { word }, ...roomInfo });
     });
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
     return () => {
       socket.off('room data');
-      socket.off('word data');
+      socket.off('word select');
     };
   }, []);
 

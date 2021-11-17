@@ -37,7 +37,7 @@ const GameButtons = (props: GameButtonsPropsType) => {
 
     const category: string[] = ['과일', '탈것'];
 
-    socket.emit('word data', { category, roomTitle });
+    socket.emit('word select', { category, roomTitle });
   };
 
   const roomGameReady = () => {
