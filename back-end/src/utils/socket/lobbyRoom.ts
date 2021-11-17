@@ -28,7 +28,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 
     if (!roomList.get(title)) {
       roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id], state: '' }] }));
-      roomSecrets.set(title, { liarName: '', answerWord: '', vote: [], words: [] });
+      roomSecrets.set(title, { liar: null, answerWord: '', vote: [], words: [] });
 
       socket.leave('lobby');
       socket.join(title);
