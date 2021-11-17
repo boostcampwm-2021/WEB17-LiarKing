@@ -52,8 +52,6 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
   };
 
   const sendMessage = () => {
-    chatList[clientIdx] = hiddenElement;
-    setModal({ ...chatList });
     const messageInfo = { userId: user.user_id, message: message, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
     socket.emit('wait room message', messageInfo);
     messageBox.current.value = '';
