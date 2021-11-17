@@ -2,17 +2,6 @@ import { Server, Socket } from 'socket.io';
 import { roomList } from '../../store/store';
 
 const sendChatMessage = (socket: Socket, io: Server) => {
-  socket.on('send message', ({ message, title }: { message: string; title: string }) => {
-    const roomInfo = roomList.get(title);
-    const { chatHistory } = roomInfo;
-
-    chatHistory.unshift(message);
-
-    roomList.set(title, { ...roomInfo, chatHistory });
-
-    io.to(title).emit('send message', message);
-  });
-
   socket.on('wait room message', (messageInfo: { userId: string; message: string; title: string; clientIdx: number }) => {
     io.to(messageInfo.title).emit('wait room message', {
       userId: messageInfo.userId,
