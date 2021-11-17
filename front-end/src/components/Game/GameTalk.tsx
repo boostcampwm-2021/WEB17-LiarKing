@@ -12,10 +12,7 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
   const roomData = useRecoilValue(globalAtom.roomData);
   const [users, setUsers] = useState([]);
   const localAudio = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
-  //const [localStream, setLocalStream] = useState<MediaStream>();
   let localStream: MediaStream;
-  //const [peerConnections, setPeerConnections] = useState<{ [prop: string]: RTCPeerConnection }>({});
   let peerConnections: { [prop: string]: RTCPeerConnection } = {};
   const pcConfig = {
     iceServers: [
@@ -150,16 +147,18 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
   useEffect(() => {
     initRTC();
 
+    socket.on(ROOM_MEESSAGE.EXIT, ({ socketId }) => {
+      if (peerConnections[socketId]) {
+        peerConnections[socketId].close();
+        delete peerConnections[socketId];
+      }
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== socketId));
+    });
+
     socket.on('myturn', () => {
       localStream.getTracks().forEach((track) => {
         track.enabled = !track.enabled;
       });
-    });
-
-    socket.on(ROOM_MEESSAGE.EXIT, ({ socketId }) => {
-      peerConnections[socketId].close();
-      delete peerConnections[socketId];
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== socketId));
     });
 
     return () => {
@@ -172,16 +171,16 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
   }, []);
 
   return (
-    <>
+    <div className="game-talk">
       <button onClick={toggleAudio}>나만끄기</button>
-      <button onClick={sendMyTurn}>나빼고다끄기</button>
+      <button onClick={sendMyTurn}>나빼고나머지꺼버리기</button>
       <div>
         <video className="game-audio" playsInline autoPlay width="100" ref={localAudio}></video>
       </div>
       {users.map((user, index) => {
         return <GameTalkAudio key={index} stream={user.stream}></GameTalkAudio>;
       })}
-    </>
+    </div>
   );
 };
 
