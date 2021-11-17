@@ -3,6 +3,7 @@ import lobbyRoom from './socket/lobbyRoom';
 import gameRoomChat from './socket/gameRoomChat';
 import gameRoom from './socket/gameRoom';
 import gameRoomTalk from './socket/gameRoomTalk';
+import gameRoomVote from './socket/gameRoomVote';
 
 const socketUtil = (io: Server) => {
   io.on('connection', (socket) => {
@@ -12,6 +13,7 @@ const socketUtil = (io: Server) => {
     gameRoomChat(socket, io);
     gameRoom(socket, io);
     gameRoomTalk(socket, io);
+    gameRoomVote(socket, io);
   });
 };
 
