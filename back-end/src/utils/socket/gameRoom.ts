@@ -58,6 +58,10 @@ const sendSelectWords = (socket: Socket, io: Server) => {
   });
 };
 
+/**
+ * 각각의 클라이언트 들에게 요청을 받아 해당 방의 단어를 3초뒤에 보내준다.
+ * 만약 그 방에 라이어인 경우에는 라이어를 보내준다.
+ */
 const sendWords = (socket: Socket, io: Server) => {
   socket.on('get word', ({ roomTitle }: { roomTitle: string }) => {
     const WAITING_TIME = 3 * 1000;

@@ -11,6 +11,8 @@ export const roomList: Map<
     cycle: number;
     owner: string;
     state: string;
+    chatHistory: string[];
+    speakerData: { speaker: string; timer: number };
   }
 > = new Map();
 
@@ -31,6 +33,8 @@ roomList.set('방1', {
   cycle: 1,
   owner: '주인장',
   state: 'waiting',
+  chatHistory: [],
+  speakerData: { speaker: '', timer: 0 },
 });
 
 roomList.set('방2', {
@@ -41,6 +45,8 @@ roomList.set('방2', {
   cycle: 1,
   owner: '주인장',
   state: 'waiting',
+  chatHistory: [],
+  speakerData: { speaker: '', timer: 0 },
 });
 
 roomList.set('방3', {
@@ -51,4 +57,6 @@ roomList.set('방3', {
   cycle: 1,
   owner: '주인장',
   state: 'waiting',
+  chatHistory: [],
+  speakerData: { speaker: '', timer: 0 },
 });

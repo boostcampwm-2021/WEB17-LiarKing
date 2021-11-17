@@ -10,13 +10,14 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
 import { voteInfo } from '../Game/store';
+import GameChatBox from '../Game/GameChatBox';
 
 type $reducerType = actionType & roomInfoType;
 
 const $reducer = (state: any, action: $reducerType) => {
   const { type, max, client, title } = action;
   const clientNumber = client.length;
-  const bgFilter: boolean = type !== 'waiting';
+  const isWaiting: boolean = type === 'waiting';
   const buttons =
     type === 'waiting' &&
     (action.waiting.isOwner ? (
@@ -27,7 +28,7 @@ const $reducer = (state: any, action: $reducerType) => {
 
   return (
     <>
-      <section className={`game-background ${bgFilter && 'game-filter'}`}></section>
+      <section className={`game-background ${!isWaiting && 'game-filter'}`}></section>
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
         {buttons}
@@ -37,6 +38,7 @@ const $reducer = (state: any, action: $reducerType) => {
       </header>
       <section className="game-persons">
         <GamePersons clients={client} />
+        {isWaiting && <GameChatBox clients={client} />}
       </section>
       <section className="game-content">
         <GameContent action={action} />
@@ -100,6 +102,8 @@ const Game = () => {
       setAction(Object.assign(actionData, roomInfo));
     });
 
+    socket.emit('room data', roomData.selectedRoomTitle);
+
     socket.on('word select', ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
       console.log('category:', category);
 
@@ -112,9 +116,15 @@ const Game = () => {
       console.log('word:', word);
 
       setAction({ type: 'select', select: { word }, ...roomInfo });
+
+      if (roomInfo.owner === user.user_id) {
+        socket.emit('chat data', { roomTitle: roomData.selectedRoomTitle });
+      }
     });
 
-    socket.emit('room data', roomData.selectedRoomTitle);
+    socket.on('chat data', ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
+      setAction({ type: 'chat', chat, ...roomInfo });
+    });
 
     socket.on('on vote', (time: number) => {
       clients.map((client: any) => (client.state = 'vote'));
