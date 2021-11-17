@@ -1,15 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import { voteInfo } from './store';
 import GameChatBox from './GameChatBox';
+import voteBox from '../../images/voteBox.svg';
 
 export type clientType = { name: string; state: string };
 
 const GamePersons = ({ clients }: { clients: clientType[] }) => {
+  const [selectedPerson, setVotePerson] = useState(-1);
   const [client, setClient] = useState(new Array(8).fill(<div />));
 
-  const getStateComponent = (state: string) => {
+  const getStateComponent = (state: string, idx: number) => {
     switch (state) {
       case 'ready':
         return <div className="persons-ready">READY!</div>;
+      case 'vote':
+        return (
+          <img
+            className={idx === selectedPerson ? 'vote-box-select' : 'vote-box'}
+            src={clients[idx]?.state === 'vote' ? voteBox : ''}
+            onClick={() => {
+              if (idx !== voteInfo.voteTo) {
+                voteInfo.voteTo = idx;
+                setVotePerson(idx);
+              } else {
+                voteInfo.voteTo = -1;
+                setVotePerson(-1);
+              }
+            }}
+          />
+        );
       default:
         return <></>;
     }
@@ -24,12 +43,12 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
               <div className="game-user-id">{clients[i]?.name ?? ''}</div>
               <div className={clients[i] ? 'game-user-character' : ''} />
             </div>
-            <div className="game-persons-user-item">{getStateComponent(clients[i]?.state ?? '')}</div>
+            <div className="game-persons-user-item">{getStateComponent(clients[i]?.state ?? '', i)}</div>
           </>
         );
       })
     );
-  }, [clients]);
+  }, [clients, selectedPerson, voteInfo.isFixed]);
 
   return (
     <>

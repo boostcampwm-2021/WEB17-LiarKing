@@ -10,7 +10,7 @@ export type actionType =
   | { type: 'waiting'; waiting: { isOwner: boolean; isAllReady?: boolean; isReady?: boolean } }
   | { type: 'select'; select: { word: string } }
   | { type: 'chat'; chat: { chatHistory: string[]; speaker: string; timer: number } }
-  | { type: 'vote'; vote: { timer: number } }
+  | { type: 'vote'; vote: { timer: number; setFix: any } }
   | { type: 'result'; result: { voteResult: string[]; liar: string; gameResult: boolean } }
   | { type: 'liar'; liar: { category: string[]; answer: number; success: () => void; fail: () => void } };
 
@@ -23,7 +23,7 @@ const $reducer = (state: JSX.Element, action: actionType & roomInfoType): JSX.El
     case 'chat':
       return <GameContentChat clients={action.client} chat={action.chat} />;
     case 'vote':
-      return <GameContentVote timer={action.vote.timer} />;
+      return <GameContentVote timer={action.vote.timer} setFix={action.vote.setFix} />;
     case 'result':
       return <GameContentResult result={action.result} />;
     case 'liar':
