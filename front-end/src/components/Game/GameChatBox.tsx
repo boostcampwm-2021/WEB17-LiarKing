@@ -14,23 +14,24 @@ const CONSTANTS = {
   CHATBOX_RIGHT: '68%',
   CHATBOX_TOP_DIFF: 19,
   ROW_MAX_CLIENT: 4,
+  CURRENT_CHAT_IDX: 0,
 };
 
 type chatListType = {
-  [prop: string]: JSX.Element;
+  [prop: string]: JSX.Element[];
 };
 
 const hiddenElement = <div className="game-wait-chat-hidden"></div>;
 
 let chatList: chatListType = {
-  0: hiddenElement,
-  1: hiddenElement,
-  2: hiddenElement,
-  3: hiddenElement,
-  4: hiddenElement,
-  5: hiddenElement,
-  6: hiddenElement,
-  7: hiddenElement,
+  0: [hiddenElement],
+  1: [hiddenElement],
+  2: [hiddenElement],
+  3: [hiddenElement],
+  4: [hiddenElement],
+  5: [hiddenElement],
+  6: [hiddenElement],
+  7: [hiddenElement],
 };
 
 const GameChatBox = ({ clients }: { clients: clientType[] }) => {
@@ -42,6 +43,7 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
   const messageBox = useRef<HTMLInputElement>();
   const { socket }: { socket: Socket } = useContext(globalContext);
 
+  const myClassName = 'my-bubble-box';
   let clientIdx = clients.length;
   clients.map((client, i) => {
     if (client.name === user.user_id) clientIdx = i;
@@ -63,12 +65,20 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
       bubbleClassName = 'bubble-right';
     }
     const updateModal = (
-      <div id="bubble-chat-box" className={bubbleClassName} key={messageInfo.clientIdx}>
+      <div
+        id="bubble-chat-box"
+        className={bubbleClassName + ' ' + (messageInfo.clientIdx === clientIdx ? myClassName : '')}
+        key={messageInfo.clientIdx}
+      >
         {messageInfo.message}
       </div>
     );
-    chatList[messageInfo.clientIdx] = updateModal;
+    chatList[messageInfo.clientIdx].unshift(updateModal);
     setModal({ ...chatList });
+    setTimeout(() => {
+      chatList[messageInfo.clientIdx].splice(chatList[messageInfo.clientIdx].length - 2, 1);
+      setModal({ ...chatList });
+    }, 3000);
   };
 
   useEffect(() => {
@@ -90,13 +100,12 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
         return i < CONSTANTS.ROW_MAX_CLIENT ? (
           <div
             style={{
-              animation: 'appear 3s ease-in-out forwards',
               position: 'absolute',
               top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
               left: CONSTANTS.CHATBOX_LEFT,
             }}
           >
-            {chat}
+            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
           </div>
         ) : (
           <div
@@ -106,7 +115,7 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
               left: CONSTANTS.CHATBOX_RIGHT,
             }}
           >
-            {chat}
+            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
           </div>
         );
       })}
