@@ -6,6 +6,7 @@ import GameTalkAudio from './GameTalkAudio';
 import { clientsType } from '../../utils/typeDefinitions';
 import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+import '../../styles/GameTalk.css';
 
 const GameTalk = ({ clients }: { clients: clientsType[] }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
@@ -174,12 +175,12 @@ const GameTalk = ({ clients }: { clients: clientsType[] }) => {
     <div className="game-talk">
       <button onClick={toggleAudio}>나만끄기</button>
       <button onClick={sendMyTurn}>나빼고나머지꺼버리기</button>
-      <div>
+      <div className="audio-wrap">
         <video className="game-audio" playsInline autoPlay width="100" ref={localAudio}></video>
+        {users.map((user, index) => {
+          return <GameTalkAudio key={index} stream={user.stream}></GameTalkAudio>;
+        })}
       </div>
-      {users.map((user, index) => {
-        return <GameTalkAudio key={index} stream={user.stream}></GameTalkAudio>;
-      })}
     </div>
   );
 };
