@@ -122,6 +122,16 @@
   z-index: 2;
 }
 
+.vote-box {
+  width: 40px;
+  cursor: pointer;
+}
+
+.vote-box-select {
+  width: 40px;
+  filter: invert(100%);
+}
+
 .game-persons-left,
 .game-persons-right {
   display: flex;
@@ -135,10 +145,6 @@
   position: absolute;
   top: 95%;
   left: 25%;
-}
-
-.game-wait-chat-hidden {
-  display: none;
 }
 
 .game-wait-chat-input {
@@ -191,16 +197,12 @@
   }
 }
 
-@keyframes appear {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.game-wait-chat-hidden {
+  display: none;
+}
+
+.my-bubble-box {
+  color: #6d80a6;
 }
 
 .game-user-id {
@@ -452,4 +454,17 @@
   font-weight: 400;
   padding: 10px;
   margin: 10px 10px;
+}
+
+.game-content-vote-submit {
+  font-size: 17px;
+  font-weight: bold;
+  background-color: #a7bdd9;
+  border-radius: 10px;
+  margin-top: 10%;
+  padding: 10%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  cursor: pointer;
+  border: 2px solid black;
 }
