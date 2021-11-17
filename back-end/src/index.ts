@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { readFileSync } from 'fs';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
 
@@ -13,6 +14,12 @@ import userRouter from './route/userRouter';
 import indexRouter from './route/indexRouter';
 
 dotenv.config();
+
+/*const keyOption = {
+  key: readFileSync(__dirname + '/../keys/private.pem'),
+  cert: readFileSync(__dirname + '/../keys/public.pem'),
+};
+*/
 
 const app = express();
 const httpServer = createServer(app);
@@ -46,8 +53,9 @@ app.use(express.static(path.join(__dirname, '../build')));
 if (process.env.NODE_ENV !== 'test') {
   connection.create().then(() => {
     console.log('database connected');
-
-    httpServer.listen(5000);
+    httpServer.listen(5000, () => {
+      console.log('server start');
+    });
   });
 }
 

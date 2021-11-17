@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { voteInfo } from './store';
 import GameChatBox from './GameChatBox';
+import GameTalk from './GameTalk';
 import voteBox from '../../images/voteBox.svg';
 
-export type clientType = { name: string; state: string };
+export type clientType = { name: string; state: string; socketId: string };
 
 const GamePersons = ({ clients }: { clients: clientType[] }) => {
   const [selectedPerson, setVotePerson] = useState(-1);
@@ -61,6 +62,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
             </div>
           ))}
       </div>
+      <GameTalk clients={clients}></GameTalk>
       <div className="game-persons-right">
         {client
           .filter((v, i) => i >= 4)
