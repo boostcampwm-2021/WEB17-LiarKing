@@ -108,6 +108,7 @@ const Game = () => {
 
     socket.on('on vote', (time: number) => {
       clients.map((client: any) => (client.state = 'vote'));
+      console.log(voteInfo.voteTo);
       if (time === -1) {
         if (voteInfo.voteTo === -1) {
           socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
@@ -115,7 +116,6 @@ const Game = () => {
           socket.emit('vote result', { index: voteInfo.voteTo, name: clients[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
         }
       } else if (voteInfo.isFixed === false) {
-        console.log('in vote');
         setAction({
           type: 'vote',
           vote: { timer: time, setFix: setIsFixed },
@@ -149,7 +149,7 @@ const Game = () => {
       socket.off('word data');
       socket.off('room exit');
       socket.off('user disconnected');
-      socket.off('start vote');
+      socket.off('on vote');
     };
   }, [isFixed]);
 

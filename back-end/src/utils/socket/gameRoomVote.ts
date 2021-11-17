@@ -30,7 +30,6 @@ const endVote = (socket: Socket, io: Server) => {
     } else {
       voteResult[roomtitle][name] += 1;
     }
-
     if (roomPeopleNum === voteCount[roomtitle]) {
       let resultArray = [];
       for (const [key, value] of Object.entries(voteResult[roomtitle])) {
