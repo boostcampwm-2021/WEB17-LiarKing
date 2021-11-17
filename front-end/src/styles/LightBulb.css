@@ -7,7 +7,6 @@
 .light-bulb-container {
   width: 75px;
   height: 275px;
-  animation: fade-in ease-in 1.5s forwards;
   animation: bulb-swing 3s infinite ease-in-out;
   transform-origin: top center;
   position: absolute;
@@ -34,7 +33,7 @@
 }
 
 .light-bulb {
-  padding-top: 25px;
+  padding-top: 35px;
   text-align: center;
   color: #ffd700;
   z-index: 10;
@@ -50,6 +49,8 @@
     -5px -5px 80px rgba(255, 215, 0, 1);
   cursor: pointer;
   z-index: 200;
+  transition: all ease-in 0.7s 0s;
+  animation: fade-in 0.7s ease-in forwards;
 }
 
 .light-bulb::before {
@@ -87,6 +88,7 @@
   box-shadow: 17px 0 #000;
   opacity: 0;
   z-index: 200;
+  transition: all ease-in 0.7s 0s;
 }
 
 .light-bulb-filaments::after {
@@ -112,16 +114,17 @@
 
 .light-bulb-filaments.off {
   opacity: 1;
+  transition: all ease-in 0.7s 0s;
 }
 
 @keyframes bulb-swing {
   0% {
-    transform: rotate(-10deg);
+    transform: rotate(-25deg);
   }
   50% {
-    transform: rotate(10deg);
+    transform: rotate(25deg);
   }
   100% {
-    transform: rotate(-10deg);
+    transform: rotate(-25deg);
   }
 }
