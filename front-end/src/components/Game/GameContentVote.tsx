@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { voteInfo } from './store';
 
 const SendVoteResult = (setFix: any) => {
@@ -17,7 +17,7 @@ const GameContentVote = ({ timer, setFix }: { timer: number; setFix: any }) => {
           SendVoteResult(setFix);
         }}
       >
-        투표하기
+        {voteInfo.voteTo === -1 ? '기권하기' : '투표하기'}
       </div>
     </div>
   );

@@ -118,9 +118,8 @@ const Game = () => {
 
     socket.on('on vote', (time: number) => {
       clients.map((client: any) => (client.state = 'vote'));
-      console.log(voteInfo.voteTo);
       if (time === -1) {
-        if (voteInfo.voteTo === -1) {
+        if (!isFixed || voteInfo.voteTo === -1) {
           socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
         } else {
           socket.emit('vote result', { index: voteInfo.voteTo, name: clients[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
