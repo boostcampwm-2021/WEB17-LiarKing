@@ -93,6 +93,7 @@ const sendRoomExit = (socket: Socket, io: Server) => {
       roomList.delete(title);
     }
 
+    io.to(title).emit('room exit', { socketId: socket.id });
     io.to('lobby').emit('room list', Array.from(roomList));
   });
 };
