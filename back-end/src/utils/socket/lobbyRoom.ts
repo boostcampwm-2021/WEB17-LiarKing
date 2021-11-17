@@ -112,7 +112,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
         roomList.delete(roomTitle);
       } else {
         roomList.set(roomTitle, { ...roomInfo, client: newClients });
-        io.to(roomTitle).emit('room data', { roomInfo: roomList.get(roomTitle), tag: 'user disconnected' });
+        if (roomInfo.state === 'waiting') io.to(roomTitle).emit('room data', { roomInfo: roomList.get(roomTitle), tag: 'user disconnected' });
       }
       io.to('lobby').emit('room list', Array.from(roomList));
     }

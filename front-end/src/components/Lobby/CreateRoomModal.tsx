@@ -12,7 +12,16 @@ import globalSelector from '../../recoilStore/globalSelector';
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
-  const [roomInfo, setRoomInfo] = useState({ title: '', password: '', max: 1, cycle: 1, owner: user.user_id, state: 'waiting' });
+  const [roomInfo, setRoomInfo] = useState({
+    title: '',
+    password: '',
+    max: 1,
+    cycle: 1,
+    owner: user.user_id,
+    state: 'waiting',
+    chatHistory: [],
+    speakerData: { speaker: '', timer: 0 },
+  });
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
 
