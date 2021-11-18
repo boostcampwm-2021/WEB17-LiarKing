@@ -151,14 +151,14 @@
 
 .game-wait-chat-input {
   width: 50vw;
-  height: 3vh;
+  height: 4vh;
   padding: 0.2vh 1vw;
 }
 
 .game-wait-send-button {
   position: absolute;
   left: 95%;
-  transform: translate(0, 20%);
+  transform: translate(0, 25%);
 }
 
 .game-persons-user {
