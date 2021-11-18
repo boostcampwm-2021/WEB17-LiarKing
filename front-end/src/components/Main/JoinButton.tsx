@@ -28,7 +28,10 @@ const JoinModal = () => {
     const idValidation = checkId(userInfo.id);
 
     if (!idValidation) {
-      popModal({ type: 'error', ment: '아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.' });
+      popModal({
+        type: 'error',
+        ment: '한글 2~10글자 또는 아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.\n(모음, 자음만 있는 문자는 사용이 불가)',
+      });
       return;
     }
 
@@ -59,7 +62,8 @@ const JoinModal = () => {
 
   const checkId = (id: string): boolean => {
     const reg = /[a-zA-Z0-9]{5,20}/g;
-    return reg.test(id);
+    const refKo = /[가-힣]{2,10}/g;
+    return reg.test(id) || refKo.test(id);
   };
 
   const checkPW = (pw: string): boolean => {
