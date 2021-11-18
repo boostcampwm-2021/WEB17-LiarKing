@@ -151,6 +151,8 @@ const Game = () => {
     socket.on(
       'end vote',
       ({ gameResult, liarName, voteResult, roomInfo }: { gameResult: boolean; liarName: string; voteResult: string[]; roomInfo: roomInfoType }) => {
+        voteInfo.isFixed = false;
+        voteInfo.voteTo = -1;
         setAction({
           type: 'result',
           result: { gameResult: gameResult, liar: liarName, voteResult: voteResult },
