@@ -1,4 +1,6 @@
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 import '../../styles/LightBulb.css';
 
 const CONSTANTS = {
@@ -9,17 +11,20 @@ const LightBulb = () => {
   const wrapper = useRef();
   const bulb = useRef();
   const filaments = useRef();
+  const [bulbState, setBulbState] = useRecoilState(globalAtom.lobbyBulb);
 
   const bulbOnOff = () => {
+    const changeBulbState = bulbState.bulbState ? false : true;
+    setBulbState({ bulbState: changeBulbState });
     (wrapper.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
     (bulb.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
     (filaments.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
   };
 
   useEffect(() => {
-    (wrapper.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
-    (bulb.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
-    (filaments.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
+    const changeBulbState = bulbState.bulbState;
+    if (!bulbState.bulbState) bulbOnOff();
+    setBulbState({ bulbState: changeBulbState });
   }, []);
 
   return (
@@ -35,4 +40,4 @@ const LightBulb = () => {
   );
 };
 
-export default LightBulb;
+export default React.memo(LightBulb);

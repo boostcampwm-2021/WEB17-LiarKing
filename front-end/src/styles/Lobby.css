@@ -14,20 +14,6 @@
   flex-direction: column;
   align-items: center;
   margin-left: 40vw;
-  animation: fade-in ease-in 1.5s forwards;
-}
-
-.lobby-right-items {
-  animation: fade-in ease-in 1.5s forwards;
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .lobby-header {
@@ -127,7 +113,6 @@
   position: absolute;
   right: 2vw;
   top: 1vh;
-  animation: fade-in ease-in 1.5s forwards;
 }
 
 ul {
