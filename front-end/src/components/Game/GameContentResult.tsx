@@ -14,7 +14,7 @@ const GameContentResult = ({ result }: { result: { voteResult: string[]; liar: s
         ))}
         <span className="game-content-ment">
           <br />
-          라이어는 {liar} 입니다. {gameResult ? '검거에 성공했습니다!' : '검거에 실패하였습니다!'}
+          라이어는 {liar} 입니다. {gameResult ? '시민이 라이어 검거에 성공했습니다!' : '시민이 라이어 검거에 실패하였습니다!'}
         </span>
       </div>
     </div>

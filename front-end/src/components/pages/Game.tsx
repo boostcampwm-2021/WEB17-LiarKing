@@ -146,13 +146,16 @@ const Game = () => {
       }
     });
 
-    socket.on('end vote', ({ voteResult, roomInfo }: { voteResult: string[]; roomInfo: roomInfoType }) => {
-      setAction({
-        type: 'result',
-        result: { gameResult: true, liar: 'sumin', voteResult: voteResult },
-        ...roomInfo,
-      });
-    });
+    socket.on(
+      'end vote',
+      ({ gameResult, liarName, voteResult, roomInfo }: { gameResult: boolean; liarName: string; voteResult: string[]; roomInfo: roomInfoType }) => {
+        setAction({
+          type: 'result',
+          result: { gameResult: gameResult, liar: liarName, voteResult: voteResult },
+          ...roomInfo,
+        });
+      }
+    );
 
     return () => {
       socket.off('room data');
