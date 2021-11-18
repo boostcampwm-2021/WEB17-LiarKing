@@ -176,18 +176,7 @@ const Game = () => {
     $dispatch(action);
   }, [action]);
 
-  const click = () => {
-    socket.emit('end game', roomData.selectedRoomTitle);
-  };
-
-  return (
-    <div id="game">
-      <div className="test-buttons" style={{ zIndex: 5 }}>
-        <button onClick={click}>vote</button>
-      </div>
-      {$}
-    </div>
-  );
+  return <div id="game">{$}</div>;
 };
 
 export default React.memo(Game);
