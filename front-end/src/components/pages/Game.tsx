@@ -66,7 +66,6 @@ const Game = () => {
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
   const [$, $dispatch] = useReducer($reducer, <></>);
-  const [isFixed, setIsFixed] = useState(false);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -135,15 +134,15 @@ const Game = () => {
       client.map((client: any) => (client.state = 'vote'));
 
       if (time === -1) {
-        if (!isFixed || voteInfo.voteTo === -1) {
+        if (!voteInfo.isFixed || voteInfo.voteTo === -1) {
           socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
         } else {
           socket.emit('vote result', { index: voteInfo.voteTo, name: client[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
         }
-      } else if (voteInfo.isFixed === false) {
+      } else {
         setAction({
           type: 'vote',
-          vote: { timer: time, setFix: setIsFixed },
+          vote: { timer: time, setFix: false },
           ...roomInfo,
         });
       }
@@ -168,7 +167,7 @@ const Game = () => {
       socket.off('on vote');
       socket.off('end vote');
     };
-  }, [isFixed]);
+  }, []);
 
   useEffect(() => {
     if (!action) return;
