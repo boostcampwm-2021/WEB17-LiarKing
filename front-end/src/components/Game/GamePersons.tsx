@@ -16,7 +16,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
       case 'vote':
         return (
           <img
-            className={idx === selectedPerson ? 'vote-box-select' : 'vote-box'}
+            className={idx === voteInfo.voteTo ? 'vote-box-select' : 'vote-box'}
             src={clients[idx]?.state === 'vote' ? voteBox : ''}
             onClick={() => {
               if (idx !== voteInfo.voteTo && !voteInfo.isFixed) {

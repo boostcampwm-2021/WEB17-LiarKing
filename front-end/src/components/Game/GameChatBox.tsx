@@ -54,7 +54,9 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
   };
 
   const sendMessage = () => {
-    const messageInfo = { userId: user.user_id, message: message, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
+    if (messageBox.current.value === '') return;
+    else if (messageBox.current.value.length > 50) messageBox.current.value = messageBox.current.value.substr(0, 50) + '...';
+    const messageInfo = { userId: user.user_id, message: messageBox.current.value, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
     socket.emit('wait room message', messageInfo);
     messageBox.current.value = '';
   };
@@ -99,8 +101,8 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
       {Object.values(modal).map((chat, i) => {
         return i < CONSTANTS.ROW_MAX_CLIENT ? (
           <div
+            className="game-wait-chat-bubble-box"
             style={{
-              position: 'absolute',
               top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
               left: CONSTANTS.CHATBOX_LEFT,
             }}
@@ -109,8 +111,8 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
           </div>
         ) : (
           <div
+            className="game-wait-chat-bubble-box"
             style={{
-              position: 'absolute',
               top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
               left: CONSTANTS.CHATBOX_RIGHT,
             }}
