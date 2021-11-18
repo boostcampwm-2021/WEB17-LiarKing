@@ -124,12 +124,14 @@
 
 .vote-box {
   width: 40px;
+  filter: opacity(0.3) invert(100%);
   cursor: pointer;
 }
 
 .vote-box-select {
   width: 40px;
   filter: invert(100%);
+  cursor: pointer;
 }
 
 .game-persons-left,
