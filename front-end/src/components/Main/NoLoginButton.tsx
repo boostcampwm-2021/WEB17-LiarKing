@@ -1,9 +1,10 @@
 import '../../styles/NoLoginButton.css';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import setModal from '../../utils/setModal';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSelector';
 
 /**
  * 비로그인 모달 컴포넌트
@@ -11,13 +12,9 @@ import globalAtom from '../../recoilStore/globalAtom';
  */
 const NoLoginModal = () => {
   const [userInfo, setUserInfo] = useState({ nickname: '' });
-  const setModalState = useSetRecoilState(globalAtom.modal);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const history = useHistory();
   const setUser = useSetRecoilState(globalAtom.user);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ nickname: e.target.value });
@@ -27,14 +24,17 @@ const NoLoginModal = () => {
     const idValidation = checkId(userInfo.nickname);
 
     if (!idValidation) {
-      popModal('error', '아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.');
+      popModal({
+        type: 'error',
+        ment: '한글 2~10글자 또는 아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.\n(모음, 자음만 있는 문자는 사용이 불가)',
+      });
       return;
     }
 
     const idServerCheck = await requestToServer();
 
     if (!idServerCheck) {
-      popModal('error', '현재 사용중인 아이디 입니다.');
+      popModal({ type: 'error', ment: '현재 사용중인 아이디 입니다.' });
       return;
     }
 
@@ -44,7 +44,8 @@ const NoLoginModal = () => {
 
   const checkId = (id: string): boolean => {
     const reg = /[a-zA-Z0-9]{5,20}/g;
-    return reg.test(id);
+    const refKo = /[가-힣]{2,10}/g;
+    return reg.test(id) || refKo.test(id);
   };
 
   const requestToServer = async () => {

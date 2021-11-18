@@ -2,21 +2,26 @@ import '../../styles/Lobby.css';
 import RoomList from '../Lobby/RoomList';
 import Profile from '../Lobby/Profile';
 import LobbyButtons from '../Lobby/LobbyButtons';
+import LightBulb from '../Lobby/LightBulb';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import globalSelector from '../../recoilStore/globalSelector';
+import { modalPropsType } from '../public/Modal';
 
-interface roomInterface {
-  [prop: string]: string;
-}
+const ROOM_TITLE_IDX = 0;
 
-const filterRooms = (rooms: Array<roomInterface>, filterWord: string) => {
+export type roomType = {
+  0: string;
+  1: { client: Array<string>; cycle: number; max: number; owner: string; password: string; title: string; selected?: boolean };
+};
+
+const filterRooms = (rooms: Array<roomType>, filterWord: string) => {
   if (filterWord === '') return rooms;
-  return rooms.filter((room: roomInterface) => room[0].includes(filterWord));
+  return rooms.filter((room: roomType) => room[ROOM_TITLE_IDX].includes(filterWord));
 };
 
 const Lobby = () => {
@@ -25,13 +30,9 @@ const Lobby = () => {
   const [filterWord, setFilterWord] = useState('');
   const history = useHistory();
 
-  const setModalState = useSetRecoilState(globalAtom.modal);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const { user_id } = useRecoilValue(globalAtom.user);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const logout = async () => {
     const res = await fetch('/api/logout', {
@@ -51,7 +52,7 @@ const Lobby = () => {
       if (data) {
         history.push('/game');
       } else {
-        popModal('error', '중복된 방제가 있습니다.');
+        popModal({ type: 'error', ment: '중복된 방제가 있습니다.' });
       }
     });
 
@@ -83,9 +84,10 @@ const Lobby = () => {
         <Profile />
         <LobbyButtons rooms={rooms} setFilterWord={setFilterWord} />
       </div>
-      <button className="lobby-logout" onClick={logout}>
+      <button className="lobby-button lobby-logout" onClick={logout}>
         로그아웃
       </button>
+      <LightBulb />
     </div>
   );
 };

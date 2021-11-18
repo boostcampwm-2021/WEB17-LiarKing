@@ -1,18 +1,3 @@
-#explain-rule {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: #6d80a6;
-  width: 40vw;
-  height: 60vh;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
-  border: #000 2px solid;
-}
-
 .explain-rule-explanation {
   margin: 3vh 5vw;
   text-align: center;

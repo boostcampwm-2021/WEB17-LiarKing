@@ -4,13 +4,15 @@
   justify-content: center;
   background-color: #6d80a6;
   width: 40vw;
-  height: 60vh;
+  height: 55vh;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   border: #000 2px solid;
+  z-index: 99;
+  animation: fade-in ease-in 0.2s forwards;
 }
 
 .create-room-header {

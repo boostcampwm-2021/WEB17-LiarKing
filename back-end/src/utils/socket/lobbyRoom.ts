@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { idList, nicknameList, roomList, socketUser, socketRoom } from '../../store/store';
+import { idList, nicknameList, roomList, socketUser, socketRoom, roomSecrets } from '../../store/store';
 
 /**
  * 유저가 로비에 입장했다고 알림
@@ -27,14 +27,14 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     const title = data.title;
 
     if (!roomList.get(title)) {
-      roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id] }] }));
+      roomList.set(title, Object.assign(data, { client: [{ socketId: socket.id, name: socketUser[socket.id], state: '' }] }));
+      roomSecrets.set(title, { liar: null, answerWord: '', vote: [], words: [] });
 
       socket.leave('lobby');
       socket.join(title);
 
       socketRoom[socket.id] = title;
       io.to('lobby').emit('room list', Array.from(roomList));
-      console.log(roomList);
     } else {
       data = false;
     }
@@ -48,7 +48,9 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 const sendRoomJoin = (socket: Socket, io: Server) => {
   socket.on('room join', (title: string) => {
     socketRoom[socket.id] = title;
+
     const roomInfo = roomList.get(title);
+
     if ((roomInfo && roomInfo.client.length === roomInfo.max) || !roomInfo) {
       socket.emit('room join', false);
     } else {
@@ -56,7 +58,8 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
       socket.leave('lobby');
       socket.join(title);
 
-      if (roomInfo) roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id] }] });
+      if (roomInfo)
+        roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketUser[socket.id], state: '' }] });
 
       io.to('lobby').emit('room list', Array.from(roomList));
     }
@@ -68,7 +71,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
  */
 const sendRoomData = (socket: Socket, io: Server) => {
   socket.on('room data', (title: string) => {
-    io.to(title).emit('room data', roomList.get(title));
+    io.to(title).emit('room data', { roomInfo: roomList.get(title), tag: 'default' });
   });
 };
 
@@ -85,11 +88,12 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     if (roomInfo && roomInfo.client.length > 1) {
       const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
       roomList.set(title, { ...roomInfo, client });
-      io.to(title).emit('room exit', roomList.get(title));
+      io.to(title).emit('room data', { roomInfo: roomList.get(title), tag: 'room exit' });
     } else {
       roomList.delete(title);
     }
 
+    io.to(title).emit('room exit', { socketId: socket.id });
     io.to('lobby').emit('room list', Array.from(roomList));
   });
 };
@@ -108,7 +112,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
         roomList.delete(roomTitle);
       } else {
         roomList.set(roomTitle, { ...roomInfo, client: newClients });
-        io.to(roomTitle).emit('user disconnected', roomList.get(roomTitle));
+        if (roomInfo.state === 'waiting') io.to(roomTitle).emit('room data', { roomInfo: roomList.get(roomTitle), tag: 'user disconnected' });
       }
       io.to('lobby').emit('room list', Array.from(roomList));
     }

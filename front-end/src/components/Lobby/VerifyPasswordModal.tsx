@@ -4,17 +4,14 @@ import React, { useState, useContext } from 'react';
 import { globalContext } from '../../App';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
   const [passwordInput, setPassword] = useState('');
-  const setModalState = useSetRecoilState(globalAtom.modal);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const roomData = useRecoilValue(globalAtom.roomData);
   const { socket }: { socket: Socket } = useContext(globalContext);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -24,10 +21,10 @@ const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
     const roomTitle = roomData.selectedRoomTitle;
     const roomPassword = roomData.roomPassword;
     if (passwordInput === '') {
-      popModal('error', '비밀번호를 입력해주세요.');
+      popModal({ type: 'error', ment: '비밀번호를 입력해주세요.' });
     } else if (passwordInput !== roomPassword) {
       offModal();
-      popModal('error', '비밀번호가 틀렸습니다.');
+      popModal({ type: 'error', ment: '비밀번호가 틀렸습니다.' });
     } else {
       offModal();
       socket.emit('room join', roomTitle);

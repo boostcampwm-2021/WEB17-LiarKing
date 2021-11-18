@@ -1,67 +1,76 @@
 import '../../styles/Game.css';
-import React, { useEffect, useReducer, useContext } from 'react';
+import React, { useEffect, useReducer, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
-import GameContent from '../Game/GameContent';
+import GameContent, { actionType } from '../Game/GameContent';
 import { globalContext } from '../../App';
 import { Socket } from 'socket.io-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
+import { voteInfo } from '../Game/store';
+import GameChatBox from '../Game/GameChatBox';
 
-//임시 데이터
-const persons = [
-  { id: 'kskim625', item: '버튼' },
-  { id: 'dunde', item: '버튼' },
-  { id: 'sumin', item: '버튼' },
-  { id: 'hanbin', item: '버튼' },
-];
-
-type personType = { id: string; item?: string };
-type $reducerType = {
-  type: string;
-  persons: Array<personType>;
-  select?: { word: string };
-  chat?: { chatHistory: string[]; speaker: string; timer: number };
-  vote?: { timer: number };
-  result?: { voteResult: string[]; liar: string; gameResult: boolean };
-  liar?: { category: string[]; answer: number; success(): void; fail(): void };
-};
+type $reducerType = actionType & roomInfoType;
 
 const $reducer = (state: any, action: $reducerType) => {
-  const { type, persons } = action;
-  const bgFilter: boolean = type !== 'waiting';
-  const contentAction = Object.assign({ type }, { ...action });
+  const { type, max, client, title } = action;
+  const clientNumber = client.length;
+  const isWaiting: boolean = type === 'waiting';
+  const buttons =
+    type === 'waiting' &&
+    (action.waiting.isOwner ? (
+      <GameButtons isOwner={action.waiting.isOwner} roomTitle={title} isAllReady={action.waiting.isAllReady} />
+    ) : (
+      <GameButtons isOwner={action.waiting.isOwner} roomTitle={title} isReady={action.waiting.isReady} />
+    ));
 
   return (
     <>
-      <section className={`game-background ${bgFilter && 'game-filter'}`}></section>
+      <section className={`game-background ${!isWaiting && 'game-filter'}`}></section>
       <header className="game-header">
         <span className="game-header-logo">Liar Game</span>
-        {!bgFilter && <GameButtons />}
-        <span className="game-header-info">(6 / 8) kskim625의 방</span>
+        {buttons}
+        <span className="game-header-info">
+          ({clientNumber} / {max}) {title}
+        </span>
       </header>
       <section className="game-persons">
-        <GamePersons persons={persons} />
+        <GamePersons clients={client} />
+        {isWaiting && <GameChatBox clients={client} />}
       </section>
       <section className="game-content">
-        <GameContent action={contentAction} />
+        <GameContent action={action} />
       </section>
     </>
   );
 };
+
+export type roomInfoType = {
+  title: string;
+  password: string;
+  max: number;
+  client: { socketId: string; name: string; state: string }[];
+  cycle: number;
+  owner: string;
+  state: string;
+  chatHistory: string[];
+  speakerData: { speaker: string; timer: number };
+} | null;
 
 const Game = () => {
   const history = useHistory();
   const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
+  const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
   const [$, $dispatch] = useReducer($reducer, <></>);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
       socket.emit('room exit', roomData.selectedRoomTitle);
+    } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }
   };
@@ -69,158 +78,97 @@ const Game = () => {
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
 
-    socket.on(
-      'room data',
-      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
-        const persons = roomInfo.client.map((v) => {
-          return { id: v.name };
-        });
+    socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
+      const { owner, client, title } = roomInfo;
 
-        $dispatch({ type: 'waiting', persons });
-        console.log('누군가 입장했습니다', roomInfo);
-      }
-    );
+      const waiting = {
+        isOwner: owner === user.user_id,
+        roomTitle: title,
+        maxPerson: roomInfo.max,
+      };
+
+      Object.assign(
+        waiting,
+        waiting.isOwner
+          ? { isAllReady: client.filter((v) => v.state === 'ready').length === client.length - 1 }
+          : { isReady: client.find((v) => v.name === user.user_id)?.state === 'ready' }
+      );
+
+      const actionData: actionType = { type: 'waiting', waiting };
+
+      setAction(Object.assign(actionData, roomInfo));
+    });
 
     socket.emit('room data', roomData.selectedRoomTitle);
 
-    socket.on(
-      'room exit',
-      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
-        const persons = roomInfo.client.map((v) => {
-          return { id: v.name };
-        });
+    socket.on('word select', ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
+      setAction({ type: 'select', select: { word: category }, ...roomInfo });
 
-        $dispatch({ type: 'waiting', persons });
-        console.log('누군가 방에서 나갔습니다', roomInfo);
+      socket.emit('get word', { roomTitle: roomData.selectedRoomTitle });
+    });
+
+    socket.on('get word', ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
+      setAction({ type: 'select', select: { word }, ...roomInfo });
+
+      if (roomInfo.owner === user.user_id) {
+        socket.emit('chat data', { roomTitle: roomData.selectedRoomTitle });
       }
-    );
+    });
+
+    socket.on('chat data', ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
+      if (roomInfo.state !== 'chat') return;
+      setAction({ type: 'chat', chat, ...roomInfo });
+    });
+
+    socket.on('on vote', ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
+      const { client } = roomInfo;
+
+      client.map((client: any) => (client.state = 'vote'));
+
+      if (time === -1) {
+        if (!voteInfo.isFixed || voteInfo.voteTo === -1) {
+          socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
+        } else {
+          socket.emit('vote result', { index: voteInfo.voteTo, name: client[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
+        }
+      } else {
+        setAction({
+          type: 'vote',
+          vote: { timer: time, setFix: false },
+          ...roomInfo,
+        });
+      }
+    });
 
     socket.on(
-      'user disconnected',
-      (roomInfo: { title: string; password: string; max: number; client: { socketId: string; name: string }[]; cycle: number }) => {
-        const persons = roomInfo.client.map((v) => {
-          return { id: v.name };
+      'end vote',
+      ({ gameResult, liarName, voteResult, roomInfo }: { gameResult: boolean; liarName: string; voteResult: string[]; roomInfo: roomInfoType }) => {
+        voteInfo.isFixed = false;
+        voteInfo.voteTo = -1;
+        setAction({
+          type: 'result',
+          result: { gameResult: gameResult, liar: liarName, voteResult: voteResult },
+          ...roomInfo,
         });
-
-        $dispatch({ type: 'waiting', persons });
-        console.log('누군가 방에서 팅겼습니다', roomInfo);
       }
     );
 
     return () => {
       socket.off('room data');
-      socket.off('room exit');
-      socket.off('user disconnected');
+      socket.off('word select');
+      socket.off('get word');
+      socket.off('chat data');
+      socket.off('on vote');
+      socket.off('end vote');
     };
   }, []);
 
-  const click = {
-    waiting: () => {
-      $dispatch({
-        type: 'waiting',
-        persons,
-      });
-    },
-    selectApple: () => {
-      $dispatch({
-        type: 'select',
-        persons,
-        select: { word: '사과' },
-      });
-    },
-    selectLiar: () => {
-      $dispatch({
-        type: 'select',
-        persons,
-        select: { word: '라이어' },
-      });
-    },
-    chat: () => {
-      $dispatch({
-        type: 'chat',
-        persons,
-        chat: {
-          chatHistory: [
-            'dunde: 안녕하세요.',
-            'kskim625: 반갑습니다.',
-            'sumin: ㅎㅇ',
-            'hanbin: ㅎㅇㅎㅇ',
-            'dunde: 안녕하세요.',
-            'kskim625: 반갑습니다.',
-            'sumin: ㅎㅇ',
-            'hanbin: ㅎㅇㅎㅇ',
-          ],
-          speaker: 'sumin',
-          timer: 20,
-        },
-      });
-    },
-    vote: () => {
-      $dispatch({
-        type: 'vote',
-        persons,
-        vote: { timer: 3 },
-      });
-    },
-    resultSuccess: () => {
-      $dispatch({
-        type: 'result',
-        persons,
-        result: { gameResult: true, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 2표', 'sumin 5표'] },
-      });
-    },
-    resultFail: () => {
-      $dispatch({
-        type: 'result',
-        persons,
-        result: { gameResult: false, liar: 'sumin', voteResult: ['dunde 1표', 'kskim625 5표', 'sumin 1표'] },
-      });
-    },
-    liar: () => {
-      $dispatch({
-        type: 'liar',
-        persons,
-        liar: {
-          answer: 1,
-          category: [
-            '사과',
-            '딸기',
-            '바나나',
-            '포도',
-            '수박',
-            '멜론',
-            '샤인머스캣',
-            '배',
-            '두리안',
-            '초콜릿',
-            '방어',
-            '우럭',
-            '누룽지',
-            '멀티버스',
-            '닥터스트레인지',
-          ],
-          fail: () => console.log('실패한!'),
-          success: () => console.log('성공!'),
-        },
-      });
-    },
-  };
+  useEffect(() => {
+    if (!action) return;
+    $dispatch(action);
+  }, [action]);
 
-  return (
-    <div id="game">
-      <div className="test-buttons" style={{ zIndex: 5 }}>
-        <button onClick={click.waiting}>waiting</button>
-        <button onClick={click.selectApple}>select apple</button>
-        <button onClick={click.selectLiar}>select Liar</button>
-        <button onClick={click.chat}>chat</button>
-        <button onClick={click.vote}>vote</button>
-        <button onClick={click.resultSuccess}>result success</button>
-        <button onClick={click.resultFail}>result fail</button>
-        <button onClick={click.liar}>liar</button>
-      </div>
-      {$}
-    </div>
-  );
+  return <div id="game">{$}</div>;
 };
 
 export default React.memo(Game);

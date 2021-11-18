@@ -12,7 +12,7 @@ import globalAtom from './recoilStore/globalAtom';
 
 export const globalContext = React.createContext(null);
 
-const global = { socket: io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket' }) };
+const global = { socket: io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true }) };
 
 function App() {
   const modal = useRecoilValue(globalAtom.modal);

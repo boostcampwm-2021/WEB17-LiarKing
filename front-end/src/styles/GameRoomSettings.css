@@ -1,0 +1,68 @@
+#game-room-settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #6d80a6;
+  width: 45vw;
+  height: 45vh;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+  border: #000 2px solid;
+  z-index: 100;
+}
+
+.game-settings-header {
+  margin-left: 5vw;
+  font-size: 30px;
+  font-weight: 600;
+  text-shadow: 2px 3px 2px #47536b;
+}
+
+.game-room-settings-buttons {
+  display: flex;
+}
+
+.grs-button:first-of-type {
+  margin: 3vh 0 0 40vw;
+}
+
+.grs-button {
+  width: 80px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  margin: 3vh 0 0 1vw;
+  font-weight: 600;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.game-room-category {
+  display: flex;
+}
+
+.game-room-category-list:first-of-type {
+  margin-left: 3vw;
+}
+
+.game-room-category-list {
+  display: flex;
+  margin: 1vh 0 0 1vw;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.category-in-list {
+  color: #fff;
+  background-color: #000;
+  border: transparent 1px solid;
+}
+
+.category-not-in-list {
+  color: #000;
+  background-color: #6d80a6;
+  border: #000 1px solid;
+}

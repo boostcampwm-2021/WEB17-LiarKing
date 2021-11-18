@@ -1,0 +1,8 @@
+.game-talk {
+  position: absolute;
+  left: 50%;
+}
+
+.audio-wrap {
+  display: flex;
+}

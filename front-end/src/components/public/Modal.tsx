@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 import '../../styles/Modal.css';
 
-type modalParam = { type: 'alert' | 'warning' | 'error'; ment: string };
+export type modalPropsType = { type: 'alert' | 'warning' | 'error'; ment: string };
 
 enum translate {
   'alert' = '알림',
@@ -8,8 +11,19 @@ enum translate {
   'error' = '오류',
 }
 
-const Modal = ({ modalProps }: { modalProps: modalParam }) => {
-  const { type, ment } = modalProps;
+const Modal = ({ modalProps }: { modalProps: modalPropsType }) => {
+  const { type, ment }: modalPropsType = modalProps;
+  const setModal = useSetRecoilState(globalAtom.modal);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setModal(<></>);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
 
   return (
     <section className="modal-outter">

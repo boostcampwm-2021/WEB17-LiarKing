@@ -1,11 +1,12 @@
 #lobby {
-  background-image: url('../images/Lobby.png');
+  background-image: url('../images/Lobby.jpg');
   background-repeat: no-repeat;
   background-size: 100vw 100vh;
   width: 100vw;
   height: 100vh;
   display: flex;
   align-items: center;
+  object-fit: cover;
 }
 
 .lobby-center-items {
@@ -29,7 +30,7 @@
   font-weight: 600;
   text-shadow: 4px 6px 4px gray;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(-45deg, rgb(109, 119, 134), rgb(38, 50, 69), rgb(109, 119, 134), rgb(38, 50, 69));
+  background: linear-gradient(-45deg, gray, rgb(209, 209, 209), gray, rgb(209, 209, 209));
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
 }
@@ -40,7 +41,7 @@
   width: 35vw;
   height: 70vh;
   box-shadow: 8px 10px 10px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(-45deg, rgb(109, 119, 134), rgb(38, 50, 69), rgb(109, 119, 134), rgb(38, 50, 69));
+  background: linear-gradient(-45deg, gray, rgb(209, 209, 209), gray, rgb(209, 209, 209));
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
 }
@@ -56,7 +57,7 @@
   margin: 20vh 0 0 5vw;
   font-weight: 600;
   box-shadow: 4px 8px 10px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(-45deg, rgb(109, 119, 134), rgb(38, 50, 69), rgb(109, 119, 134), rgb(38, 50, 69));
+  background: linear-gradient(-45deg, gray, rgb(209, 209, 209), gray, rgb(209, 209, 209));
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
 }
@@ -85,25 +86,33 @@
 
 .lobby-button {
   border: none;
-  border-radius: 10px;
   margin-top: 2vh;
-  width: 7vw;
+  width: 6vw;
   height: 4vh;
   font-weight: 600;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease 0s;
+}
+
+.lobby-button:hover {
+  background-color: #000;
+  box-shadow: 0px 15px 20px (0, 0, 0, 0.5);
+  color: #fff;
+  transform: translateY(-7px);
+  border: #fff solid 1px;
 }
 
 .lobby-logout {
-  position: absolute;
-  right: 25px;
-  top: 10px;
   border: none;
-  border-radius: 10px;
   margin-top: 2vh;
-  width: 4vw;
+  width: 6vw;
   height: 4vh;
   font-weight: 600;
-  box-shadow: 5px 10px 10px rgb(0 0 0 / 50%);
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease 0s;
+  position: absolute;
+  right: 2vw;
+  top: 1vh;
 }
 
 ul {
@@ -128,6 +137,14 @@ ul {
   cursor: pointer;
   background-color: #fff;
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease 0s;
+}
+
+.room-list:hover {
+  background-color: #000;
+  box-shadow: 0px 15px 20px (0, 0, 0, 0.5);
+  color: #fff;
+  transform: translateY(-7px);
 }
 
 .room-list-selected {
@@ -155,7 +172,16 @@ ul {
     background-position: 0% 100%;
   }
   100% {
-    background-position: 0% 0%;
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 

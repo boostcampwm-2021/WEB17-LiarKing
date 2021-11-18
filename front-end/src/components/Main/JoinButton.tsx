@@ -3,17 +3,14 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const JoinModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '', pwdCheck: '' });
   const history = useHistory();
   const setUser = useSetRecoilState(globalAtom.user);
-  const setModalState = useSetRecoilState(globalAtom.modal);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const changeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({ ...userInfo, id: e.target.value });
@@ -31,28 +28,31 @@ const JoinModal = () => {
     const idValidation = checkId(userInfo.id);
 
     if (!idValidation) {
-      popModal('error', '아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.');
+      popModal({
+        type: 'error',
+        ment: '한글 2~10글자 또는 아이디는 영문자 대, 소, 숫자로만 이루어진 5~20글자만 허용됩니다.\n(모음, 자음만 있는 문자는 사용이 불가)',
+      });
       return;
     }
 
     const pwValidation = checkPW(userInfo.pwd);
 
     if (!pwValidation) {
-      popModal('error', '비밀번호는 영문자 대, 소, 숫자, 특수문자로만 이루어진 8~20글자만 허용됩니다.');
+      popModal({ type: 'error', ment: '비밀번호는 영문자 대, 소, 숫자, 특수문자로만 이루어진 8~20글자만 허용됩니다.' });
       return;
     }
 
     const pwMatchValidation = checkMatchPW(userInfo.pwd, userInfo.pwdCheck);
 
     if (!pwMatchValidation) {
-      popModal('error', '비밀번호가 맞지 않습니다.');
+      popModal({ type: 'error', ment: '비밀번호가 맞지 않습니다.' });
       return;
     }
 
     const userData = await requestToServer();
 
     if (!userData) {
-      popModal('error', '이미 만들어진 아이디입니다.');
+      popModal({ type: 'error', ment: '이미 만들어진 아이디입니다.' });
       return;
     }
 
@@ -62,7 +62,8 @@ const JoinModal = () => {
 
   const checkId = (id: string): boolean => {
     const reg = /[a-zA-Z0-9]{5,20}/g;
-    return reg.test(id);
+    const refKo = /[가-힣]{2,10}/g;
+    return reg.test(id) || refKo.test(id);
   };
 
   const checkPW = (pw: string): boolean => {

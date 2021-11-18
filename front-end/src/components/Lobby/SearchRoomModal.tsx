@@ -1,16 +1,12 @@
 import '../../styles/SearchRoomModal.css';
 import React, { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
-import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import { modalPropsType } from '../public/Modal';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFilterWord: (filterWord: string) => void }) => {
   const [searchWord, setSearchWord] = useState('');
-  const setModalState = useSetRecoilState(globalAtom.modal);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -18,7 +14,7 @@ const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFil
 
   const searchRoom = () => {
     if (searchWord === '') {
-      popModal('error', '검색어를 입력해주세요.');
+      popModal({ type: 'error', ment: '검색어를 입력해주세요.' });
     } else {
       setFilterWord(searchWord);
       offModal();

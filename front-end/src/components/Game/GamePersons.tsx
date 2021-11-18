@@ -1,30 +1,59 @@
 import React, { useEffect, useState } from 'react';
+import { voteInfo } from './store';
+import GameTalk from './GameTalk';
+import voteBox from '../../images/voteBox.svg';
 
-type personType = { id: string; item?: string; etc?: any };
+export type clientType = { name: string; state: string; socketId: string };
 
-const GamePersons = ({ persons }: { persons: personType[] }) => {
-  const [person, setPerson] = useState(new Array(8).fill(<div />));
+const GamePersons = ({ clients }: { clients: clientType[] }) => {
+  const [selectedPerson, setVotePerson] = useState(-1);
+  const [client, setClient] = useState(new Array(8).fill(<div />));
+
+  const getStateComponent = (state: string, idx: number) => {
+    switch (state) {
+      case 'ready':
+        return <div className="persons-ready">READY!</div>;
+      case 'vote':
+        return (
+          <img
+            className={idx === selectedPerson ? 'vote-box-select' : 'vote-box'}
+            src={clients[idx]?.state === 'vote' ? voteBox : ''}
+            onClick={() => {
+              if (idx !== voteInfo.voteTo && !voteInfo.isFixed) {
+                voteInfo.voteTo = idx;
+                setVotePerson(idx);
+              } else if (!voteInfo.isFixed) {
+                voteInfo.voteTo = -1;
+                setVotePerson(-1);
+              }
+            }}
+          />
+        );
+      default:
+        return <></>;
+    }
+  };
 
   useEffect(() => {
-    setPerson(
-      person.map((v, i) => {
+    setClient(
+      client.map((v, i) => {
         return (
           <>
             <div className="game-persons-user-character">
-              <div className="game-user-id">{persons[i]?.id ?? ''}</div>
-              <div className={persons[i] ? 'game-user-character' : ''} />
+              <div className="game-user-id">{clients[i]?.name ?? ''}</div>
+              <div className={clients[i] ? 'game-user-character' : ''} />
             </div>
-            <div className="game-persons-user-item">{persons[i]?.item ?? ''}</div>
+            <div className="game-persons-user-item">{getStateComponent(clients[i]?.state ?? '', i)}</div>
           </>
         );
       })
     );
-  }, [persons]);
+  }, [clients, selectedPerson]);
 
   return (
     <>
       <div className="game-persons-left">
-        {person
+        {client
           .filter((v, i) => i < 4)
           .map((v, i) => (
             <div className="game-persons-user game-persons-user-left" key={i}>
@@ -32,8 +61,9 @@ const GamePersons = ({ persons }: { persons: personType[] }) => {
             </div>
           ))}
       </div>
+      {/* {<GameTalk clients={clients}></GameTalk>} */}
       <div className="game-persons-right">
-        {person
+        {client
           .filter((v, i) => i >= 4)
           .map((v, i) => (
             <div className="game-persons-user game-persons-user-right" key={i}>

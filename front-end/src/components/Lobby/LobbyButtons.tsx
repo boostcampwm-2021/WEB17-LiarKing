@@ -2,31 +2,29 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+
 import CreateRoomModal from './CreateRoomModal';
 import SearchRoomModal from './SearchRoomModal';
 import CreateRankModal from './CreateRankModal';
 import ExplainRuleModal from './ExplainRuleModal';
 import VerfiyPasswordModal from './VerifyPasswordModal';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+
 import globalAtom from '../../recoilStore/globalAtom';
-import setModal from '../../utils/setModal';
+import globalSelector from '../../recoilStore/globalSelector';
+import { modalPropsType } from '../public/Modal';
+import { roomType } from '../pages/Lobby';
 
-interface roomInterface {
-  [prop: string]: any;
-}
+const ROOM_INFO_IDX = 1;
 
-const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (filterWord: string) => void }) => {
+const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
   const { socket }: { socket: Socket } = useContext(globalContext);
+  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const roomData = useRecoilValue(globalAtom.roomData);
 
   const history = useHistory();
-  const setModalState = useSetRecoilState(globalAtom.modal);
-
-  const popModal = (type: 'alert' | 'warning' | 'error', ment: string) => {
-    setModal(setModalState, { type, ment });
-  };
 
   const offModal = () => {
     setCreateModal([]);
@@ -43,18 +41,19 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
   };
 
   const joinRoom = () => {
-    let currentRoom = { client: Array, max: -1 };
+    let currentRoom = { client: new Array(), max: -1 };
     const roomTitle = roomData.selectedRoomTitle;
     const roomPassword = roomData.roomPassword;
-    rooms.map((room: roomInterface) => {
-      if (room[1].title === roomData.selectedRoomTitle) {
-        currentRoom = room[1];
+    rooms.map((room: roomType) => {
+      if (room[ROOM_INFO_IDX].title === roomData.selectedRoomTitle) {
+        currentRoom.client = room[ROOM_INFO_IDX].client;
+        currentRoom.max = room[ROOM_INFO_IDX].max;
       }
     });
     if (currentRoom.max === -1) {
-      popModal('alert', '방을 선택해주세요.');
+      popModal({ type: 'alert', ment: '방을 선택해주세요.' });
     } else if (currentRoom.client.length === currentRoom.max) {
-      popModal('error', '해당 방은 가득 차서 입장이 불가능합니다.');
+      popModal({ type: 'error', ment: '해당 방은 가득 차서 입장이 불가능합니다.' });
     } else if (roomPassword === '') {
       socket.emit('room join', roomTitle);
     } else {
@@ -76,7 +75,7 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: any; setFilterWord: (fi
   useEffect(() => {
     socket.on('room join', (isEnter) => {
       if (isEnter) history.push('/game');
-      else popModal('error', '방에 입장을 할 수 없습니다.');
+      else popModal({ type: 'error', ment: '방에 입장을 할 수 없습니다.' });
     });
 
     return () => {

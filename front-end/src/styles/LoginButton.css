@@ -7,19 +7,21 @@
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
   padding: 30px;
-  width: 350px;
-  height: 250px;
+  width: 450px;
+  height: 320px;
+  align-items: center;
   left: 50%;
   top: 50%;
   transform: translate(-50%, 0);
+  z-index: 99;
 }
 
 .main-login-id-password:first-of-type {
-  margin-top: 70px;
+  margin-top: 50px;
 }
 
 .main-login-id-password {
-  width: 300px;
+  width: 360px;
   border: #000 1px solid;
   margin: 5px 0;
   padding: 10px 20px;
@@ -27,7 +29,7 @@
 
 .main-login-header {
   top: 10px;
-  margin: -20px;
+  margin: -5px;
   padding: 5px 15px;
   text-align: center;
   color: #fff;
