@@ -26,6 +26,7 @@ const endVote = (socket: Socket, io: Server) => {
     let maxName = '';
     for (let name in voteResult[roomtitle]) {
       const val = voteResult[roomtitle][name];
+      if (name === '기권') continue;
       if (val > maxVal) {
         maxName = name;
         maxVal = val;
