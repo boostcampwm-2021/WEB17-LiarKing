@@ -176,6 +176,15 @@ ul {
   }
 }
 
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .room-list-buttons {
   display: flex;
   justify-content: center;
