@@ -123,11 +123,14 @@ const Game = () => {
     });
 
     socket.on('chat data', ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
+      if (roomInfo.state !== 'chat') return;
       setAction({ type: 'chat', chat, ...roomInfo });
     });
 
     socket.on('on vote', ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
       const { client } = roomInfo;
+
+      console.log('on vote:', voteInfo.isFixed);
 
       client.map((client: any) => (client.state = 'vote'));
 
@@ -160,6 +163,8 @@ const Game = () => {
     return () => {
       socket.off('room data');
       socket.off('word select');
+      socket.off('get word');
+      socket.off('chat data');
       socket.off('on vote');
       socket.off('end vote');
     };

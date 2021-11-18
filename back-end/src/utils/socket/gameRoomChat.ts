@@ -32,7 +32,8 @@ const sendChatData = (socket: Socket, io: Server) => {
       const SECOND = 1000;
 
       setTimeout(async () => {
-        roomList.set(roomTitle, { ...roomInfo, state: 'chat' });
+        roomInfo.state = 'chat';
+        roomList.set(roomTitle, { ...roomInfo });
 
         const setTimer = async (name: string) => {
           speakerData.timer = TALK_TIME;
