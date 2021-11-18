@@ -144,21 +144,24 @@
 }
 
 .game-wait-chat-box {
+  display: flex;
   position: absolute;
+  background-color: #fff;
   top: 95%;
-  left: 25%;
+  left: 24%;
+  align-items: center;
 }
 
 .game-wait-chat-input {
+  flex-grow: 1;
   width: 50vw;
   height: 4vh;
   padding: 0.2vh 1vw;
+  border: none;
 }
 
 .game-wait-send-button {
-  position: absolute;
-  left: 95%;
-  transform: translate(0, 25%);
+  margin-right: 1vw;
 }
 
 .game-persons-user {
