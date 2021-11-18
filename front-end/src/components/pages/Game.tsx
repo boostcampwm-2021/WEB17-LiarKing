@@ -79,8 +79,6 @@ const Game = () => {
     if (!user.user_id) getUserData(setUser);
 
     socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
-      console.log('tag:', tag);
-      console.log('roomInfo:', roomInfo);
       const { owner, client, title } = roomInfo;
 
       const waiting = {
@@ -104,16 +102,12 @@ const Game = () => {
     socket.emit('room data', roomData.selectedRoomTitle);
 
     socket.on('word select', ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
-      console.log('category:', category);
-
       setAction({ type: 'select', select: { word: category }, ...roomInfo });
 
       socket.emit('get word', { roomTitle: roomData.selectedRoomTitle });
     });
 
     socket.on('get word', ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
-      console.log('word:', word);
-
       setAction({ type: 'select', select: { word }, ...roomInfo });
 
       if (roomInfo.owner === user.user_id) {
@@ -128,8 +122,6 @@ const Game = () => {
 
     socket.on('on vote', ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
       const { client } = roomInfo;
-
-      console.log('on vote:', voteInfo.isFixed);
 
       client.map((client: any) => (client.state = 'vote'));
 
