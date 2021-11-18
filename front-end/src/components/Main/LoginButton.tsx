@@ -51,7 +51,8 @@ const LoginModal = () => {
 
   const checkId = (id: string): boolean => {
     const reg = /[a-zA-Z0-9]{5,20}/g;
-    return reg.test(id);
+    const refKo = /[가-힣]{2,10}/g;
+    return reg.test(id) || refKo.test(id);
   };
 
   const checkPW = (pw: string): boolean => {

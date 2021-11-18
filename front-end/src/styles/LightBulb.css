@@ -7,7 +7,7 @@
 .light-bulb-container {
   width: 75px;
   height: 275px;
-  animation: bulb-swing 3s infinite ease-in-out;
+  animation: bulb-swing 5s infinite ease-in-out;
   transform-origin: top center;
   position: absolute;
   top: 0;
@@ -119,12 +119,12 @@
 
 @keyframes bulb-swing {
   0% {
-    transform: rotate(-25deg);
+    transform: rotate(-15deg);
   }
   50% {
-    transform: rotate(25deg);
+    transform: rotate(15deg);
   }
   100% {
-    transform: rotate(-25deg);
+    transform: rotate(-15deg);
   }
 }
