@@ -19,10 +19,10 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
             className={idx === selectedPerson ? 'vote-box-select' : 'vote-box'}
             src={clients[idx]?.state === 'vote' ? voteBox : ''}
             onClick={() => {
-              if (idx !== voteInfo.voteTo) {
+              if (idx !== voteInfo.voteTo && !voteInfo.isFixed) {
                 voteInfo.voteTo = idx;
                 setVotePerson(idx);
-              } else {
+              } else if (!voteInfo.isFixed) {
                 voteInfo.voteTo = -1;
                 setVotePerson(-1);
               }
@@ -48,7 +48,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
         );
       })
     );
-  }, [clients, selectedPerson, voteInfo.isFixed]);
+  }, [clients, selectedPerson]);
 
   return (
     <>

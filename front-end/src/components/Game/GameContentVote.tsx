@@ -1,12 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { voteInfo } from './store';
 
-const SendVoteResult = (setFix: any) => {
-  voteInfo.isFixed = true;
-  setFix(true);
-};
+const GameContentVote = ({ timer }: { timer: number }) => {
+  const [isFixed, setFixed] = useState(false);
 
-const GameContentVote = ({ timer, setFix }: { timer: number; setFix: any }) => {
   return (
     <div className="game-content-box">
       <span className="game-content-title game-content-title-vote">라이어를 투표하세요!</span>
@@ -14,10 +11,11 @@ const GameContentVote = ({ timer, setFix }: { timer: number; setFix: any }) => {
       <div
         className="game-content-vote-submit"
         onClick={() => {
-          SendVoteResult(setFix);
+          voteInfo.isFixed = true;
+          setFixed(true);
         }}
       >
-        {voteInfo.voteTo === -1 ? '기권하기' : '투표하기'}
+        {isFixed ? '잠시만 기다려주세요' : voteInfo.voteTo === -1 ? '기권하기' : '투표하기'}
       </div>
     </div>
   );

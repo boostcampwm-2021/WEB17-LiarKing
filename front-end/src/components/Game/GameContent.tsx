@@ -23,7 +23,7 @@ const $reducer = (state: JSX.Element, action: actionType & roomInfoType): JSX.El
     case 'chat':
       return <GameContentChat clients={action.client} chat={action.chat} />;
     case 'vote':
-      return <GameContentVote timer={action.vote.timer} setFix={action.vote.setFix} />;
+      return <GameContentVote timer={action.vote.timer} />;
     case 'result':
       return <GameContentResult result={action.result} />;
     case 'liar':
