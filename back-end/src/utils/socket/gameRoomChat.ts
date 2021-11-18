@@ -59,12 +59,15 @@ const sendChatData = (socket: Socket, io: Server) => {
         }
 
         const VOTE_TIME_OUT = 10;
-        //투표화면으로 넘어가기.
+
         setTimeout(() => {
+          roomInfo.state = 'vote';
+          roomList.set(roomTitle, roomInfo);
+
           for (let cnt = 0; cnt <= VOTE_TIME_OUT + 1; cnt++) {
             let leftSecond = VOTE_TIME_OUT - cnt;
             setTimeout(() => {
-              io.to(roomTitle).emit('on vote', leftSecond);
+              io.to(roomTitle).emit('on vote', { time: leftSecond, roomInfo });
             }, 1000 * cnt);
           }
         }, SECOND);

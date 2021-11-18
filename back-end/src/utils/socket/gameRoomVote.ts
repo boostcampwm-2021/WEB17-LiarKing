@@ -7,7 +7,9 @@ let voteCount = {};
 const endVote = (socket: Socket, io: Server) => {
   socket.on('vote result', (voteUser: any) => {
     const { index, name, roomtitle } = voteUser;
-    const roomPeopleNum = roomList.get(roomtitle).client.length;
+    const roomInfo = roomList.get(roomtitle);
+    const roomPeopleNum = roomInfo.client.length;
+
     if (!voteResult[roomtitle]) {
       voteResult[roomtitle] = {};
       voteCount[roomtitle] = 0;
@@ -23,7 +25,7 @@ const endVote = (socket: Socket, io: Server) => {
       for (const [key, value] of Object.entries(voteResult[roomtitle])) {
         resultArray.push(key + ' ' + value + '표');
       }
-      io.to(roomtitle).emit('end vote', resultArray);
+      io.to(roomtitle).emit('end vote', { voteResult: resultArray, roomInfo });
     }
   });
 };

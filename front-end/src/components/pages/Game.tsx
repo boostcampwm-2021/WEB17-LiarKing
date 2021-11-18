@@ -55,6 +55,8 @@ export type roomInfoType = {
   cycle: number;
   owner: string;
   state: string;
+  chatHistory: string[];
+  speakerData: { speaker: string; timer: number };
 } | null;
 
 const Game = () => {
@@ -65,7 +67,6 @@ const Game = () => {
   const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
   const [$, $dispatch] = useReducer($reducer, <></>);
   const [isFixed, setIsFixed] = useState(false);
-  let clients: any;
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -81,7 +82,6 @@ const Game = () => {
     socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
       console.log('tag:', tag);
       console.log('roomInfo:', roomInfo);
-      clients = roomInfo.client;
       const { owner, client, title } = roomInfo;
 
       const waiting = {
@@ -126,40 +126,31 @@ const Game = () => {
       setAction({ type: 'chat', chat, ...roomInfo });
     });
 
-    socket.on('on vote', (time: number) => {
-      clients.map((client: any) => (client.state = 'vote'));
+    socket.on('on vote', ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
+      const { client } = roomInfo;
+
+      client.map((client: any) => (client.state = 'vote'));
+
       if (time === -1) {
         if (!isFixed || voteInfo.voteTo === -1) {
           socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
         } else {
-          socket.emit('vote result', { index: voteInfo.voteTo, name: clients[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
+          socket.emit('vote result', { index: voteInfo.voteTo, name: client[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
         }
       } else if (voteInfo.isFixed === false) {
         setAction({
           type: 'vote',
           vote: { timer: time, setFix: setIsFixed },
-          title: '',
-          password: '',
-          max: 8,
-          client: [...clients],
-          cycle: 1,
-          owner: '',
-          state: 'vote',
+          ...roomInfo,
         });
       }
     });
 
-    socket.on('end vote', (voteResult: string[]) => {
+    socket.on('end vote', ({ voteResult, roomInfo }: { voteResult: string[]; roomInfo: roomInfoType }) => {
       setAction({
         type: 'result',
         result: { gameResult: true, liar: 'sumin', voteResult: voteResult },
-        title: '',
-        password: '',
-        max: 8,
-        client: [...clients],
-        cycle: 1,
-        owner: '',
-        state: 'vote',
+        ...roomInfo,
       });
     });
 
