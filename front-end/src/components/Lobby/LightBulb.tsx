@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import '../../styles/LightBulb.css';
+import blinkingEyes from '../../images/blinkingEyes.gif';
 
 const CONSTANTS = {
   TOGGLE_CLASSNAME: 'off',
@@ -11,6 +12,8 @@ const LightBulb = () => {
   const wrapper = useRef();
   const bulb = useRef();
   const filaments = useRef();
+  const eyes = useRef();
+  const [eyePosition, setEyePosition] = useState([Math.floor(Math.random() * 80), Math.floor(Math.random() * 80)]);
   const [bulbState, setBulbState] = useRecoilState(globalAtom.lobbyBulb);
 
   const bulbOnOff = () => {
@@ -19,12 +22,20 @@ const LightBulb = () => {
     (wrapper.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
     (bulb.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
     (filaments.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
+    (eyes.current as HTMLElement).classList.toggle(CONSTANTS.TOGGLE_CLASSNAME);
   };
 
   useEffect(() => {
     const changeBulbState = bulbState.bulbState;
     if (!bulbState.bulbState) bulbOnOff();
     setBulbState({ bulbState: changeBulbState });
+
+    setInterval(() => {
+      setEyePosition([Math.floor(Math.random() * 80), Math.floor(Math.random() * 80)]);
+    }, 3000);
+    return () => {
+      clearInterval();
+    };
   }, []);
 
   return (
@@ -36,6 +47,7 @@ const LightBulb = () => {
           <div className="light-bulb-filaments" ref={filaments}></div>
         </div>
       </div>
+      <img className="blinking-eyes-in-dark" src={blinkingEyes} ref={eyes} style={{ top: eyePosition[0] + 'vh', left: eyePosition[1] + 'vw' }}></img>
     </>
   );
 };

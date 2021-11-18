@@ -21,7 +21,7 @@
   height: 0;
   background-color: transparent;
   z-index: 0;
-  transition: all ease-in 0.7s 0s;
+  transition: all ease-in 0.5s 0s;
 }
 
 .light-bulb-wrapper.off {
@@ -49,8 +49,8 @@
     -5px -5px 80px rgba(255, 215, 0, 1);
   cursor: pointer;
   z-index: 200;
-  transition: all ease-in 0.7s 0s;
-  animation: fade-in 0.7s ease-in forwards;
+  transition: all ease-in 0.5s 0s;
+  animation: fade-in 0.5s ease-in forwards;
 }
 
 .light-bulb::before {
@@ -88,7 +88,7 @@
   box-shadow: 17px 0 #000;
   opacity: 0;
   z-index: 200;
-  transition: all ease-in 0.7s 0s;
+  transition: all ease-in 0.5s 0s;
 }
 
 .light-bulb-filaments::after {
@@ -114,7 +114,7 @@
 
 .light-bulb-filaments.off {
   opacity: 1;
-  transition: all ease-in 0.7s 0s;
+  transition: all ease-in 0.5s 0s;
 }
 
 @keyframes bulb-swing {
@@ -127,4 +127,18 @@
   100% {
     transform: rotate(-15deg);
   }
+}
+
+.blinking-eyes-in-dark {
+  position: absolute;
+  width: 6vw;
+  height: 15vh;
+  z-index: 200;
+  opacity: 0;
+}
+
+.blinking-eyes-in-dark.off {
+  opacity: 1;
+  transition: all ease-out 0s;
+  animation: fade-in 0.5s ease-in forwards;
 }
