@@ -12,7 +12,7 @@
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   border: #000 2px solid;
   z-index: 99;
-  animation: fade-in ease-in 1s forwards;
+  animation: fade-in ease-in 0.2s forwards;
 }
 
 .create-room-header {

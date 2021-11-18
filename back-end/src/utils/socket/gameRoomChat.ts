@@ -58,9 +58,15 @@ const sendChatData = (socket: Socket, io: Server) => {
           await setTimer(client[i].name);
         }
 
+        const VOTE_TIME_OUT = 10;
         //투표화면으로 넘어가기.
         setTimeout(() => {
-          io.to(roomTitle).emit('chat data', { chat: { chatHistory, speaker: '다음장면', timer: 999 }, roomInfo });
+          for (let cnt = 0; cnt <= VOTE_TIME_OUT + 1; cnt++) {
+            let leftSecond = VOTE_TIME_OUT - cnt;
+            setTimeout(() => {
+              io.to(roomTitle).emit('on vote', leftSecond);
+            }, 1000 * cnt);
+          }
         }, SECOND);
       }, WAITING_TIME * SECOND);
     }
