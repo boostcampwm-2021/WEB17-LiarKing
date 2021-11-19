@@ -27,6 +27,9 @@ const sendUserReady = (socket: Socket, io: Server) => {
   });
 };
 
+/*
+ * 방장이 최대 플레이어수 변경 요청
+ */
 const sendSettingChange = (socket: Socket, io: Server) => {
   socket.on('setting change', ({ category, max, cycle, title }) => {
     const roomInfo = roomList.get(title);

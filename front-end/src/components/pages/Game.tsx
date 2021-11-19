@@ -185,7 +185,6 @@ const Game = () => {
 
     return () => {
       socket.off(ROOM_MEESSAGE.DATA);
-      socket.off(GAME_MESSAGE.SETTING_CHANGE);
       socket.off(GAME_MESSAGE.WORD_SELECT);
       socket.off(GAME_MESSAGE.GET_WORD);
       socket.off(GAME_MESSAGE.CHAT_DATA);
