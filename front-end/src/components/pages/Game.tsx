@@ -65,6 +65,7 @@ const Game = () => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const roomData = useRecoilValue(globalAtom.roomData);
   const [user, setUser] = useRecoilState(globalAtom.user);
+  const [client, setClient] = useRecoilState(globalAtom.client);
   const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
   const [$, $dispatch] = useReducer($reducer, <></>);
 
@@ -76,7 +77,7 @@ const Game = () => {
     }
   };
 
-  const onRoomList = () => {
+  const onRoomData = () => {
     socket.on(ROOM_MEESSAGE.DATA, ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
       const { owner, client, title } = roomInfo;
 
@@ -94,6 +95,8 @@ const Game = () => {
       );
 
       const actionData: actionType = { type: 'waiting', waiting };
+
+      setClient([...client]);
 
       setAction(Object.assign(actionData, roomInfo));
     });
@@ -171,7 +174,7 @@ const Game = () => {
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
 
-    onRoomList();
+    onRoomData();
     onWordSelect();
     onGetWord();
     onChatData();
@@ -182,6 +185,7 @@ const Game = () => {
 
     return () => {
       socket.off(ROOM_MEESSAGE.DATA);
+      socket.off(GAME_MESSAGE.SETTING_CHANGE);
       socket.off(GAME_MESSAGE.WORD_SELECT);
       socket.off(GAME_MESSAGE.GET_WORD);
       socket.off(GAME_MESSAGE.CHAT_DATA);

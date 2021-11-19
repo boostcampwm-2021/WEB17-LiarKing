@@ -27,6 +27,20 @@ const sendUserReady = (socket: Socket, io: Server) => {
   });
 };
 
+const sendSettingChange = (socket: Socket, io: Server) => {
+  socket.on('setting change', ({ category, max, cycle, title }) => {
+    const roomInfo = roomList.get(title);
+
+    if (roomInfo) {
+      roomInfo.max = max;
+      roomInfo.cycle = cycle;
+      roomList.set(title, roomInfo);
+      io.to(title).emit('room data', { roomInfo });
+      io.to('lobby').emit('room list', Array.from(roomList));
+    }
+  });
+};
+
 /**
  * 클라이언트에게 카테고리 리스트를 받아 랜덤으로 선정 후 해당 카테고리에서 15개 단어 랜덤으로 추출,
  * 해당 roomSecrets에 저장한다. 그 후, 클라이언트에게 선정된 카테고리를 넘긴다.
@@ -81,6 +95,7 @@ const sendWords = (socket: Socket, io: Server) => {
  */
 const gameRoom = (socket: Socket, io: Server) => {
   sendUserReady(socket, io);
+  sendSettingChange(socket, io);
   sendSelectWords(socket, io);
   sendWords(socket, io);
 };

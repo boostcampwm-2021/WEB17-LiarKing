@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 
 import '../../styles/GameRoomSettings.css';
 import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
+import { globalContext } from '../../App';
+import { GAME_MESSAGE } from '../../utils/socketMsgConstants';
 
 const categoryList = [
   { category: '과일', include: true },
@@ -19,12 +21,22 @@ const categoryList = [
 ];
 
 const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
+  const { socket } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
   const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
   const [roomInfo, setRoomInfo] = useState({ max: roomSettings.max, cycle: roomSettings.cycle, owner: user.user_id });
   const [categories, setCategory] = useState(roomSettings.category.length === 0 ? categoryList : roomSettings.category);
+  const { selectedRoomTitle } = useRecoilValue(globalAtom.roomData);
+  const client = useRecoilValue(globalAtom.client);
 
   const changeSettings = () => {
+    socket.emit(GAME_MESSAGE.SETTING_CHANGE, {
+      ...roomSettings,
+      category: categories,
+      max: roomInfo.max,
+      cycle: roomInfo.cycle,
+      title: selectedRoomTitle,
+    });
     setRoomSettings({ ...roomSettings, category: categories, max: roomInfo.max, cycle: roomInfo.cycle });
     offModal();
   };
@@ -51,7 +63,7 @@ const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
   };
 
   const decreasePersons = () => {
-    if (roomInfo.max > 1) {
+    if (roomInfo.max > client.length) {
       setRoomInfo({ ...roomInfo, max: roomInfo.max - 1 });
     }
   };

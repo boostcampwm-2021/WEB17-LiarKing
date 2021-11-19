@@ -4,7 +4,7 @@ import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
@@ -25,6 +25,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   });
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
+  const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
@@ -64,6 +65,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     } else {
       socket.emit(ROOM_MEESSAGE.CREATE, roomInfo);
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
+      setRoomSettings({ category: [], max: roomInfo.max, cycle: roomInfo.cycle });
     }
   };
 

@@ -18,6 +18,7 @@ const GAME_MESSAGE = {
   ON_VOTE: 'on vote',
   END_VOTE: 'end vote',
   VOTE_RESULT: 'vote result',
+  SETTING_CHANGE: 'setting change',
 };
 
 const RTC_MESSAGE = {
