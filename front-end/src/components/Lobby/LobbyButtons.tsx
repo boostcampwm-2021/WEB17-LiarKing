@@ -51,6 +51,7 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
         currentRoom.max = room[ROOM_INFO_IDX].max;
       }
     });
+    console.log(roomData);
     if (currentRoom.max === -1) {
       popModal({ type: 'alert', ment: '방을 선택해주세요.' });
     } else if (currentRoom.client.length === currentRoom.max) {
@@ -76,7 +77,7 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
   useEffect(() => {
     socket.on(ROOM_MEESSAGE.JOIN, (isEnter) => {
       if (isEnter) history.push('/game');
-      else popModal({ type: 'error', ment: '방에 입장을 할 수 없습니다.' });
+      else popModal({ type: 'error', ment: '게임이 이미 진행 중인 방입니다.' });
     });
 
     return () => {
