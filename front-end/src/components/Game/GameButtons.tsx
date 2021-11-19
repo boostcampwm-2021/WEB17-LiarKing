@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { useSetRecoilState } from 'recoil';
 import { globalContext } from '../../App';
 import globalSelector from '../../recoilStore/globalSelector';
+import { GAME_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 import { modalPropsType } from '../public/Modal';
 
 import GameRoomSettings from './GameRoomSettings';
@@ -20,7 +21,7 @@ const GameButtons = (props: GameButtonsPropsType) => {
   };
 
   const exit = () => {
-    socket.emit('room exit', roomTitle);
+    socket.emit(ROOM_MEESSAGE.EXIT, roomTitle);
     history.replace('/lobby');
   };
 
@@ -37,11 +38,11 @@ const GameButtons = (props: GameButtonsPropsType) => {
 
     const category: string[] = ['과일', '탈것', '장소', '직업'];
 
-    socket.emit('word select', { category, roomTitle });
+    socket.emit(GAME_MESSAGE.WORD_SELECT, { category, roomTitle });
   };
 
   const roomGameReady = () => {
-    socket.emit('user ready', props.roomTitle);
+    socket.emit(GAME_MESSAGE.USER_READY, props.roomTitle);
   };
 
   return (

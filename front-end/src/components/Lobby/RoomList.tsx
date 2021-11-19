@@ -9,6 +9,7 @@ import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
 import { roomType } from '../pages/Lobby';
+import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
 let selectedRoom = -1;
 const ROOM_INFO_IDX = 1;
@@ -60,14 +61,14 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   }, [filterWord]);
 
   useEffect(() => {
-    socket.on('room list', (roomList) => {
+    socket.on(ROOM_MEESSAGE.LIST, (roomList) => {
       setRooms(roomList);
     });
 
-    socket.emit('room list', null);
+    socket.emit(ROOM_MEESSAGE.LIST, null);
 
     return () => {
-      socket.off('room list');
+      socket.off(ROOM_MEESSAGE.LIST);
     };
   }, []);
 

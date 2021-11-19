@@ -9,8 +9,9 @@ import { Socket } from 'socket.io-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
-import { voteInfo } from '../Game/store';
+import { voteInfo } from '../../utils/store';
 import GameChatBox from '../Game/GameChatBox';
+import { GAME_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
 type $reducerType = actionType & roomInfoType;
 
@@ -69,7 +70,7 @@ const Game = () => {
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
-      socket.emit('room exit', roomData.selectedRoomTitle);
+      socket.emit(ROOM_MEESSAGE.EXIT, roomData.selectedRoomTitle);
     } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }
@@ -78,7 +79,7 @@ const Game = () => {
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
 
-    socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
+    socket.on(ROOM_MEESSAGE.DATA, ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
       const { owner, client, title } = roomInfo;
 
       const waiting = {
@@ -99,37 +100,44 @@ const Game = () => {
       setAction(Object.assign(actionData, roomInfo));
     });
 
-    socket.emit('room data', roomData.selectedRoomTitle);
+    socket.emit(ROOM_MEESSAGE.DATA, roomData.selectedRoomTitle);
 
-    socket.on('word select', ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
+    socket.on(GAME_MESSAGE.WORD_SELECT, ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
       setAction({ type: 'select', select: { word: category }, ...roomInfo });
 
-      socket.emit('get word', { roomTitle: roomData.selectedRoomTitle });
+      socket.emit(GAME_MESSAGE.GET_WORD, { roomTitle: roomData.selectedRoomTitle });
     });
 
-    socket.on('get word', ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
+    socket.on(GAME_MESSAGE.GET_WORD, ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
       setAction({ type: 'select', select: { word }, ...roomInfo });
 
       if (roomInfo.owner === user.user_id) {
-        socket.emit('chat data', { roomTitle: roomData.selectedRoomTitle });
+        socket.emit(GAME_MESSAGE.CHAT_DATA, { roomTitle: roomData.selectedRoomTitle });
       }
     });
 
-    socket.on('chat data', ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
-      if (roomInfo.state !== 'chat') return;
-      setAction({ type: 'chat', chat, ...roomInfo });
-    });
+    socket.on(
+      GAME_MESSAGE.CHAT_DATA,
+      ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
+        if (roomInfo.state !== 'chat') return;
+        setAction({ type: 'chat', chat, ...roomInfo });
+      }
+    );
 
-    socket.on('on vote', ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
+    socket.on(GAME_MESSAGE.ON_VOTE, ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
       const { client } = roomInfo;
 
       client.map((client: any) => (client.state = 'vote'));
 
       if (time === -1) {
         if (!voteInfo.isFixed || voteInfo.voteTo === -1) {
-          socket.emit('vote result', { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
+          socket.emit(GAME_MESSAGE.VOTE_RESULT, { index: -1, name: '기권', roomtitle: roomData.selectedRoomTitle });
         } else {
-          socket.emit('vote result', { index: voteInfo.voteTo, name: client[voteInfo.voteTo].name, roomtitle: roomData.selectedRoomTitle });
+          socket.emit(GAME_MESSAGE.VOTE_RESULT, {
+            index: voteInfo.voteTo,
+            name: client[voteInfo.voteTo].name,
+            roomtitle: roomData.selectedRoomTitle,
+          });
         }
       } else {
         setAction({
@@ -141,7 +149,7 @@ const Game = () => {
     });
 
     socket.on(
-      'end vote',
+      GAME_MESSAGE.END_VOTE,
       ({ gameResult, liarName, voteResult, roomInfo }: { gameResult: boolean; liarName: string; voteResult: string[]; roomInfo: roomInfoType }) => {
         voteInfo.isFixed = false;
         voteInfo.voteTo = -1;
@@ -154,12 +162,12 @@ const Game = () => {
     );
 
     return () => {
-      socket.off('room data');
-      socket.off('word select');
-      socket.off('get word');
-      socket.off('chat data');
-      socket.off('on vote');
-      socket.off('end vote');
+      socket.off(ROOM_MEESSAGE.DATA);
+      socket.off(GAME_MESSAGE.WORD_SELECT);
+      socket.off(GAME_MESSAGE.GET_WORD);
+      socket.off(GAME_MESSAGE.CHAT_DATA);
+      socket.off(GAME_MESSAGE.ON_VOTE);
+      socket.off(GAME_MESSAGE.END_VOTE);
     };
   }, []);
 

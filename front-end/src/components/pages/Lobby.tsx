@@ -11,6 +11,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
+import { LOBBY_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
 const ROOM_TITLE_IDX = 0;
 
@@ -29,7 +30,6 @@ const Lobby = () => {
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
   const history = useHistory();
-
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const { user_id } = useRecoilValue(globalAtom.user);
@@ -48,7 +48,7 @@ const Lobby = () => {
   };
 
   useEffect(() => {
-    socket.on('room create', (data) => {
+    socket.on(ROOM_MEESSAGE.CREATE, (data) => {
       if (data) {
         history.push('/game');
       } else {
@@ -56,19 +56,19 @@ const Lobby = () => {
       }
     });
 
-    socket.on('room list', (roomList) => {
+    socket.on(ROOM_MEESSAGE.LIST, (roomList) => {
       setRooms(roomList);
     });
 
-    socket.emit('room list', null);
+    socket.emit(ROOM_MEESSAGE.LIST, null);
 
-    socket.emit('lobby entered', user_id);
+    socket.emit(LOBBY_MESSAGE.ENTER, user_id);
 
     setRoomData({ ...roomData, selectedRoomTitle: '' });
 
     return () => {
-      socket.off('room create');
-      socket.off('room list');
+      socket.off(ROOM_MEESSAGE.CREATE);
+      socket.off(ROOM_MEESSAGE.LIST);
     };
   }, []);
 

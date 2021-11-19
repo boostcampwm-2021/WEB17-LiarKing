@@ -8,6 +8,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
@@ -61,7 +62,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     if (roomInfo.title === '') {
       popModal({ type: 'error', ment: '방 제목을 입력해주세요.' });
     } else {
-      socket.emit('room create', roomInfo);
+      socket.emit(ROOM_MEESSAGE.CREATE, roomInfo);
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
     }
   };
