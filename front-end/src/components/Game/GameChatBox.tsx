@@ -10,8 +10,8 @@ import '../../styles/GameChatBox.css';
 
 const CONSTANTS = {
   INITIAL_CHATBOX_TOP: 23,
-  CHATBOX_LEFT: '15%',
-  CHATBOX_RIGHT: '68%',
+  CHATBOX_LEFT: '200px',
+  CHATBOX_RIGHT: '200px',
   CHATBOX_TOP_DIFF: 19,
   ROW_MAX_CLIENT: 4,
   CURRENT_CHAT_IDX: 0,
@@ -55,7 +55,7 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
 
   const sendMessage = () => {
     if (messageBox.current.value === '') return;
-    else if (messageBox.current.value.length > 50) messageBox.current.value = messageBox.current.value.substr(0, 50) + '...';
+    //else if (messageBox.current.value.length > 50) messageBox.current.value = messageBox.current.value.substr(0, 50) + '...';
     const messageInfo = { userId: user.user_id, message: messageBox.current.value, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
     socket.emit('wait room message', messageInfo);
     messageBox.current.value = '';
@@ -114,7 +114,7 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
             className="game-wait-chat-bubble-box"
             style={{
               top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              left: CONSTANTS.CHATBOX_RIGHT,
+              right: CONSTANTS.CHATBOX_RIGHT,
             }}
           >
             {chat[CONSTANTS.CURRENT_CHAT_IDX]}
