@@ -76,9 +76,7 @@ const Game = () => {
     }
   };
 
-  useEffect(() => {
-    if (!user.user_id) getUserData(setUser);
-
+  const onRoomList = () => {
     socket.on(ROOM_MEESSAGE.DATA, ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
       const { owner, client, title } = roomInfo;
 
@@ -99,15 +97,17 @@ const Game = () => {
 
       setAction(Object.assign(actionData, roomInfo));
     });
+  };
 
-    socket.emit(ROOM_MEESSAGE.DATA, roomData.selectedRoomTitle);
-
+  const onWordSelect = () => {
     socket.on(GAME_MESSAGE.WORD_SELECT, ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
       setAction({ type: 'select', select: { word: category }, ...roomInfo });
 
       socket.emit(GAME_MESSAGE.GET_WORD, { roomTitle: roomData.selectedRoomTitle });
     });
+  };
 
+  const onGetWord = () => {
     socket.on(GAME_MESSAGE.GET_WORD, ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
       setAction({ type: 'select', select: { word }, ...roomInfo });
 
@@ -115,7 +115,9 @@ const Game = () => {
         socket.emit(GAME_MESSAGE.CHAT_DATA, { roomTitle: roomData.selectedRoomTitle });
       }
     });
+  };
 
+  const onChatData = () => {
     socket.on(
       GAME_MESSAGE.CHAT_DATA,
       ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
@@ -123,7 +125,9 @@ const Game = () => {
         setAction({ type: 'chat', chat, ...roomInfo });
       }
     );
+  };
 
+  const onOnVote = () => {
     socket.on(GAME_MESSAGE.ON_VOTE, ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
       const { client } = roomInfo;
 
@@ -147,7 +151,9 @@ const Game = () => {
         });
       }
     });
+  };
 
+  const onEndVote = () => {
     socket.on(
       GAME_MESSAGE.END_VOTE,
       ({ gameResult, liarName, voteResult, roomInfo }: { gameResult: boolean; liarName: string; voteResult: string[]; roomInfo: roomInfoType }) => {
@@ -160,6 +166,19 @@ const Game = () => {
         });
       }
     );
+  };
+
+  useEffect(() => {
+    if (!user.user_id) getUserData(setUser);
+
+    onRoomList();
+    onWordSelect();
+    onGetWord();
+    onChatData();
+    onOnVote();
+    onEndVote();
+
+    socket.emit(ROOM_MEESSAGE.DATA, roomData.selectedRoomTitle);
 
     return () => {
       socket.off(ROOM_MEESSAGE.DATA);

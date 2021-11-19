@@ -1,7 +1,5 @@
-const RTC_MESSAGE = {
-  OFFER: 'rtc offer',
-  ANSWER: 'rtc answer',
-  CANDIDATE: 'rtc candidate',
+const LOBBY_MESSAGE = {
+  ENTER: 'lobby entered',
 };
 
 const ROOM_MEESSAGE = {
@@ -12,10 +10,6 @@ const ROOM_MEESSAGE = {
   JOIN: 'room join',
 };
 
-const LOBBY_MESSAGE = {
-  ENTER: 'lobby entered',
-};
-
 const GAME_MESSAGE = {
   USER_READY: 'user ready',
   WORD_SELECT: 'word select',
@@ -24,6 +18,12 @@ const GAME_MESSAGE = {
   ON_VOTE: 'on vote',
   END_VOTE: 'end vote',
   VOTE_RESULT: 'vote result',
+};
+
+const RTC_MESSAGE = {
+  OFFER: 'rtc offer',
+  ANSWER: 'rtc answer',
+  CANDIDATE: 'rtc candidate',
 };
 
 export { RTC_MESSAGE, ROOM_MEESSAGE, LOBBY_MESSAGE, GAME_MESSAGE };
