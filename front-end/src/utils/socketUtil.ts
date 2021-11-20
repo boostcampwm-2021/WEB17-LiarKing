@@ -13,14 +13,19 @@ const ROOM_STATE_INFO = 'room state info'; //not server -> 서버 요청
 
 const SELECT_DATA = 'select data'; //not server
 const REQUEST_SELECT_DATA = 'request select data'; //not server -> 개별로 서버요청
+const CHAT_HISTORY_DATA = 'chat history data'; //not server
+const CHAT_SPEAKER_DATA = 'chat speaker data'; //not server
 
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
 const GAME_START = 'game start'; //not server -> 서버 요청만
+const CHAT_MESSAGE_DATA = 'chat message data'; //not server -> 서버 요청만
 
 type setStateType<T> = React.Dispatch<React.SetStateAction<T>>;
 type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: string };
 type clientType = { socketId: string; name: string; state: string };
+type chatDataType = { ment: string; userName: string; color: string };
+type speakerDataType = { speaker: string; timer: number };
 
 const on = {
   /**
@@ -119,7 +124,7 @@ const on = {
     });
   },
   /**
-   * GameContent의 GameContentSelect 컴포넌트에서 사용한다.
+   * GameContentSelect 컴포넌트에서 사용한다.
    * 서버로부터 선택된 단어, 혹은 라이어가 표시된 문자열을 받는다.
    */
   SELECT_DATA: ({ setState }: { setState: setStateType<{ word: string }> }) => {
@@ -128,12 +133,30 @@ const on = {
     });
   },
   /**
-   * GameContent의 GameContentSelect 컴포넌트에서 사용한다.
+   * GameContentSelect 컴포넌트에서 사용한다.
    * 서버로부터 신호를 받으면 개별로 서버에 selectData를 요청하도록 한다.
    */
   REQUEST_SELECT_DATA: () => {
     socket.on(REQUEST_SELECT_DATA, () => {
       emit.REQUEST_SELECT_DATA();
+    });
+  },
+  /**
+   * GameContentChat의 GameContentChatHistory에 사용된다.
+   * 서버에서 채팅 내용(멘트, 유저이름, 유저색상)을 받아온다.
+   */
+  CHAT_HISTORY_DATA: ({ setState }: { setState: setStateType<chatDataType[]> }) => {
+    socket.on(CHAT_HISTORY_DATA, ({ chatHistory }: { chatHistory: chatDataType[] }) => {
+      setState(chatHistory);
+    });
+  },
+  /**
+   * GameContentChat의 GameContentChatSpeaker에 사용된다.
+   * 서버에서 발언자 아이디와 발언시간을 받아온다.
+   */
+  CHAT_SPEAKER_DATA: ({ setState }: { setState: setStateType<speakerDataType> }) => {
+    socket.on(CHAT_SPEAKER_DATA, ({ speakerData }: { speakerData: speakerDataType }) => {
+      setState(speakerData);
     });
   },
 };
@@ -149,6 +172,8 @@ const off = {
   ROOM_STATE_INFO: () => socket.off(ROOM_STATE_INFO),
   SELECT_DATA: () => socket.off(SELECT_DATA),
   REQUEST_SELECT_DATA: () => socket.off(REQUEST_SELECT_DATA),
+  CHAT_HISTORY_DATA: () => socket.off(CHAT_HISTORY_DATA),
+  CHAT_SPEAKER_DATA: () => socket.off(CHAT_SPEAKER_DATA),
 };
 
 const emit = {
@@ -161,6 +186,8 @@ const emit = {
   WAIT_ROOM_MESSAGE: (messageInfo: any) => socket.emit(WAIT_ROOM_MESSAGE, messageInfo),
   ROOM_STATE_INFO: () => socket.emit(ROOM_STATE_INFO, null),
   REQUEST_SELECT_DATA: () => socket.emit(REQUEST_SELECT_DATA, null),
+  CHAT_HISTORY_DATA: () => socket.emit(CHAT_HISTORY_DATA, null),
+  CHAT_MESSAGE_DATA: ({ message }: { message: string }) => socket.emit(CHAT_MESSAGE_DATA, message),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };
