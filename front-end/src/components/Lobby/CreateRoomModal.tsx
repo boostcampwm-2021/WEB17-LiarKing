@@ -10,6 +10,18 @@ import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
 import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
+const categoryList = [
+  { category: '과일', include: true },
+  { category: '탈 것', include: true },
+  { category: '장소', include: true },
+  { category: '직업', include: true },
+  { category: '동물', include: true },
+  { category: '음식', include: true },
+  { category: '나라', include: true },
+  { category: '악기', include: true },
+  { category: '스포츠', include: true },
+];
+
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: Socket } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
@@ -65,7 +77,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     } else {
       socket.emit(ROOM_MEESSAGE.CREATE, roomInfo);
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
-      setRoomSettings({ category: [], max: roomInfo.max, cycle: roomInfo.cycle });
+      setRoomSettings({ category: categoryList, max: roomInfo.max, cycle: roomInfo.cycle });
     }
   };
 
