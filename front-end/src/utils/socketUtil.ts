@@ -9,6 +9,10 @@ const IS_ALL_READY = 'is all ready'; //not server
 const ROOM_TITLE_INFO = 'room title info'; //not server -> 서버 요청
 const ROOM_CLIENTS_INFO = 'room clients info'; //not server -> 서버 요청
 const WAIT_ROOM_MESSAGE = 'wait room message'; //?
+const ROOM_STATE_INFO = 'room state info'; //not server -> 서버 요청
+
+const SELECT_DATA = 'select data'; //not server
+const REQUEST_SELECT_DATA = 'request select data'; //not server -> 개별로 서버요청
 
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
@@ -105,6 +109,33 @@ const on = {
       fn(messageInfo);
     });
   },
+  /**
+   * GameContent 컴포넌트에서 사용한다.
+   * 서버로부터 방의 상태를 문자열로 받아온다.
+   */
+  ROOM_STATE_INFO: ({ dispatch }: { dispatch: React.Dispatch<{ type: string }> }) => {
+    socket.on(ROOM_STATE_INFO, ({ roomState }: { roomState: string }) => {
+      dispatch({ type: roomState });
+    });
+  },
+  /**
+   * GameContent의 GameContentSelect 컴포넌트에서 사용한다.
+   * 서버로부터 선택된 단어, 혹은 라이어가 표시된 문자열을 받는다.
+   */
+  SELECT_DATA: ({ setState }: { setState: setStateType<{ word: string }> }) => {
+    socket.on(SELECT_DATA, ({ select }: { select: { word: string } }) => {
+      setState(select);
+    });
+  },
+  /**
+   * GameContent의 GameContentSelect 컴포넌트에서 사용한다.
+   * 서버로부터 신호를 받으면 개별로 서버에 selectData를 요청하도록 한다.
+   */
+  REQUEST_SELECT_DATA: () => {
+    socket.on(REQUEST_SELECT_DATA, () => {
+      emit.REQUEST_SELECT_DATA();
+    });
+  },
 };
 
 const off = {
@@ -115,6 +146,9 @@ const off = {
   ROOM_TITLE_INFO: () => socket.off(ROOM_TITLE_INFO),
   ROOM_CLIENTS_INFO: () => socket.off(ROOM_CLIENTS_INFO),
   WAIT_ROOM_MESSAGE: () => socket.off(WAIT_ROOM_MESSAGE),
+  ROOM_STATE_INFO: () => socket.off(ROOM_STATE_INFO),
+  SELECT_DATA: () => socket.off(SELECT_DATA),
+  REQUEST_SELECT_DATA: () => socket.off(REQUEST_SELECT_DATA),
 };
 
 const emit = {
@@ -125,6 +159,8 @@ const emit = {
   ROOM_TITLE_INFO: () => socket.emit(ROOM_TITLE_INFO, null),
   ROOM_CLIENTS_INFO: () => socket.emit(ROOM_CLIENTS_INFO, null),
   WAIT_ROOM_MESSAGE: (messageInfo: any) => socket.emit(WAIT_ROOM_MESSAGE, messageInfo),
+  ROOM_STATE_INFO: () => socket.emit(ROOM_STATE_INFO, null),
+  REQUEST_SELECT_DATA: () => socket.emit(REQUEST_SELECT_DATA, null),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };
