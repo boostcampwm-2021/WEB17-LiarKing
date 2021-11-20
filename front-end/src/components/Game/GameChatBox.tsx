@@ -41,7 +41,10 @@ const GameChatBox = () => {
   const [message, setMessage] = useState('');
   const [modal, setModal] = useState(chatList);
   const messageBox = useRef<HTMLInputElement>();
+
   const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState(null);
+  const [isWaitingState, setIsWaitingState] = useState(true);
+
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const myClassName = 'my-bubble-box';
@@ -101,35 +104,49 @@ const GameChatBox = () => {
     };
   }, []);
 
+  useEffect(() => {
+    socket.on.IS_WAITING_STATE({ state: isWaitingState, setState: setIsWaitingState });
+
+    return () => {
+      socket.off.IS_WAITING_STATE();
+    };
+  }, [isWaitingState]);
+
   return (
     <>
-      <div className="game-wait-chat-box">
-        <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onChange={changeMessage}></input>
-        <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
-      </div>
-      {Object.values(modal).map((chat, i) => {
-        return i < CONSTANTS.ROW_MAX_CLIENT ? (
-          <div
-            className="game-wait-chat-bubble-box"
-            style={{
-              top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              left: CONSTANTS.CHATBOX_LEFT,
-            }}
-          >
-            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+      {isWaitingState ? (
+        <>
+          <div className="game-wait-chat-box">
+            <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onChange={changeMessage}></input>
+            <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
           </div>
-        ) : (
-          <div
-            className="game-wait-chat-bubble-box"
-            style={{
-              top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              left: CONSTANTS.CHATBOX_RIGHT,
-            }}
-          >
-            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
-          </div>
-        );
-      })}
+          {Object.values(modal).map((chat, i) => {
+            return i < CONSTANTS.ROW_MAX_CLIENT ? (
+              <div
+                className="game-wait-chat-bubble-box"
+                style={{
+                  top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
+                  left: CONSTANTS.CHATBOX_LEFT,
+                }}
+              >
+                {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+              </div>
+            ) : (
+              <div
+                className="game-wait-chat-bubble-box"
+                style={{
+                  top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
+                  left: CONSTANTS.CHATBOX_RIGHT,
+                }}
+              >
+                {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

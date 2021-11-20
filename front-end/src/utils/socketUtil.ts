@@ -22,15 +22,12 @@ const on = {
   /**
    * Game의 GameBackground 컴포넌트에서 사용한다.
    * 현재 방의 상태가 waiting 일 경우 true, 그외 false를 서버로부터 반환받는다.
-   * true일 경우 배경필터가 미적용되고, false일 경우 배경필터가 적용된다.
    * 이미 적용된 값과 같을경우 변경하지 않는다.
    */
-  IS_WAITING_STATE: ({ state, setState, filterClass }: { state: string; setState: setStateType<string>; filterClass: string }) => {
+  IS_WAITING_STATE: ({ state, setState }: { state: boolean; setState: setStateType<boolean> }) => {
     socket.on(IS_WAITING_STATE, ({ isWaitingState }: { isWaitingState: boolean }) => {
-      if (isWaitingState && state !== '') {
-        setState('');
-      } else if (state !== filterClass) {
-        setState(filterClass);
+      if (isWaitingState !== state) {
+        setState(isWaitingState);
       }
     });
   },
