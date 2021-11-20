@@ -68,7 +68,7 @@
   align-items: center;
 }
 
-.game-header-buttons > .not-ready-to-start {
+.game-header-buttons > .inactive {
   filter: opacity(0.6) !important;
 }
 
