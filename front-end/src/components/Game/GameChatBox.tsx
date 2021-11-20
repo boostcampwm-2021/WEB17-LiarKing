@@ -38,7 +38,6 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
   const user = useRecoilValue(globalAtom.user);
   const roomData = useRecoilValue(globalAtom.roomData);
 
-  const [message, setMessage] = useState('');
   const [modal, setModal] = useState(chatList);
   const messageBox = useRef<HTMLInputElement>();
   const { socket }: { socket: Socket } = useContext(globalContext);
@@ -49,13 +48,12 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
     if (client.name === user.user_id) clientIdx = i;
   });
 
-  const changeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') sendMessage();
   };
 
   const sendMessage = () => {
     if (messageBox.current.value === '') return;
-    //else if (messageBox.current.value.length > 50) messageBox.current.value = messageBox.current.value.substr(0, 50) + '...';
     const messageInfo = { userId: user.user_id, message: messageBox.current.value, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
     socket.emit('wait room message', messageInfo);
     messageBox.current.value = '';
@@ -95,7 +93,7 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
   return (
     <>
       <div className="game-wait-chat-box">
-        <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onChange={changeMessage}></input>
+        <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onKeyDown={sendIfEnter}></input>
         <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
       </div>
       {Object.values(modal).map((chat, i) => {

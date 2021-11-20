@@ -125,6 +125,19 @@ ul {
   height: 100%;
 }
 
+.room-list-refresh {
+  position: absolute;
+  height: 3%;
+  cursor: pointer;
+  margin-top: 1vh;
+  margin-left: 32vw;
+  transition: transform 0.5s ease-in-out;
+}
+
+.room-list-refresh:hover {
+  transform: rotate(360deg);
+}
+
 .room-list {
   display: flex;
   justify-content: space-between;
@@ -153,7 +166,7 @@ ul {
 }
 
 .room-list:first-of-type {
-  margin-top: 5vh;
+  margin-top: 7vh;
 }
 
 .room-full {

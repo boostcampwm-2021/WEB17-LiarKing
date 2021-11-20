@@ -35,22 +35,17 @@ const JoinModal = () => {
       return;
     }
 
-    const pwValidation = checkPW(userInfo.pwd);
-
-    if (!pwValidation) {
+    if (!checkPW(userInfo.pwd)) {
       popModal({ type: 'error', ment: '비밀번호는 영문자 대, 소, 숫자, 특수문자로만 이루어진 8~20글자만 허용됩니다.' });
       return;
     }
 
-    const pwMatchValidation = checkMatchPW(userInfo.pwd, userInfo.pwdCheck);
-
-    if (!pwMatchValidation) {
+    if (!checkMatchPW(userInfo.pwd, userInfo.pwdCheck)) {
       popModal({ type: 'error', ment: '비밀번호가 맞지 않습니다.' });
       return;
     }
 
     const userData = await requestToServer();
-
     if (!userData) {
       popModal({ type: 'error', ment: '이미 만들어진 아이디입니다.' });
       return;
@@ -60,10 +55,14 @@ const JoinModal = () => {
     history.push('/lobby');
   };
 
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') clickPlay();
+  };
+
   const checkId = (id: string): boolean => {
     const reg = /[a-zA-Z0-9]{5,20}/g;
-    const refKo = /[가-힣]{2,10}/g;
-    return reg.test(id) || refKo.test(id);
+    const regKo = /[가-힣]{2,10}/g;
+    return reg.test(id) || regKo.test(id);
   };
 
   const checkPW = (pw: string): boolean => {
@@ -97,9 +96,21 @@ const JoinModal = () => {
   return (
     <div className="main-join-modal">
       <div className="main-join-header">Member Join</div>
-      <input className="main-join-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId}></input>
-      <input className="main-join-id-password" type="password" placeholder="비밀번호를 입력하세요." onInput={changePwd}></input>
-      <input className="main-join-id-password" type="password" placeholder="비밀번호를 확인해주세요." onInput={changePwdCheck}></input>
+      <input className="main-join-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId} onKeyDown={sendIfEnter}></input>
+      <input
+        className="main-join-id-password"
+        type="password"
+        placeholder="비밀번호를 입력하세요."
+        onInput={changePwd}
+        onKeyDown={sendIfEnter}
+      ></input>
+      <input
+        className="main-join-id-password"
+        type="password"
+        placeholder="비밀번호를 확인해주세요."
+        onInput={changePwdCheck}
+        onKeyDown={sendIfEnter}
+      ></input>
       <button className="main-join-submit" onClick={clickPlay}>
         Join!
       </button>
