@@ -8,6 +8,7 @@ const IS_USER_READY = 'is user ready'; //not server
 const IS_ALL_READY = 'is all ready'; //not server
 const ROOM_TITLE_INFO = 'room title info'; //not server -> 서버 요청
 const ROOM_CLIENTS_INFO = 'room clients info'; //not server -> 서버 요청
+const WAIT_ROOM_MESSAGE = 'wait room message'; //?
 
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
@@ -102,6 +103,11 @@ const on = {
       setState(clients);
     });
   },
+  WAIT_ROOM_MESSAGE: (fn: (messageInfo: any) => void) => {
+    socket.on(WAIT_ROOM_MESSAGE, (messageInfo: { userId: string; message: string; clientIdx: number }) => {
+      fn(messageInfo);
+    });
+  },
 };
 
 const off = {
@@ -111,6 +117,7 @@ const off = {
   IS_ALL_READY: () => socket.off(IS_ALL_READY),
   ROOM_TITLE_INFO: () => socket.off(ROOM_TITLE_INFO),
   ROOM_CLIENTS_INFO: () => socket.off(ROOM_CLIENTS_INFO),
+  WAIT_ROOM_MESSAGE: () => socket.off(WAIT_ROOM_MESSAGE),
 };
 
 const emit = {
@@ -120,6 +127,7 @@ const emit = {
   GAME_START: ({ categorys }: { categorys: string[] }) => socket.emit(GAME_START, { categorys }),
   ROOM_TITLE_INFO: () => socket.emit(ROOM_TITLE_INFO, null),
   ROOM_CLIENTS_INFO: () => socket.emit(ROOM_CLIENTS_INFO, null),
+  WAIT_ROOM_MESSAGE: (messageInfo: any) => socket.emit(WAIT_ROOM_MESSAGE, messageInfo),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };
