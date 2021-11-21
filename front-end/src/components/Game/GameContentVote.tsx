@@ -38,9 +38,7 @@ const GameContentVote = () => {
   return (
     <div className="game-content-box">
       <span className="game-content-title game-content-title-vote">라이어를 투표하세요!</span>
-      <span className="game-content-ment" ref={timer}>
-        남은시간: 0초
-      </span>
+      <span className="game-content-ment" ref={timer}></span>
       <div
         className="game-content-vote-submit"
         onClick={() => {

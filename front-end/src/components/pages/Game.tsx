@@ -16,12 +16,12 @@ const GameBackgound = ({ socket }: { socket: socketUtilType }) => {
   const FILTER_CLASS_NAME = 'game-filter';
 
   useEffect(() => {
-    socket.on.IS_WAITING_STATE({ state: isWaitingState, setState: setIsWaitingState });
+    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
 
     return () => {
       socket.off.IS_WAITING_STATE();
     };
-  }, [isWaitingState]);
+  }, []);
 
   return <section className={`game-background ${isWaitingState ? '' : FILTER_CLASS_NAME}`}></section>;
 };
@@ -65,48 +65,6 @@ const Game = () => {
 
   useEffect(() => {
     if (!user.user_id) getUserData(setUser);
-
-    // socket.on('room data', ({ roomInfo, tag }: { roomInfo: roomInfoType; tag: string }) => {
-    //   const { owner, client, title } = roomInfo;
-
-    //   const waiting = {
-    //     isOwner: owner === user.user_id,
-    //     roomTitle: title,
-    //     maxPerson: roomInfo.max,
-    //   };
-
-    //   Object.assign(
-    //     waiting,
-    //     waiting.isOwner
-    //       ? { isAllReady: client.filter((v) => v.state === 'ready').length === client.length - 1 }
-    //       : { isReady: client.find((v) => v.name === user.user_id)?.state === 'ready' }
-    //   );
-
-    //   const actionData: actionType = { type: 'waiting', waiting };
-
-    //   setAction(Object.assign(actionData, roomInfo));
-    // });
-
-    // socket.emit('room data', roomData.selectedRoomTitle);
-
-    // socket.on('word select', ({ category, roomInfo }: { category: string; roomInfo: roomInfoType }) => {
-    //   setAction({ type: 'select', select: { word: category }, ...roomInfo });
-
-    //   socket.emit('get word', { roomTitle: roomData.selectedRoomTitle });
-    // });
-
-    // socket.on('get word', ({ word, roomInfo }: { word: string; roomInfo: roomInfoType }) => {
-    //   setAction({ type: 'select', select: { word }, ...roomInfo });
-
-    //   if (roomInfo.owner === user.user_id) {
-    //     socket.emit('chat data', { roomTitle: roomData.selectedRoomTitle });
-    //   }
-    // });
-
-    // socket.on('chat data', ({ chat, roomInfo }: { chat: { chatHistory: string[]; speaker: string; timer: number }; roomInfo: roomInfoType }) => {
-    //   if (roomInfo.state !== 'chat') return;
-    //   setAction({ type: 'chat', chat, ...roomInfo });
-    // });
 
     // socket.on('on vote', ({ time, roomInfo }: { time: number; roomInfo: roomInfoType }) => {
     //   const { client } = roomInfo;

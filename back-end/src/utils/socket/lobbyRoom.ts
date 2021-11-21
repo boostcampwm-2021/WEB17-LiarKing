@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { idList, nicknameList, roomList, socketData, roomSecrets, roomInfoType } from '../../store/store';
+import { roomList, socketDatas, roomSecrets, roomInfoType } from '../../store/store';
 
 const LOBBY = 'lobby';
 
@@ -7,9 +7,13 @@ const LOBBY = 'lobby';
 const CREATE_ROOM = 'create room';
 const LOBBY_ENTERED = 'lobby entered';
 const LOBBY_LOGOUT = 'lobby logout';
+const DISCONNECT = 'disconnect';
 
 //emit broadcast
 const ROOM_LIST = 'room list';
+const REQUEST_USER_OWNER = 'request user owner';
+const ROOM_CLIENTS_INFO = 'room clients info';
+const ROOM_TITLE_INFO = 'room title info';
 
 //emit unicast
 const IS_ROOM_CREATE = 'is room create';
@@ -20,7 +24,7 @@ const ROOM_JOIN = 'room join';
  */
 const sendLobbyEntered = (socket: Socket) => {
   socket.on(LOBBY_ENTERED, ({ userId }: { userId: string }) => {
-    socketData.set(socket.id, { name: userId, roomTitle: null });
+    socketDatas.set(socket.id, { name: userId, roomTitle: null });
   });
 };
 
@@ -47,7 +51,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
 
   socket.on(CREATE_ROOM, ({ roomInfo }: { roomInfo: createRoomInfoType }) => {
     const { title } = roomInfo;
-    const socketInfo = socketData.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
     const isDuplicateRoom: boolean = !roomList.get(title);
 
     if (isDuplicateRoom) {
@@ -68,12 +72,12 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
       socket.leave(LOBBY);
       socket.join(title);
 
-      socketData.set(socket.id, { ...socketInfo, roomTitle: title });
+      socketDatas.set(socket.id, { ...socketInfo, roomTitle: title });
 
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     }
 
-    socket.emit(IS_ROOM_CREATE, isDuplicateRoom);
+    socket.emit(IS_ROOM_CREATE, { isRoomCreate: isDuplicateRoom });
   });
 };
 
@@ -81,23 +85,24 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
  * 유저가 방 접속 요청
  */
 const sendRoomJoin = (socket: Socket, io: Server) => {
-  socket.on(ROOM_JOIN, (title: string) => {
-    const roomInfo = roomList.get(title);
-    const socketInfo = socketData.get(socket.id);
+  socket.on(ROOM_JOIN, ({ roomTitle }: { roomTitle: string }) => {
+    const roomInfo = roomList.get(roomTitle);
+    const socketInfo = socketDatas.get(socket.id);
 
-    if ((roomInfo && roomInfo.client.length === roomInfo.max) || !roomInfo) {
-      socket.emit(ROOM_JOIN, false);
+    if (!roomInfo || roomInfo.client.length === roomInfo.max) {
+      socket.emit(ROOM_JOIN, { isEnter: false });
     } else {
-      socket.emit(ROOM_JOIN, true);
+      socket.emit(ROOM_JOIN, { isEnter: true });
       socket.leave(LOBBY);
-      socket.join(title);
+      socket.join(roomTitle);
 
-      if (roomInfo) {
-        roomList.set(title, { ...roomInfo, client: [...roomInfo.client, { socketId: socket.id, name: socketInfo.name, state: '' }] });
-        socketData.set(socket.id, { ...socketInfo, roomTitle: title });
-      }
+      roomInfo.client = [...roomInfo.client, { socketId: socket.id, name: socketInfo.name, state: '' }];
 
-      io.to(LOBBY).emit(ROOM_LIST, Array.from(roomList));
+      roomList.set(roomTitle, roomInfo);
+      socketDatas.set(socket.id, { ...socketInfo, roomTitle });
+
+      io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
+      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     }
   });
 };
@@ -107,7 +112,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
  */
 const userLogout = (socket: Socket, io: Server) => {
   socket.on(LOBBY_LOGOUT, () => {
-    socketData.delete(socket.id);
+    socketDatas.delete(socket.id);
   });
 };
 
@@ -115,30 +120,65 @@ const userLogout = (socket: Socket, io: Server) => {
  * 유저 강제 종료
  */
 const sendDisconnect = (socket: Socket, io: Server) => {
-  socket.on('disconnect', () => {
-    const socketInfo = socketData.get(socket.id);
-    const roomTitle = socketInfo.roomTitle;
+  socket.on(DISCONNECT, () => {
+    const socketInfo = socketDatas.get(socket.id);
+
+    //메인화면에서 강제종료 했을 때.
+    if (!socketInfo) return;
+
+    //로비에서 강제종료 했을 때.
+    if (socketInfo.roomTitle === '') {
+      socketDatas.delete(socket.id);
+      return;
+    }
+
+    //게임방에서 강제종료 했을 때.
+    const { name, roomTitle } = socketInfo;
     const roomInfo = roomList.get(roomTitle);
 
-    if (roomTitle && roomInfo && roomInfo.client.find((v: { socketId: string }) => v.socketId === socket.id)) {
-      const newClients = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
-      if (newClients.length === 0) {
-        roomList.delete(roomTitle);
-      } else {
-        roomList.set(roomTitle, { ...roomInfo, client: newClients });
-        if (roomInfo.state === 'waiting') io.to(roomTitle).emit('room data', { roomInfo: roomList.get(roomTitle), tag: 'user disconnected' });
+    if (roomInfo.client.length === 1) {
+      roomList.delete(roomTitle);
+    } else {
+      if (roomInfo.owner === name) {
+        roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
+
+        io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
       }
-      io.to('lobby').emit('room list', Array.from(roomList));
+
+      roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
+      roomList.set(roomTitle, roomInfo);
+
+      io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
+      io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
     }
 
-    const userId = socketInfo.name;
+    //나간사람이 라이어일 경우 게임이 종료 및 패널티부여 등의 로직이 들어가야함.
 
-    if (userId) {
-      idList.splice(idList.indexOf(userId), idList.indexOf(userId) + 1);
-      nicknameList.splice(nicknameList.indexOf(userId), nicknameList.indexOf(userId) + 1);
-    }
+    socketDatas.delete(socket.id);
 
-    socketData.delete(socket.id);
+    io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
+
+    // if (roomTitle && roomInfo && roomInfo.client.find((v: { socketId: string }) => v.socketId === socket.id)) {
+    //   const newClients = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
+
+    //   if (newClients.length === 0) {
+    //     roomList.delete(roomTitle);
+    //   } else {
+    //     roomList.set(roomTitle, { ...roomInfo, client: newClients });
+
+    //     if (roomInfo.state === 'waiting') io.to(roomTitle).emit('room data', { roomInfo: roomList.get(roomTitle), tag: 'user disconnected' });
+    //   }
+    //   io.to(LOBBY).emit('room list', Array.from(roomList));
+    // }
+
+    // const userId = socketInfo.name;
+
+    // if (userId) {
+    //   idList.splice(idList.indexOf(userId), idList.indexOf(userId) + 1);
+    //   nicknameList.splice(nicknameList.indexOf(userId), nicknameList.indexOf(userId) + 1);
+    // }
+
+    // socketDatas.delete(socket.id);
   });
 };
 
@@ -146,7 +186,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
  * 로비에서 할 소켓 기능 모음
  */
 const lobbyRoom = (socket: Socket, io: Server) => {
-  socket.join('lobby');
+  socket.join(LOBBY);
 
   sendLobbyEntered(socket);
 

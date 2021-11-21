@@ -62,13 +62,16 @@ const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
   }, []);
 
   useEffect(() => {
+    if (!speackerData) return;
+
     let time = speackerData.timer;
+    timer.current.innerText = `남은시간: ${time}초`;
 
     const activeTimer = setInterval(() => {
-      timer.current.innerText = `남은시간: ${time}초`;
-
       if (time <= 0) clearInterval(activeTimer);
       else time--;
+
+      if (!!timer.current) timer.current.innerText = `남은시간: ${time}초`;
     }, SECONDS);
 
     return () => {
@@ -78,8 +81,8 @@ const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
 
   return (
     <>
-      <div className="game-content-chat-speaker">{`발언자: ${speackerData.speaker}`}</div>
-      <div className="game-content-chat-timer" ref={timer}>{`남은시간: 0초`}</div>
+      <div className="game-content-chat-speaker">{!!speackerData ? `발언자: ${speackerData.speaker}` : ''}</div>
+      <div className="game-content-chat-timer" ref={timer}></div>
     </>
   );
 };

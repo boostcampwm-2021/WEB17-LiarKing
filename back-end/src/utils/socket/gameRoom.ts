@@ -1,60 +1,223 @@
 import { Server, Socket } from 'socket.io';
-import { roomList, roomSecrets } from '../../store/store';
+import { roomInfoType, roomList, roomSecrets, roomSecretType, socketDatas } from '../../store/store';
 import shuffle from '../shuffle';
 import { getRandomWords } from '../../database/service/wordService';
+import timer from '../timer';
+
+const LOBBY = 'lobby';
+
+const ROOM_TITLE_INFO = 'room title info';
+const ROOM_READY = 'room ready';
+const ROOM_EXIT = 'room exit';
+const IS_USER_OWNER = 'is user owner';
+const GAME_START = 'game start';
+const CHAT_MESSAGE_DATA = 'chat message data';
+const IS_USER_READY = 'is user ready';
+const ROOM_LIST = 'room list';
+const REQUEST_USER_OWNER = 'request user owner';
+const IS_WAITING_STATE = 'is waiting state';
+const IS_ALL_READY = 'is all ready';
+const ROOM_CLIENTS_INFO = 'room clients info';
+const WAIT_ROOM_MESSAGE = 'wait room message';
+const ROOM_STATE_INFO = 'room state info';
+const SELECT_DATA = 'select data';
+const REQUEST_SELECT_DATA = 'request select data';
+const CHAT_HISTORY_DATA = 'chat history data';
+const CHAT_SPEAKER_DATA = 'chat speaker data';
+const VOTE_TIMER_DATA = 'vote timer data';
+const RESULT_DATA = 'result data'; //아직 미사용
+const LIAR_DATA = 'liar data'; //아직 미사용
+
+/**
+ * 클라이언트에게 요청이오면 해당 방에 있는 모든 클라이언트에게
+ * 방의 제목정보(인원수, 인원제한수, 방제목)를 뿌린다.
+ */
+const sendRoomTitleInfo = (socket: Socket, io: Server) => {
+  socket.on(ROOM_TITLE_INFO, () => {
+    const { roomTitle } = socketDatas.get(socket.id);
+    const { client, max } = roomList.get(roomTitle);
+
+    io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: client.length, maxUsers: max, roomTitle });
+  });
+};
+
+/**
+ * 요청한 유저가 방장인지 여부 데이터를 전송.
+ */
+const sendIsUserOwner = (socket: Socket) => {
+  socket.on(IS_USER_OWNER, () => {
+    const { name, roomTitle } = socketDatas.get(socket.id);
+    const { owner } = roomList.get(roomTitle);
+
+    socket.emit(IS_USER_OWNER, { isUserOwner: owner === name });
+  });
+};
+
+/**
+ * 요청한 유저 방의 클라이언트들 정보를 불러옴.
+ */
+const sendClientInfo = (socket: Socket, io: Server) => {
+  socket.on(ROOM_CLIENTS_INFO, () => {
+    const { roomTitle } = socketDatas.get(socket.id);
+
+    io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomList.get(roomTitle).client });
+  });
+};
 
 /**
  * 유저가 레디버튼을 클릭 하였을 때 상태를 서버에서 전파
  */
 const sendUserReady = (socket: Socket, io: Server) => {
-  socket.on('user ready', (title: string) => {
-    const roomInfo = roomList.get(title);
+  socket.on(ROOM_READY, () => {
+    const { name, roomTitle } = socketDatas.get(socket.id);
+    const roomInfo = roomList.get(roomTitle);
 
-    roomInfo.client = roomInfo.client.map((v: { socketId: string; state: string; name: string }) => {
-      if (v.socketId === socket.id) {
-        if (v.state === 'ready') {
-          v.state = '';
-        } else {
-          v.state = 'ready';
-        }
-      }
-      return v;
+    const clientInfo = roomInfo.client.find((v) => v.name === name);
+
+    if (clientInfo.state === 'ready') clientInfo.state = '';
+    else clientInfo.state = 'ready';
+
+    roomList.set(roomTitle, roomInfo);
+
+    socket.emit(IS_USER_READY, { isUserReady: clientInfo.state === 'ready' });
+    io.to(roomTitle).emit(IS_ALL_READY, {
+      isAllReady: !roomInfo.client.find((v) => v.state === '' && v.name !== roomInfo.owner),
     });
 
-    roomList.set(title, roomInfo);
-
-    io.to(title).emit('room data', { roomInfo: roomInfo, tag: 'user ready' });
+    io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
   });
 };
 
 /**
- * 클라이언트에게 카테고리 리스트를 받아 랜덤으로 선정 후 해당 카테고리에서 15개 단어 랜덤으로 추출,
- * 해당 roomSecrets에 저장한다. 그 후, 클라이언트에게 선정된 카테고리를 넘긴다.
+ * 유저가 방에서 나간다고 알림
  */
-const sendSelectWords = (socket: Socket, io: Server) => {
-  socket.on('word select', async ({ category, roomTitle }: { category: string[]; roomTitle: string }) => {
-    const categoryFix = shuffle(category, 1).pop();
-
-    const words = await getRandomWords(categoryFix);
-
-    const answerWord = shuffle(words, 1).pop();
-
-    const roomSecret = roomSecrets.get(roomTitle);
+const sendRoomExit = (socket: Socket, io: Server) => {
+  socket.on(ROOM_EXIT, () => {
+    const { name, roomTitle } = socketDatas.get(socket.id);
     const roomInfo = roomList.get(roomTitle);
 
-    const liar = shuffle(roomInfo.client, 1).pop();
+    socket.leave(roomTitle);
+    socket.join(LOBBY);
 
-    roomSecrets.set(roomTitle, { ...roomSecret, words, answerWord, liar });
-    roomList.set(roomTitle, {
-      ...roomInfo,
-      client: roomInfo.client.map((v) => {
-        v.state = '';
-        return v;
-      }),
-      state: 'select',
+    if (roomInfo.client.length === 1) {
+      roomList.delete(roomTitle);
+    } else {
+      if (roomInfo.owner === name) {
+        roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
+
+        io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
+      }
+
+      roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
+      roomList.set(roomTitle, roomInfo);
+
+      io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
+      io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
+    }
+
+    io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
+
+    // if (roomInfo && roomInfo.client.length > 1) {
+    //   const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
+    //   roomList.set(title, { ...roomInfo, client });
+    //   io.to(title).emit('room data', { roomInfo: roomList.get(title), tag: 'room exit' });
+    // } else {
+    //   roomList.delete(title);
+    // }
+
+    // io.to(title).emit('room exit', { socketId: socket.id });
+    // io.to('lobby').emit('room list', Array.from(roomList));
+  });
+};
+
+/**
+ * 대기상태일 때의 주고받는 메세지를 전파한다.
+ */
+const waitRoomMessage = (socket: Socket, io: Server) => {
+  socket.on(WAIT_ROOM_MESSAGE, (messageInfo: { userId: string; message: string; title: string; clientIdx: number }) => {
+    io.to(messageInfo.title).emit(WAIT_ROOM_MESSAGE, messageInfo);
+  });
+};
+
+/**
+ * 방장이 게임을 시작한다.
+ */
+const gameStart = (socket: Socket, io: Server) => {
+  const state = {
+    select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
+      const ROOM_STATE = 'select';
+      const WAITING_TIME = 3 * 1000;
+
+      const { title } = roomInfo;
+
+      io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+
+      const categoryFix = shuffle(categorys, 1).pop();
+      const words = await getRandomWords(categoryFix);
+      const answerWord = shuffle(words, 1).pop();
+      const liar = shuffle(roomInfo.client, 1).pop();
+
+      Object.assign(roomSecret, { ...roomSecret, words, answerWord, liar });
+
+      io.to(title).emit(SELECT_DATA, { select: { word: categoryFix } });
+
+      await timer(WAITING_TIME);
+
+      io.to(title).emit(REQUEST_SELECT_DATA, null);
+
+      await timer(WAITING_TIME);
+    },
+    chat: async (roomInfo: roomInfoType) => {
+      const ROOM_STATE = 'chat';
+      const SPEAK_TIME = 10; //임시로, 원래 30 ~ 60
+      const SUB_TIME = 1;
+      const SECONDS = 1000;
+
+      const { title } = roomInfo;
+
+      io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+
+      const randomClients = shuffle(roomInfo.client, roomInfo.client.length);
+
+      for (let i = 0; i < randomClients.length; i++) {
+        io.to(title).emit(CHAT_SPEAKER_DATA, { speakerData: { speaker: randomClients[i].name, timer: SPEAK_TIME } });
+        await timer((SPEAK_TIME + SUB_TIME) * SECONDS);
+      }
+    },
+    vote: async (roomInfo: roomInfoType) => {
+      const TIMER = 20;
+      const SECONDS = 1000;
+      const SUB_TIME = 1;
+
+      const { title } = roomInfo;
+
+      io.to(title).emit(VOTE_TIMER_DATA, { timer: TIMER });
+
+      await timer((TIMER + SUB_TIME) * SECONDS);
+    },
+  };
+
+  socket.on(GAME_START, async ({ categorys }: { categorys: string[] }) => {
+    const { roomTitle } = socketDatas.get(socket.id);
+    const roomInfo = roomList.get(roomTitle);
+    const roomSecret = roomSecrets.get(roomTitle);
+
+    roomInfo.client.map((v) => {
+      v.state = '';
+      return v;
     });
 
-    io.to(roomTitle).emit('word select', { category: categoryFix, roomInfo: roomList.get(roomTitle) });
+    roomInfo.state = 'start';
+
+    io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: false });
+    io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
+
+    await state.select(roomInfo, roomSecret, categorys);
+    await state.chat(roomInfo);
+    await state.vote(roomInfo);
+
+    io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: true });
+    io.to(roomTitle).emit(ROOM_STATE_INFO, { roomState: 'waiting' });
   });
 };
 
@@ -63,16 +226,37 @@ const sendSelectWords = (socket: Socket, io: Server) => {
  * 만약 그 방에 라이어인 경우에는 라이어를 보내준다.
  */
 const sendWords = (socket: Socket, io: Server) => {
-  socket.on('get word', ({ roomTitle }: { roomTitle: string }) => {
-    const WAITING_TIME = 3 * 1000;
-
+  socket.on(REQUEST_SELECT_DATA, () => {
+    const { roomTitle } = socketDatas.get(socket.id);
     const roomSecret = roomSecrets.get(roomTitle);
 
     const word = roomSecret.liar.socketId === socket.id ? '라이어' : roomSecret.answerWord;
 
-    setTimeout(() => {
-      socket.emit('get word', { word, roomInfo: roomList.get(roomTitle) });
-    }, WAITING_TIME);
+    socket.emit(SELECT_DATA, { select: { word } });
+  });
+};
+
+/**
+ * 게임방의 발언시간 때 채팅 내역을 기록하고 전파한다.
+ */
+const sendChat = (socket: Socket, io: Server) => {
+  const COLORS = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
+
+  socket.on(CHAT_MESSAGE_DATA, ({ message }: { message: string }) => {
+    const { name, roomTitle } = socketDatas.get(socket.id);
+    const roomInfo = roomList.get(roomTitle);
+    const client = roomInfo.client.find((v) => v.name === name);
+    const { chatHistory } = roomInfo;
+
+    chatHistory.push({
+      userName: name,
+      ment: message,
+      color: COLORS[roomInfo.client.indexOf(client)],
+    });
+
+    io.to(roomTitle).emit(CHAT_HISTORY_DATA, { chatHistory });
+
+    roomList.set(roomTitle, roomInfo);
   });
 };
 
@@ -80,9 +264,17 @@ const sendWords = (socket: Socket, io: Server) => {
  * 게임 방에서 할 소켓 기능 모음
  */
 const gameRoom = (socket: Socket, io: Server) => {
+  sendRoomTitleInfo(socket, io);
+  sendIsUserOwner(socket);
+  sendClientInfo(socket, io);
   sendUserReady(socket, io);
-  sendSelectWords(socket, io);
+  sendRoomExit(socket, io);
+  waitRoomMessage(socket, io);
+
+  gameStart(socket, io);
+
   sendWords(socket, io);
+  sendChat(socket, io);
 };
 
 export default gameRoom;

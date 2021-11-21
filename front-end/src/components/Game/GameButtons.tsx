@@ -22,7 +22,7 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
   };
 
   const roomGameStart = () => {
-    if (isAllReady) {
+    if (!isAllReady) {
       popModal({ type: 'error', ment: '아직 준비가 되지않은 플레이어가 있습니다.' });
       return;
     }
@@ -87,6 +87,7 @@ const GameButtonsUser = ({ socket }: { socket: socketUtilType }) => {
 
 const GameButtons = () => {
   const [isOwner, setIsOwner] = useState(null);
+  const [isWaitingState, setIsWaitingState] = useState(true);
   const history = useHistory();
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
@@ -96,10 +97,6 @@ const GameButtons = () => {
   };
 
   useEffect(() => {
-    socket.emit.IS_USER_OWNER();
-  }, []);
-
-  useEffect(() => {
     socket.on.IS_USER_OWNER({ state: isOwner, setState: setIsOwner });
 
     return () => {
@@ -107,12 +104,35 @@ const GameButtons = () => {
     };
   }, [isOwner]);
 
+  useEffect(() => {
+    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
+
+    return () => {
+      socket.off.IS_WAITING_STATE();
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on.REQUEST_USER_OWNER();
+    socket.emit.IS_USER_OWNER();
+
+    return () => {
+      socket.off.REQUEST_USER_OWNER();
+    };
+  }, []);
+
   return (
     <div className="game-header-buttons">
-      {isOwner ? <GameButtonsOwner socket={socket} /> : <GameButtonsUser socket={socket} />}
-      <div className="game-header-button-exit" onClick={exitRoom} />
+      {isWaitingState ? (
+        <>
+          {isOwner ? <GameButtonsOwner socket={socket} /> : <GameButtonsUser socket={socket} />}
+          <div className="game-header-button-exit" onClick={exitRoom} />
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
 
-export default React.memo(GameButtons);
+export default GameButtons;

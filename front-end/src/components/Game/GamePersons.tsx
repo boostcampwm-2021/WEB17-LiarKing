@@ -9,20 +9,6 @@ export type clientType = { name: string; state: string; socketId: string };
 const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
   const [selectedPerson, setVotePerson] = useState(-1);
 
-  const element = useMemo(() => {
-    return clients.map((v, i) => {
-      return (
-        <>
-          <div className="game-persons-user-character">
-            <div className="game-user-id">{v?.name ?? ''}</div>
-            <div className={v ? 'game-user-character' : ''} />
-          </div>
-          <div className="game-persons-user-item">{getStateComponent(v?.state ?? '', i)}</div>
-        </>
-      );
-    });
-  }, [selectedPerson]);
-
   const getStateComponent = (state: string, idx: number) => {
     switch (state) {
       case 'ready':
@@ -47,6 +33,20 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
         return <></>;
     }
   };
+
+  const element = useMemo(() => {
+    return clients.map((v, i) => {
+      return (
+        <>
+          <div className="game-persons-user-character">
+            <div className="game-user-id">{v.name ?? ''}</div>
+            <div className={v.name ? 'game-user-character' : ''} />
+          </div>
+          <div className="game-persons-user-item">{getStateComponent(v.state ?? '', i)}</div>
+        </>
+      );
+    });
+  }, [clients, selectedPerson]);
 
   return (
     <>
@@ -89,7 +89,7 @@ const GamePersons = () => {
     socket.emit.ROOM_CLIENTS_INFO();
   }, []);
 
-  return <GamePersonsElement clients={clients} />;
+  return <>{!!clients ? <GamePersonsElement clients={clients} /> : <></>}</>;
 };
 
 export default GamePersons;

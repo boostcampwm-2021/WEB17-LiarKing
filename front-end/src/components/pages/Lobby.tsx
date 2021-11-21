@@ -4,12 +4,9 @@ import Profile from '../Lobby/Profile';
 import LobbyButtons from '../Lobby/LobbyButtons';
 import LightBulb from '../Lobby/LightBulb';
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import { globalContext } from '../../App';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import globalSelector from '../../recoilStore/globalSelector';
-import { modalPropsType } from '../public/Modal';
 import { socketUtilType } from '../../utils/socketUtil';
 
 const ROOM_TITLE_IDX = 0;

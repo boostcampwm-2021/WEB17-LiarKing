@@ -42,13 +42,15 @@ const GameChatBox = () => {
   const [modal, setModal] = useState(chatList);
   const messageBox = useRef<HTMLInputElement>();
 
-  const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState(null);
+  const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState([]);
   const [isWaitingState, setIsWaitingState] = useState(true);
 
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const myClassName = 'my-bubble-box';
+
   let clientIdx = clients.length;
+
   clients.map((client, i) => {
     if (client.name === user.user_id) clientIdx = i;
   });
@@ -105,12 +107,12 @@ const GameChatBox = () => {
   }, []);
 
   useEffect(() => {
-    socket.on.IS_WAITING_STATE({ state: isWaitingState, setState: setIsWaitingState });
+    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
 
     return () => {
       socket.off.IS_WAITING_STATE();
     };
-  }, [isWaitingState]);
+  }, []);
 
   return (
     <>

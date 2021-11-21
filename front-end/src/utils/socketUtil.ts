@@ -9,35 +9,36 @@ const IS_ROOM_CREATE = 'is room create';
 const ROOM_LIST = 'room list';
 
 //room on
-const IS_WAITING_STATE = 'is waiting state'; //not server
-const IS_USER_OWNER = 'is user owner'; //not server -> 서버 요청
-const IS_USER_READY = 'is user ready'; //not server
-const IS_ALL_READY = 'is all ready'; //not server
-const ROOM_TITLE_INFO = 'room title info'; //not server -> 서버 요청
-const ROOM_CLIENTS_INFO = 'room clients info'; //not server -> 서버 요청
-const WAIT_ROOM_MESSAGE = 'wait room message'; //?
-const ROOM_STATE_INFO = 'room state info'; //not server -> 서버 요청
+const IS_WAITING_STATE = 'is waiting state';
+const IS_USER_OWNER = 'is user owner';
+const REQUEST_USER_OWNER = 'request user owner';
+const IS_USER_READY = 'is user ready';
+const IS_ALL_READY = 'is all ready';
+const ROOM_TITLE_INFO = 'room title info';
+const ROOM_CLIENTS_INFO = 'room clients info';
+const WAIT_ROOM_MESSAGE = 'wait room message';
 
 //game on
-const SELECT_DATA = 'select data'; //not server
-const REQUEST_SELECT_DATA = 'request select data'; //not server -> 개별로 서버요청
-const CHAT_HISTORY_DATA = 'chat history data'; //not server
-const CHAT_SPEAKER_DATA = 'chat speaker data'; //not server
-const VOTE_TIMER_DATA = 'vote timer data'; //not server
-const RESULT_DATA = 'result data'; //not server
-const LIAR_DATA = 'liar data'; //not server
+const ROOM_STATE_INFO = 'room state info';
+const SELECT_DATA = 'select data';
+const REQUEST_SELECT_DATA = 'request select data';
+const CHAT_HISTORY_DATA = 'chat history data';
+const CHAT_SPEAKER_DATA = 'chat speaker data';
+const VOTE_TIMER_DATA = 'vote timer data';
+const RESULT_DATA = 'result data';
+const LIAR_DATA = 'liar data';
 
 //lobby emit
-const CREATE_ROOM = 'create room'; //not server -> 서버 요청만
-const LOBBY_LOGOUT = 'lobby logout'; //not server -> 서버 요청만
+const CREATE_ROOM = 'create room';
+const LOBBY_LOGOUT = 'lobby logout';
 const ROOM_JOIN = 'room join';
 const LOBBY_ENTERED = 'lobby entered';
 
 //game, room emit
-const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
-const ROOM_READY = 'room ready'; //not server -> 서버 요청만
-const GAME_START = 'game start'; //not server -> 서버 요청만
-const CHAT_MESSAGE_DATA = 'chat message data'; //not server -> 서버 요청만
+const ROOM_EXIT = 'room exit';
+const ROOM_READY = 'room ready';
+const GAME_START = 'game start';
+const CHAT_MESSAGE_DATA = 'chat message data';
 
 type createRoomInfoType = {
   title: string;
@@ -66,9 +67,12 @@ const on = {
       else error();
     });
   },
+  /**
+   * RoomList 컴포넌트에서 사용한다.
+   * 방의 목록 정보를 서버로부터 받는다.
+   */
   ROOM_LIST: ({ setState }: { setState: setStateType<roomType[]> }) => {
     socket.on(ROOM_LIST, ({ roomList }: { roomList: roomType[] }) => {
-      console.log('!!!roomlist!!!', roomList);
       setState(roomList);
     });
   },
@@ -88,11 +92,9 @@ const on = {
    * 현재 방의 상태가 waiting 일 경우 true, 그외 false를 서버로부터 반환받는다.
    * 이미 적용된 값과 같을경우 변경하지 않는다.
    */
-  IS_WAITING_STATE: ({ state, setState }: { state: boolean; setState: setStateType<boolean> }) => {
+  IS_WAITING_STATE: ({ setState }: { setState: setStateType<boolean> }) => {
     socket.on(IS_WAITING_STATE, ({ isWaitingState }: { isWaitingState: boolean }) => {
-      if (isWaitingState !== state) {
-        setState(isWaitingState);
-      }
+      setState(isWaitingState);
     });
   },
   /**
@@ -108,13 +110,22 @@ const on = {
     });
   },
   /**
+   * 게임 방에 입장한 상태에서 방장이 바뀌었을 때
+   * 서버로부터 요청받아 새롭게 데이터를 불러온다.
+   */
+  REQUEST_USER_OWNER: () => {
+    socket.on(REQUEST_USER_OWNER, () => {
+      emit.IS_USER_OWNER();
+    });
+  },
+  /**
    * GameButtons의 GameButtonsUser 컴포넌트에서 사용한다.
    * 해당 유저가 준비버튼을 클릭했을 때 서버로부터 제대로 값이 변했는지 boolean값으로 응답한다.
    * 준비된 상태일 경우 ture, 준비되지 않은 상태일 경우 false를 반환받는다.
    */
   IS_USER_READY: ({ setState }: { setState: setStateType<boolean> }) => {
-    socket.on(IS_USER_READY, ({ isUserOwner }: { isUserOwner: boolean }) => {
-      setState(isUserOwner);
+    socket.on(IS_USER_READY, ({ isUserReady }: { isUserReady: boolean }) => {
+      setState(isUserReady);
     });
   },
   /**
@@ -161,9 +172,16 @@ const on = {
    */
   ROOM_CLIENTS_INFO: ({ setState }: { setState: setStateType<clientType[]> }) => {
     socket.on(ROOM_CLIENTS_INFO, ({ clients }: { clients: clientType[] }) => {
+      while (clients.length < 8) {
+        clients.push({ socketId: null, name: null, state: null });
+      }
       setState(clients);
     });
   },
+  /**
+   * GameChatBox 컴포넌트에서 사용한다.
+   * 대기상태일 때의 주고받는 메세지를 받는다.
+   */
   WAIT_ROOM_MESSAGE: (fn: (messageInfo: any) => void) => {
     socket.on(WAIT_ROOM_MESSAGE, (messageInfo: { userId: string; message: string; clientIdx: number }) => {
       fn(messageInfo);
@@ -249,6 +267,7 @@ const off = {
   ROOM_JOIN: () => socket.off(ROOM_JOIN),
   IS_WAITING_STATE: () => socket.off(IS_WAITING_STATE),
   IS_USER_OWNER: () => socket.off(IS_USER_OWNER),
+  REQUEST_USER_OWNER: () => socket.off(REQUEST_USER_OWNER),
   IS_USER_READY: () => socket.off(IS_USER_READY),
   IS_ALL_READY: () => socket.off(IS_ALL_READY),
   ROOM_TITLE_INFO: () => socket.off(ROOM_TITLE_INFO),
@@ -265,7 +284,7 @@ const off = {
 };
 
 const emit = {
-  CREATE_ROOM: ({ roomInfo }: { roomInfo: createRoomInfoType }) => socket.emit(CREATE_ROOM, roomInfo),
+  CREATE_ROOM: ({ roomInfo }: { roomInfo: createRoomInfoType }) => socket.emit(CREATE_ROOM, { roomInfo }),
   ROOM_LIST: () => socket.emit(ROOM_LIST, null),
   ROOM_JOIN: ({ roomTitle }: { roomTitle: string }) => socket.emit(ROOM_JOIN, { roomTitle }),
   LOBBY_ENTERED: ({ userId }: { userId: string }) => socket.emit(LOBBY_ENTERED, { userId }),
@@ -279,8 +298,7 @@ const emit = {
   WAIT_ROOM_MESSAGE: (messageInfo: any) => socket.emit(WAIT_ROOM_MESSAGE, messageInfo),
   ROOM_STATE_INFO: () => socket.emit(ROOM_STATE_INFO, null),
   REQUEST_SELECT_DATA: () => socket.emit(REQUEST_SELECT_DATA, null),
-  CHAT_HISTORY_DATA: () => socket.emit(CHAT_HISTORY_DATA, null),
-  CHAT_MESSAGE_DATA: ({ message }: { message: string }) => socket.emit(CHAT_MESSAGE_DATA, message),
+  CHAT_MESSAGE_DATA: ({ message }: { message: string }) => socket.emit(CHAT_MESSAGE_DATA, { message }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };

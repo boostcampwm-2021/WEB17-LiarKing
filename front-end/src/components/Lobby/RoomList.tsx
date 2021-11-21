@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
-import { globalContext } from '../../App';
+import { useEffect, useState } from 'react';
 
 import leftArrow from '../../images/leftArrow.svg';
 import rightArrow from '../../images/rightArrow.svg';
@@ -8,7 +7,6 @@ import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
 import { roomType } from '../pages/Lobby';
-import { socketUtilType } from '../../utils/socketUtil';
 
 let selectedRoom = -1;
 const ROOM_INFO_IDX = 1;
@@ -22,7 +20,6 @@ interface roomListInterface {
 
 const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   const [pageNumber, setPageNumber] = useState(1);
-  const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
@@ -44,6 +41,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
       room[ROOM_INFO_IDX]['selected'] = false;
       return room;
     });
+
     if (selectedRoom !== index) {
       newRooms[index][ROOM_INFO_IDX]['selected'] = true;
       selectedRoom = index;
