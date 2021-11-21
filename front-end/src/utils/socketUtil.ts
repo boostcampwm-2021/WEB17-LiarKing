@@ -15,6 +15,7 @@ const SELECT_DATA = 'select data'; //not server
 const REQUEST_SELECT_DATA = 'request select data'; //not server -> 개별로 서버요청
 const CHAT_HISTORY_DATA = 'chat history data'; //not server
 const CHAT_SPEAKER_DATA = 'chat speaker data'; //not server
+const VOTE_TIMER_DATA = 'vote timer data'; //not server
 
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
@@ -159,6 +160,15 @@ const on = {
       setState(speakerData);
     });
   },
+  /**
+   * GameContentVote 컴포넌트에서 사용한다.
+   * 서버로부터 투표 시간 데이터를 받아온다.
+   */
+  VOTE_TIMER_DATA: ({ setState }: { setState: setStateType<number> }) => {
+    socket.on(VOTE_TIMER_DATA, ({ timer }: { timer: number }) => {
+      setState(timer);
+    });
+  },
 };
 
 const off = {
@@ -174,6 +184,7 @@ const off = {
   REQUEST_SELECT_DATA: () => socket.off(REQUEST_SELECT_DATA),
   CHAT_HISTORY_DATA: () => socket.off(CHAT_HISTORY_DATA),
   CHAT_SPEAKER_DATA: () => socket.off(CHAT_SPEAKER_DATA),
+  VOTE_TIMER_DATA: () => socket.off(VOTE_TIMER_DATA),
 };
 
 const emit = {
