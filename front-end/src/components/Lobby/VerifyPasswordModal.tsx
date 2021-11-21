@@ -1,17 +1,17 @@
 import '../../styles/SearchRoomModal.css';
-import { Socket } from 'socket.io-client';
 import React, { useState, useContext } from 'react';
 import { globalContext } from '../../App';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { socketUtilType } from '../../utils/socketUtil';
 
 const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
   const [passwordInput, setPassword] = useState('');
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const roomData = useRecoilValue(globalAtom.roomData);
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -27,7 +27,7 @@ const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
       popModal({ type: 'error', ment: '비밀번호가 틀렸습니다.' });
     } else {
       offModal();
-      socket.emit('room join', roomTitle);
+      socket.emit.ROOM_JOIN({ roomTitle });
     }
   };
 

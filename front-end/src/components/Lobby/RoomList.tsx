@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 import { globalContext } from '../../App';
-import { Socket } from 'socket.io-client';
 
 import leftArrow from '../../images/leftArrow.svg';
 import rightArrow from '../../images/rightArrow.svg';
@@ -9,6 +8,7 @@ import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
 import { roomType } from '../pages/Lobby';
+import { socketUtilType } from '../../utils/socketUtil';
 
 let selectedRoom = -1;
 const ROOM_INFO_IDX = 1;
@@ -22,7 +22,7 @@ interface roomListInterface {
 
 const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
   const [pageNumber, setPageNumber] = useState(1);
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
@@ -59,18 +59,6 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
     if (rooms.length === 0 && filterWord !== '') popModal({ type: 'error', ment: '조건을 만족하는 방이 없습니다.' });
   }, [filterWord]);
 
-  useEffect(() => {
-    socket.on('room list', (roomList) => {
-      setRooms(roomList);
-    });
-
-    socket.emit('room list', null);
-
-    return () => {
-      socket.off('room list');
-    };
-  }, []);
-
   useEffect(() => {}, [pageNumber]);
 
   return (
@@ -100,7 +88,7 @@ const RoomList = ({ rooms, filterWord, setRooms }: roomListInterface) => {
         })}
       <div className="room-list-buttons">
         <img className="room-list-arrows" src={leftArrow} onClick={decreasePage}></img>
-        <div className="room-list-numbers">{pageNumber + ' / ' + Math.ceil(rooms.length / 10)}</div>
+        <div className="room-list-numbers">{pageNumber + ' / ' + Math.ceil(rooms ? rooms?.length / 10 : 0)}</div>
         <img className="room-list-arrows" src={rightArrow} onClick={increasePage}></img>
       </div>
     </div>

@@ -1,7 +1,14 @@
 import { io } from 'socket.io-client';
 
+import { roomType } from '../components/pages/Lobby';
+
 const socket = io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true });
 
+//lobby on
+const IS_ROOM_CREATE = 'is room create';
+const ROOM_LIST = 'room list';
+
+//room on
 const IS_WAITING_STATE = 'is waiting state'; //not server
 const IS_USER_OWNER = 'is user owner'; //not server -> 서버 요청
 const IS_USER_READY = 'is user ready'; //not server
@@ -11,6 +18,7 @@ const ROOM_CLIENTS_INFO = 'room clients info'; //not server -> 서버 요청
 const WAIT_ROOM_MESSAGE = 'wait room message'; //?
 const ROOM_STATE_INFO = 'room state info'; //not server -> 서버 요청
 
+//game on
 const SELECT_DATA = 'select data'; //not server
 const REQUEST_SELECT_DATA = 'request select data'; //not server -> 개별로 서버요청
 const CHAT_HISTORY_DATA = 'chat history data'; //not server
@@ -19,11 +27,25 @@ const VOTE_TIMER_DATA = 'vote timer data'; //not server
 const RESULT_DATA = 'result data'; //not server
 const LIAR_DATA = 'liar data'; //not server
 
+//lobby emit
+const CREATE_ROOM = 'create room'; //not server -> 서버 요청만
+const LOBBY_LOGOUT = 'lobby logout'; //not server -> 서버 요청만
+const ROOM_JOIN = 'room join';
+const LOBBY_ENTERED = 'lobby entered';
+
+//game, room emit
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
 const GAME_START = 'game start'; //not server -> 서버 요청만
 const CHAT_MESSAGE_DATA = 'chat message data'; //not server -> 서버 요청만
 
+type createRoomInfoType = {
+  title: string;
+  password: string;
+  max: number;
+  cycle: number;
+  owner: string;
+};
 type setStateType<T> = React.Dispatch<React.SetStateAction<T>>;
 type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: string };
 type clientType = { socketId: string; name: string; state: string };
@@ -33,6 +55,34 @@ type resultType = { results: string[]; totalResult: string };
 type liarType = { category: string[]; answer: number };
 
 const on = {
+  /**
+   * Lobby 컴포넌트에서 사용한다.
+   * 방이 제대로 만들어졌는지 서버에서 데이터를 받는다.
+   * false일 경우 방제가 중복되어 만들어 지지 않았다.
+   */
+  IS_ROOM_CREATE: ({ success, error }: { success: () => void; error: () => void }) => {
+    socket.on(IS_ROOM_CREATE, ({ isRoomCreate }: { isRoomCreate: boolean }) => {
+      if (isRoomCreate) success();
+      else error();
+    });
+  },
+  ROOM_LIST: ({ setState }: { setState: setStateType<roomType[]> }) => {
+    socket.on(ROOM_LIST, ({ roomList }: { roomList: roomType[] }) => {
+      console.log('!!!roomlist!!!', roomList);
+      setState(roomList);
+    });
+  },
+  /**
+   * LobbyButtons 컴포넌트에서 사용한다.
+   * 방이 제대로 입장가능한지 서버에서 데이터를 받는다.
+   * false일 경우 입장이 불가능 하다.
+   */
+  ROOM_JOIN: ({ success, error }: { success: () => void; error: () => void }) => {
+    socket.on(ROOM_JOIN, ({ isEnter }: { isEnter: boolean }) => {
+      if (isEnter) success();
+      else error();
+    });
+  },
   /**
    * Game의 GameBackground 컴포넌트에서 사용한다.
    * 현재 방의 상태가 waiting 일 경우 true, 그외 false를 서버로부터 반환받는다.
@@ -194,6 +244,9 @@ const on = {
 };
 
 const off = {
+  IS_ROOM_CREATE: () => socket.off(IS_ROOM_CREATE),
+  ROOM_LIST: () => socket.off(ROOM_LIST),
+  ROOM_JOIN: () => socket.off(ROOM_JOIN),
   IS_WAITING_STATE: () => socket.off(IS_WAITING_STATE),
   IS_USER_OWNER: () => socket.off(IS_USER_OWNER),
   IS_USER_READY: () => socket.off(IS_USER_READY),
@@ -212,7 +265,12 @@ const off = {
 };
 
 const emit = {
+  CREATE_ROOM: ({ roomInfo }: { roomInfo: createRoomInfoType }) => socket.emit(CREATE_ROOM, roomInfo),
+  ROOM_LIST: () => socket.emit(ROOM_LIST, null),
+  ROOM_JOIN: ({ roomTitle }: { roomTitle: string }) => socket.emit(ROOM_JOIN, { roomTitle }),
+  LOBBY_ENTERED: ({ userId }: { userId: string }) => socket.emit(LOBBY_ENTERED, { userId }),
   IS_USER_OWNER: () => socket.emit(IS_USER_OWNER, null),
+  LOBBY_LOGOUT: () => socket.emit(LOBBY_LOGOUT, null),
   ROOM_EXIT: () => socket.emit(ROOM_EXIT, null),
   ROOM_READY: () => socket.emit(ROOM_READY, null),
   GAME_START: ({ categorys }: { categorys: string[] }) => socket.emit(GAME_START, { categorys }),

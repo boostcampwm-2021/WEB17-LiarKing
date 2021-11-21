@@ -5,12 +5,12 @@ import LobbyButtons from '../Lobby/LobbyButtons';
 import LightBulb from '../Lobby/LightBulb';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
+import { socketUtilType } from '../../utils/socketUtil';
 
 const ROOM_TITLE_IDX = 0;
 
@@ -25,12 +25,10 @@ const filterRooms = (rooms: Array<roomType>, filterWord: string) => {
 };
 
 const Lobby = () => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
-  const history = useHistory();
 
-  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const { user_id } = useRecoilValue(globalAtom.user);
 
@@ -42,33 +40,24 @@ const Lobby = () => {
       },
       body: JSON.stringify({ user_id: user_id }),
     });
+
     if (res) {
+      socket.emit.LOBBY_LOGOUT();
       window.location.href = '/';
     }
   };
 
   useEffect(() => {
-    socket.on('room create', (data) => {
-      if (data) {
-        history.push('/game');
-      } else {
-        popModal({ type: 'error', ment: '중복된 방제가 있습니다.' });
-      }
-    });
+    socket.emit.LOBBY_ENTERED({ userId: user_id });
 
-    socket.on('room list', (roomList) => {
-      setRooms(roomList);
-    });
+    socket.on.ROOM_LIST({ setState: setRooms });
 
-    socket.emit('room list', null);
-
-    socket.emit('lobby entered', user_id);
+    socket.emit.ROOM_LIST();
 
     setRoomData({ ...roomData, selectedRoomTitle: '' });
 
     return () => {
-      socket.off('room create');
-      socket.off('room list');
+      socket.off.ROOM_LIST();
     };
   }, []);
 

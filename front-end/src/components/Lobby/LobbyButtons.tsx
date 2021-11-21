@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useHistory } from 'react-router';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -14,12 +13,13 @@ import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 import { roomType } from '../pages/Lobby';
+import { socketUtilType } from '../../utils/socketUtil';
 
 const ROOM_INFO_IDX = 1;
 
 const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFilterWord: (filterWord: string) => void }) => {
   const [createModal, setCreateModal] = useState([]);
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const roomData = useRecoilValue(globalAtom.roomData);
@@ -55,7 +55,7 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
     } else if (currentRoom.client.length === currentRoom.max) {
       popModal({ type: 'error', ment: '해당 방은 가득 차서 입장이 불가능합니다.' });
     } else if (roomPassword === '') {
-      socket.emit('room join', roomTitle);
+      socket.emit.ROOM_JOIN({ roomTitle });
     } else {
       const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
       setCreateModal([ModalOutLocation, <VerfiyPasswordModal offModal={offModal} key={1} />]);
@@ -73,13 +73,12 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
   };
 
   useEffect(() => {
-    socket.on('room join', (isEnter) => {
-      if (isEnter) history.push('/game');
-      else popModal({ type: 'error', ment: '방에 입장을 할 수 없습니다.' });
+    socket.on.ROOM_JOIN({
+      success: () => history.push('/game'),
+      error: () => popModal({ type: 'error', ment: '방에 입장을 할 수 없습니다.' }),
     });
-
     return () => {
-      socket.off('room join');
+      socket.off.ROOM_JOIN();
     };
   }, []);
 

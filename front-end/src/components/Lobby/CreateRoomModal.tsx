@@ -1,16 +1,17 @@
 import '../../styles/CreateRoomModal.css';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
-import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { socketUtilType } from '../../utils/socketUtil';
+import { useHistory } from 'react-router';
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
   const [roomInfo, setRoomInfo] = useState({
     title: '',
@@ -18,10 +19,8 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     max: 1,
     cycle: 1,
     owner: user.user_id,
-    state: 'waiting',
-    chatHistory: [],
-    speakerData: { speaker: '', timer: 0 },
   });
+  const history = useHistory();
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
 
@@ -61,10 +60,21 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     if (roomInfo.title === '') {
       popModal({ type: 'error', ment: '방 제목을 입력해주세요.' });
     } else {
-      socket.emit('room create', roomInfo);
+      socket.emit.CREATE_ROOM({ roomInfo });
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
     }
   };
+
+  useEffect(() => {
+    socket.on.IS_ROOM_CREATE({
+      success: () => history.push('/game'),
+      error: () => popModal({ type: 'error', ment: '중복된 방제가 있습니다.' }),
+    });
+
+    return () => {
+      socket.off.IS_ROOM_CREATE();
+    };
+  }, []);
 
   return (
     <div id="create-room">
