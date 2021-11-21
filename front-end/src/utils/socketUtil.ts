@@ -16,6 +16,7 @@ const REQUEST_SELECT_DATA = 'request select data'; //not server -> 개별로 서
 const CHAT_HISTORY_DATA = 'chat history data'; //not server
 const CHAT_SPEAKER_DATA = 'chat speaker data'; //not server
 const VOTE_TIMER_DATA = 'vote timer data'; //not server
+const RESULT_DATA = 'result data'; //not server
 
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
@@ -27,6 +28,7 @@ type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: str
 type clientType = { socketId: string; name: string; state: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
+type resultType = { results: string[]; totalResult: string };
 
 const on = {
   /**
@@ -169,6 +171,15 @@ const on = {
       setState(timer);
     });
   },
+  /**
+   * GameContentResult 컴포넌트에서 사용한다.
+   * 서버로부터 결과 데이터를 받아온다.
+   */
+  RESULT_DATA: ({ setState }: { setState: setStateType<resultType> }) => {
+    socket.on(RESULT_DATA, ({ resultData }: { resultData: resultType }) => {
+      setState(resultData);
+    });
+  },
 };
 
 const off = {
@@ -185,6 +196,7 @@ const off = {
   CHAT_HISTORY_DATA: () => socket.off(CHAT_HISTORY_DATA),
   CHAT_SPEAKER_DATA: () => socket.off(CHAT_SPEAKER_DATA),
   VOTE_TIMER_DATA: () => socket.off(VOTE_TIMER_DATA),
+  RESULT_DATA: () => socket.off(RESULT_DATA),
 };
 
 const emit = {
