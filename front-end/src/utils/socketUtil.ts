@@ -17,6 +17,7 @@ const CHAT_HISTORY_DATA = 'chat history data'; //not server
 const CHAT_SPEAKER_DATA = 'chat speaker data'; //not server
 const VOTE_TIMER_DATA = 'vote timer data'; //not server
 const RESULT_DATA = 'result data'; //not server
+const LIAR_DATA = 'liar data'; //not server
 
 const ROOM_EXIT = 'room exit'; //not server -> 서버 요청만
 const ROOM_READY = 'room ready'; //not server -> 서버 요청만
@@ -29,6 +30,7 @@ type clientType = { socketId: string; name: string; state: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type resultType = { results: string[]; totalResult: string };
+type liarType = { category: string[]; answer: number };
 
 const on = {
   /**
@@ -180,6 +182,15 @@ const on = {
       setState(resultData);
     });
   },
+  /**
+   * GameContentLiar 컴포넌트에서 사용한다.
+   * 서버로부터 단어들과 정답 번호를 받아온다.
+   */
+  LIAR_DATA: ({ setState }: { setState: setStateType<liarType> }) => {
+    socket.on(LIAR_DATA, ({ liarData }: { liarData: liarType }) => {
+      setState(liarData);
+    });
+  },
 };
 
 const off = {
@@ -197,6 +208,7 @@ const off = {
   CHAT_SPEAKER_DATA: () => socket.off(CHAT_SPEAKER_DATA),
   VOTE_TIMER_DATA: () => socket.off(VOTE_TIMER_DATA),
   RESULT_DATA: () => socket.off(RESULT_DATA),
+  LIAR_DATA: () => socket.off(LIAR_DATA),
 };
 
 const emit = {

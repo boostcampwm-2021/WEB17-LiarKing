@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { globalContext } from '../../App';
+import { socketUtilType } from '../../utils/socketUtil';
 
-const GameContentLiar = ({ liar }: { liar: { category: string[]; answer: number; success(): void; fail(): void } }) => {
-  const { category, answer, success, fail } = liar;
+const GameContentLiar = () => {
+  type liarType = { category: string[]; answer: number };
+
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
+  const [liarData, setLiarData]: [liarType, React.Dispatch<React.SetStateAction<liarType>>] = useState(null);
+  const { category, answer } = liarData;
+
+  const success = () => {
+    console.log('success!');
+  };
+
+  const fail = () => {
+    console.log('fail!');
+  };
 
   const setCategory = category.map((v, i) => {
     const obj: { category: string; fn(): void } = { category: v, fn: null };
@@ -11,6 +25,14 @@ const GameContentLiar = ({ liar }: { liar: { category: string[]; answer: number;
 
     return obj;
   });
+
+  useEffect(() => {
+    socket.on.LIAR_DATA({ setState: setLiarData });
+
+    return () => {
+      socket.off.LIAR_DATA();
+    };
+  }, []);
 
   return (
     <div className="game-content-box">
