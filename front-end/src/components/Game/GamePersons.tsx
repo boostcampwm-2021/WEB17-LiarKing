@@ -39,7 +39,7 @@ const GamePersons = ({ clients }: { clients: clientType[] }) => {
       client.map((v, i) => {
         return (
           <>
-            <div className="game-persons-user-character">
+            <div className={clients[i] ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
               <div className="game-user-id">{clients[i]?.name ?? ''}</div>
               <div className={clients[i] ? 'game-user-character' : ''} />
             </div>

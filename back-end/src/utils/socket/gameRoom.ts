@@ -81,7 +81,7 @@ const sendSelectWords = (socket: Socket, io: Server) => {
  */
 const sendWords = (socket: Socket, io: Server) => {
   socket.on('get word', ({ roomTitle }: { roomTitle: string }) => {
-    const WAITING_TIME = 3 * 1000;
+    const WAITING_TIME = 5 * 1000;
 
     const roomSecret = roomSecrets.get(roomTitle);
 

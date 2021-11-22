@@ -25,12 +25,14 @@ const GameContentChat = ({ clients, chat }: { clients: clientType[]; chat: props
     idList.push(client.name);
   });
 
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') sendMessage();
+  };
+
   const sendMessage = () => {
     if (messageBox.current.value !== '') {
       const message = user.user_id + ': ' + messageBox.current.value;
-
       socket.emit(GAME_MESSAGE.CHAT_DATA, { message, roomTitle: roomData.selectedRoomTitle });
-
       messageBox.current.value = '';
     }
   };
@@ -49,7 +51,7 @@ const GameContentChat = ({ clients, chat }: { clients: clientType[]; chat: props
         )) ?? <></>}
       </div>
       <div className="game-chat-box game-chat-box-send">
-        <input className="game-chat-box-font game-chat-send-input" size={40} ref={messageBox} />
+        <input className="game-chat-box-font game-chat-send-input" onKeyDown={sendIfEnter} size={40} ref={messageBox} />
         <button className="game-chat-send-button" onClick={sendMessage} />
       </div>
       <div className="game-content-chat-speaker">{`발언자: ${speaker}`}</div>

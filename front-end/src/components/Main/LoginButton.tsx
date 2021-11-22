@@ -20,23 +20,22 @@ const LoginModal = () => {
     setUserInfo({ ...userInfo, pwd: e.target.value });
   };
 
-  const clickPlay = async () => {
-    const idValidation = checkId(userInfo.id);
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') clickPlay();
+  };
 
-    if (!idValidation) {
+  const clickPlay = async () => {
+    if (!checkId(userInfo.id)) {
       popModal({ type: 'error', ment: '아이디를 다시 확인해 주세요.' });
       return;
     }
 
-    const pwValidation = checkPW(userInfo.pwd);
-
-    if (!pwValidation) {
+    if (!checkPW(userInfo.pwd)) {
       popModal({ type: 'error', ment: '비밀번호를 다시 확인해 주세요.' });
       return;
     }
 
     const userData = await requestToServer();
-
     if (userData.state === 'duplicated') {
       popModal({ type: 'error', ment: '이미 로그인되어 있습니다.' });
       return;
@@ -51,8 +50,8 @@ const LoginModal = () => {
 
   const checkId = (id: string): boolean => {
     const reg = /[a-zA-Z0-9]{5,20}/g;
-    const refKo = /[가-힣]{2,10}/g;
-    return reg.test(id) || refKo.test(id);
+    const regKo = /[가-힣]{2,10}/g;
+    return reg.test(id) || regKo.test(id);
   };
 
   const checkPW = (pw: string): boolean => {
@@ -80,8 +79,14 @@ const LoginModal = () => {
   return (
     <div className="main-login-modal">
       <div className="main-login-header">Account Login</div>
-      <input className="main-login-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId}></input>
-      <input className="main-login-id-password" type="password" placeholder="비밀번호를 입력하세요." onInput={changePwd}></input>
+      <input className="main-login-id-password" type="text" placeholder="아이디를 입력하세요." onInput={changeId} onKeyDown={sendIfEnter}></input>
+      <input
+        className="main-login-id-password"
+        type="password"
+        placeholder="비밀번호를 입력하세요."
+        onInput={changePwd}
+        onKeyDown={sendIfEnter}
+      ></input>
       <button className="main-login-submit" onClick={clickPlay}>
         Let's start lying...!
       </button>

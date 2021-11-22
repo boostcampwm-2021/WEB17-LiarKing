@@ -77,7 +77,7 @@ const Lobby = () => {
       <div className="lobby-center-items">
         <div className="lobby-header">Liar Game</div>
         <div className="lobby-rooms">
-          <RoomList rooms={filterRooms(rooms, filterWord)} filterWord={filterWord} setRooms={setRooms} />
+          <RoomList rooms={rooms} fRooms={filterRooms(rooms, filterWord)} filterWord={filterWord} setRooms={setRooms} />
         </div>
       </div>
       <div className="lobby-right-items">
