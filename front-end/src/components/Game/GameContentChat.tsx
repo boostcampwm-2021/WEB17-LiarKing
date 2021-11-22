@@ -27,19 +27,21 @@ const GameContentChatHistory = ({ socket }: { socket: socketUtilType }) => {
 const GameContentChatBox = ({ socket }: { socket: socketUtilType }) => {
   const messageBox = useRef<HTMLInputElement>();
 
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') sendMessage();
+  };
+
   const sendMessage = () => {
     if (messageBox.current.value !== '') {
       const message = messageBox.current.value;
-
       socket.emit.CHAT_MESSAGE_DATA({ message });
-
       messageBox.current.value = '';
     }
   };
 
   return (
     <div className="game-chat-box game-chat-box-send">
-      <input className="game-chat-box-font game-chat-send-input" size={40} ref={messageBox} />
+      <input className="game-chat-box-font game-chat-send-input" size={40} ref={messageBox} onKeyDown={sendIfEnter} />
       <button className="game-chat-send-button" onClick={sendMessage} />
     </div>
   );
