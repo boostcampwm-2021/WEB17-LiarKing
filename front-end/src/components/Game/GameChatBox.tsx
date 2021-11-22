@@ -15,6 +15,7 @@ const CONSTANTS = {
   CHATBOX_TOP_DIFF: 19,
   ROW_MAX_CLIENT: 4,
   CURRENT_CHAT_IDX: 0,
+  MSG_BOX_APPEAR_TIME: 3000,
 };
 
 type chatListType = {
@@ -47,7 +48,6 @@ const GameChatBox = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const myClassName = 'my-bubble-box';
-
   let clientIdx = clients.length;
 
   clients.map((client, i) => {
@@ -60,16 +60,13 @@ const GameChatBox = () => {
 
   const sendMessage = () => {
     if (messageBox.current.value === '') return;
-
     const messageInfo = { userId: user.user_id, message: messageBox.current.value, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
-
     socket.emit.WAIT_ROOM_MESSAGE(messageInfo);
     messageBox.current.value = '';
   };
 
   const setBubbleBox = (messageInfo: { userId: string; message: string; clientIdx: number }) => {
     let bubbleClassName = 'bubble-left';
-
     if (messageInfo.clientIdx >= CONSTANTS.ROW_MAX_CLIENT) {
       bubbleClassName = 'bubble-right';
     }
@@ -80,18 +77,16 @@ const GameChatBox = () => {
         className={bubbleClassName + ' ' + (messageInfo.clientIdx === clientIdx ? myClassName : '')}
         key={messageInfo.clientIdx}
       >
-        {messageInfo.message}
+        <div className="bubble-chat-box-msg">{messageInfo.message}</div>
       </div>
     );
 
     chatList[messageInfo.clientIdx].unshift(updateModal);
-
     setModal({ ...chatList });
-
     setTimeout(() => {
       chatList[messageInfo.clientIdx].splice(chatList[messageInfo.clientIdx].length - 2, 1);
       setModal({ ...chatList });
-    }, 3000);
+    }, CONSTANTS.MSG_BOX_APPEAR_TIME);
   };
 
   useEffect(() => {
