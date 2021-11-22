@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { voteInfo } from './store';
+import { voteInfo } from '../../utils/store';
 import GameTalk from './GameTalk';
 import voteBox from '../../images/voteBox.svg';
 

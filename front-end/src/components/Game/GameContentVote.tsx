@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { voteInfo } from './store';
+import { voteInfo } from '../../utils/store';
 
 const GameContentVote = ({ timer }: { timer: number }) => {
   const [isFixed, setFixed] = useState(false);

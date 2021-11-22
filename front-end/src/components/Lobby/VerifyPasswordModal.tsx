@@ -6,6 +6,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
 const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
   const [passwordInput, setPassword] = useState('');
@@ -27,7 +28,7 @@ const VerfiyPasswordModal = ({ offModal }: { offModal(): void }) => {
       popModal({ type: 'error', ment: '비밀번호가 틀렸습니다.' });
     } else {
       offModal();
-      socket.emit('room join', roomTitle);
+      socket.emit(ROOM_MEESSAGE.JOIN, roomTitle);
     }
   };
 

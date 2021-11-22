@@ -3,6 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
 import globalAtom from '../../recoilStore/globalAtom';
+import { GAME_MESSAGE } from '../../utils/socketMsgConstants';
 import { clientType } from './GamePersons';
 
 type propsType = { chatHistory: string[]; speaker: string; timer: number };
@@ -31,7 +32,7 @@ const GameContentChat = ({ clients, chat }: { clients: clientType[]; chat: props
   const sendMessage = () => {
     if (messageBox.current.value !== '') {
       const message = user.user_id + ': ' + messageBox.current.value;
-      socket.emit('chat data', { message, roomTitle: roomData.selectedRoomTitle });
+      socket.emit(GAME_MESSAGE.CHAT_DATA, { message, roomTitle: roomData.selectedRoomTitle });
       messageBox.current.value = '';
     }
   };
