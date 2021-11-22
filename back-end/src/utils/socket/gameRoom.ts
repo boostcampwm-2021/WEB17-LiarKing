@@ -36,6 +36,9 @@ const LIAR_DATA = 'liar data'; //아직 미사용
 const sendRoomTitleInfo = (socket: Socket, io: Server) => {
   socket.on(ROOM_TITLE_INFO, () => {
     const { roomTitle } = socketDatas.get(socket.id);
+
+    if (roomTitle === null) return;
+
     const { client, max } = roomList.get(roomTitle);
 
     io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: client.length, maxUsers: max, roomTitle });
@@ -48,6 +51,9 @@ const sendRoomTitleInfo = (socket: Socket, io: Server) => {
 const sendIsUserOwner = (socket: Socket) => {
   socket.on(IS_USER_OWNER, () => {
     const { name, roomTitle } = socketDatas.get(socket.id);
+
+    if (roomTitle === null) return;
+
     const { owner } = roomList.get(roomTitle);
 
     socket.emit(IS_USER_OWNER, { isUserOwner: owner === name });
@@ -60,6 +66,8 @@ const sendIsUserOwner = (socket: Socket) => {
 const sendClientInfo = (socket: Socket, io: Server) => {
   socket.on(ROOM_CLIENTS_INFO, () => {
     const { roomTitle } = socketDatas.get(socket.id);
+
+    if (roomTitle === null) return;
 
     io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomList.get(roomTitle).client });
   });
@@ -94,15 +102,21 @@ const sendUserReady = (socket: Socket, io: Server) => {
  */
 const sendRoomExit = (socket: Socket, io: Server) => {
   socket.on(ROOM_EXIT, () => {
-    const { name, roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+
+    if (!socketInfo) return;
+
+    const { name, roomTitle } = socketInfo;
     const roomInfo = roomList.get(roomTitle);
 
     socket.leave(roomTitle);
     socket.join(LOBBY);
 
-    if (roomInfo.client.length === 1) {
+    if (!!roomInfo && roomInfo.client.length === 1) {
       roomList.delete(roomTitle);
-    } else {
+
+      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
+    } else if (!!roomInfo) {
       if (roomInfo.owner === name) {
         roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
 
@@ -114,9 +128,8 @@ const sendRoomExit = (socket: Socket, io: Server) => {
 
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
       io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
+      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     }
-
-    io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
   });
 };
 

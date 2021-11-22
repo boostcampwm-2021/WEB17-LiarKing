@@ -63,9 +63,7 @@ const Game = () => {
     }
   };
 
-  useEffect(() => {
-    if (!user.user_id) getUserData(setUser);
-  }, []);
+  if (!user.user_id) getUserData(setUser);
 
   return (
     <div id="game">

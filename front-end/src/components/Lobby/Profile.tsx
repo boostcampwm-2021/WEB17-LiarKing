@@ -8,11 +8,9 @@ const Profile = () => {
   const profileImage = useRef(null);
   const [user, setUser] = useRecoilState(globalAtom.user);
 
-  useEffect(() => {
-    if (!user.user_id) getUserData(setUser);
+  if (!user.user_id) getUserData(setUser);
 
-    if (profileImage.current) profileImage.current.src = character;
-  }, []);
+  if (profileImage.current) profileImage.current.src = character;
 
   return (
     <div id="profile">
