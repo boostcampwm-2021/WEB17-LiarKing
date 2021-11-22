@@ -281,7 +281,43 @@
   background-color: #6d80a6;
   border-radius: 20px;
   padding: 15px;
-  transform: translate(0, 45%);
+  transition: all 0.3s;
+  animation: cardAnimation 2s linear forwards;
+}
+
+@keyframes cardAnimation {
+  0% {
+    transform: translate(0, 45%) translate3d(0, 0, -500px) scale(0.5);
+  }
+  12.5% {
+    transform: translate(0, 45%) translate3d(-150px, 0, -437.5px) scale(0.5625) rotateY(180deg);
+  }
+  25% {
+    transform: translate(0, 45%) translate3d(-235px, 0, -375px) scale(0.625) rotateY(0deg);
+  }
+  37.5% {
+    transform: translate(0, 45%) translate3d(-280px, 0, -312.5px) scale(0.6875) rotateY(180deg);
+  }
+  50% {
+    transform: translate(0, 45%) translate3d(-300px, 0, -250px) scale(0.75) rotateY(0deg);
+  }
+  62.5% {
+    transform: translate(0, 45%) translate3d(-280px, 0, -187.5px) scale(0.8125) rotateY(180deg);
+  }
+  75% {
+    transform: translate(0, 45%) translate3d(-235px, 0, -125px) scale(0.875) rotateY(0deg);
+  }
+  87.5% {
+    transform: translate(0, 45%) translate3d(-150px, 0, -62.5px) scale(0.9375) rotateY(180deg);
+  }
+  100% {
+    transform: translate(0, 45%) translate3d(0, 0, 0) scale(1) rotateY(0deg);
+  }
+}
+
+.game-content-select-image {
+  width: 250px;
+  height: 250px;
 }
 
 .game-content-select-imgbox {
