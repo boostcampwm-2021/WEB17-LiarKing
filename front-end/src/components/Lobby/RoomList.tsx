@@ -1,6 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
-import { globalContext } from '../../App';
-import { Socket } from 'socket.io-client';
+import { useEffect, useState } from 'react';
 
 import leftArrow from '../../images/leftArrow.svg';
 import rightArrow from '../../images/rightArrow.svg';
@@ -25,8 +23,9 @@ interface roomListInterface {
 
 const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) => {
   const [pageNumber, setPageNumber] = useState(1);
+
   const [filterRooms, setFilterRooms] = useState(rooms);
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: Socket } = useContext(globalContext);  //수정필요
 
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
@@ -48,6 +47,7 @@ const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) =>
       room[ROOM_INFO_IDX]['selected'] = false;
       return room;
     });
+
     if (selectedRoom !== index) {
       newRooms[index][ROOM_INFO_IDX]['selected'] = true;
       selectedRoom = index;
@@ -72,14 +72,15 @@ const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) =>
   }, [fRooms]);
 
   useEffect(() => {
+    //수정필요
     socket.on(ROOM_MEESSAGE.LIST, (roomList) => {
       setRooms(roomList);
     });
 
-    socket.emit(ROOM_MEESSAGE.LIST, null);
+    socket.emit(ROOM_MEESSAGE.LIST, null); //수정필요
 
     return () => {
-      socket.off(ROOM_MEESSAGE.LIST);
+      socket.off(ROOM_MEESSAGE.LIST); //수정필요
     };
   }, []);
 

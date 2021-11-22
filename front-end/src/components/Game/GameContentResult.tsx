@@ -1,24 +1,39 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { globalContext } from '../../App';
+import { socketUtilType } from '../../utils/socketUtil';
 
-const GameContentResult = ({ result }: { result: { voteResult: string[]; liar: string; gameResult: boolean } }) => {
-  const { voteResult, liar, gameResult } = result;
+const GameContentResult = () => {
+  type resultType = { results: string[]; totalResult: string };
+
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
+  const [resultData, setResultData]: [resultType, React.Dispatch<React.SetStateAction<resultType>>] = useState(null);
+  const { results, totalResult } = resultData;
+
+  useEffect(() => {
+    socket.on.RESULT_DATA({ setState: setResultData });
+
+    return () => {
+      socket.off.RESULT_DATA();
+    };
+  }, []);
 
   return (
     <div className="game-content-box">
       <span className="game-content-title">투표 결과</span>
       <div className="game-content-ment-box">
-        {voteResult.map((v, i) => (
+        {results.map((v, i) => (
           <span className="game-content-ment" key={i}>
             {v}
           </span>
         ))}
         <span className="game-content-ment">
           <br />
-          라이어는 {liar} 입니다. {gameResult ? '시민이 라이어 검거에 성공했습니다!' : '시민이 라이어 검거에 실패하였습니다!'}
+          {totalResult}
+          {/* 라이어는 {liar} 입니다. {gameResult ? '시민이 라이어 검거에 성공했습니다!' : '시민이 라이어 검거에 실패하였습니다!'} */}
         </span>
       </div>
     </div>
   );
 };
 
-export default React.memo(GameContentResult);
+export default GameContentResult;

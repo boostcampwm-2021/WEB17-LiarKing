@@ -70,7 +70,7 @@
   align-items: center;
 }
 
-.game-header-buttons > .not-ready-to-start {
+.game-header-buttons > .inactive {
   filter: opacity(0.6) !important;
 }
 
@@ -353,7 +353,7 @@
 
 .game-content-chat-history {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   height: 55vh;
   overflow: overlay;
   padding-right: 3vw;

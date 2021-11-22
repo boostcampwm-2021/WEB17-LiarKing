@@ -4,14 +4,16 @@ import Profile from '../Lobby/Profile';
 import LobbyButtons from '../Lobby/LobbyButtons';
 import LightBulb from '../Lobby/LightBulb';
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
-import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+
+import { socketUtilType } from '../../utils/socketUtil'; //수정 필요
+
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
-import { LOBBY_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
+import { LOBBY_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants'; //수정 필요
+
 
 const ROOM_TITLE_IDX = 0;
 
@@ -26,11 +28,9 @@ const filterRooms = (rooms: Array<roomType>, filterWord: string) => {
 };
 
 const Lobby = () => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
-  const history = useHistory();
-  const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const { user_id } = useRecoilValue(globalAtom.user);
 
@@ -42,20 +42,22 @@ const Lobby = () => {
       },
       body: JSON.stringify({ user_id: user_id }),
     });
+
     if (res) {
+      socket.emit.LOBBY_LOGOUT();
       window.location.href = '/';
     }
   };
 
   useEffect(() => {
-    socket.on(ROOM_MEESSAGE.CREATE, (data) => {
-      if (data) {
-        history.push('/game');
-      } else {
-        popModal({ type: 'error', ment: '중복된 방제가 있습니다.' });
-      }
-    });
+    //수정필요
+    socket.emit.LOBBY_ENTERED({ userId: user_id });
 
+    socket.on.ROOM_LIST({ setState: setRooms });
+
+    socket.emit.ROOM_LIST();
+
+    //수정필요
     socket.on(ROOM_MEESSAGE.LIST, (roomList) => {
       setRooms(roomList);
     });
@@ -67,6 +69,9 @@ const Lobby = () => {
     setRoomData({ ...roomData, selectedRoomTitle: '' });
 
     return () => {
+      //수정필요
+      socket.off.ROOM_LIST();
+      //수정필요
       socket.off(ROOM_MEESSAGE.CREATE);
       socket.off(ROOM_MEESSAGE.LIST);
     };

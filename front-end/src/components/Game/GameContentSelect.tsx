@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { globalContext } from '../../App';
+import { socketUtilType } from '../../utils/socketUtil';
 
-const GameContentSelect = ({ select }: { select: { word: string } }) => {
+const GameContentSelect = () => {
+  const [select, setSelect] = useState({ word: '' });
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
+
+  useEffect(() => {
+    socket.on.SELECT_DATA({ setState: setSelect });
+    socket.on.REQUEST_SELECT_DATA();
+
+    return () => {
+      socket.off.SELECT_DATA();
+      socket.off.REQUEST_SELECT_DATA();
+    };
+  }, []);
+
   return (
     <div className="game-content-select">
       <div className="game-content-select-imgbox">

@@ -1,46 +1,46 @@
-import React, { useEffect, useReducer } from 'react';
-import { roomInfoType } from '../pages/Game';
+import { useContext, useEffect, useReducer } from 'react';
+import { globalContext } from '../../App';
+import { socketUtilType } from '../../utils/socketUtil';
 import GameContentChat from './GameContentChat';
 import GameContentLiar from './GameContentLiar';
 import GameContentResult from './GameContentResult';
 import GameContentSelect from './GameContentSelect';
 import GameContentVote from './GameContentVote';
 
-export type actionType =
-  | { type: 'waiting'; waiting: { isOwner: boolean; isAllReady?: boolean; isReady?: boolean } }
-  | { type: 'select'; select: { word: string } }
-  | { type: 'chat'; chat: { chatHistory: string[]; speaker: string; timer: number } }
-  | { type: 'vote'; vote: { timer: number; setFix: any } }
-  | { type: 'result'; result: { voteResult: string[]; liar: string; gameResult: boolean } }
-  | { type: 'liar'; liar: { category: string[]; answer: number; success: () => void; fail: () => void } };
+export type actionType = { type: string };
 
-const $reducer = (state: JSX.Element, action: actionType & roomInfoType): JSX.Element => {
+const $reducer = (state: JSX.Element, action: actionType): JSX.Element => {
   switch (action.type) {
     case 'waiting':
       return <></>;
     case 'select':
-      return <GameContentSelect select={action.select} />;
+      return <GameContentSelect />;
     case 'chat':
-      return <GameContentChat clients={action.client} chat={action.chat} />;
+      return <GameContentChat />;
     case 'vote':
-      return <GameContentVote timer={action.vote.timer} />;
+      return <GameContentVote />;
     case 'result':
-      return <GameContentResult result={action.result} />;
+      return <GameContentResult />;
     case 'liar':
-      return <GameContentLiar liar={action.liar} />;
+      return <GameContentLiar />;
     default:
       return state;
   }
 };
 
-const GameContent = ({ action }: { action: actionType & roomInfoType }) => {
-  const [$, $dispatch] = useReducer($reducer, <></>);
+const GameContent = () => {
+  const [element, elementDispatch] = useReducer($reducer, <></>);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   useEffect(() => {
-    $dispatch(action);
-  }, [action]);
+    socket.on.ROOM_STATE_INFO({ dispatch: elementDispatch });
 
-  return $;
+    return () => {
+      socket.off.ROOM_STATE_INFO();
+    };
+  }, []);
+
+  return element;
 };
 
-export default React.memo(GameContent);
+export default GameContent;

@@ -1,77 +1,68 @@
 import '../../styles/Game.css';
-import React, { useEffect, useReducer, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import GameButtons from '../Game/GameButtons';
 import GamePersons from '../Game/GamePersons';
-import GameContent, { actionType } from '../Game/GameContent';
+import GameContent from '../Game/GameContent';
 import { globalContext } from '../../App';
-import { Socket } from 'socket.io-client';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import globalAtom from '../../recoilStore/globalAtom';
 import { getUserData } from '../../utils/getDataUtil';
 import { voteInfo } from '../../utils/store';
 import GameChatBox from '../Game/GameChatBox';
-import { GAME_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
+import globalAtom from '../../recoilStore/globalAtom';
+import { useRecoilState } from 'recoil';
 
-type $reducerType = actionType & roomInfoType;
+import { socketUtilType } from '../../utils/socketUtil'; //수정필요
+import { GAME_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants'; //수정필요
 
-const $reducer = (state: any, action: $reducerType) => {
-  const { type, max, client, title } = action;
-  const clientNumber = client.length;
-  const isWaiting: boolean = type === 'waiting';
-  const buttons =
-    type === 'waiting' &&
-    (action.waiting.isOwner ? (
-      <GameButtons isOwner={action.waiting.isOwner} roomTitle={title} isAllReady={action.waiting.isAllReady} />
-    ) : (
-      <GameButtons isOwner={action.waiting.isOwner} roomTitle={title} isReady={action.waiting.isReady} />
-    ));
+const GameBackgound = ({ socket }: { socket: socketUtilType }) => {
+  const [isWaitingState, setIsWaitingState] = useState(true);
+  const FILTER_CLASS_NAME = 'game-filter';
+
+  useEffect(() => {
+    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState }); //수정필요
+
+    return () => {
+      socket.off.IS_WAITING_STATE(); //수정필요
+    };
+  }, []);
+
+  return <section className={`game-background ${isWaitingState ? '' : FILTER_CLASS_NAME}`}></section>;
+};
+
+const GameTitleInfo = ({ socket }: { socket: socketUtilType }) => {
+  const [roomTitleInfo, setRoomInfoInfo] = useState({ usersAmount: 0, maxUsers: 0, roomTitle: '' });
+
+  const { usersAmount, maxUsers, roomTitle } = roomTitleInfo;
+
+  useEffect(() => {
+    socket.on.ROOM_TITLE_INFO({ state: roomTitleInfo, setState: setRoomInfoInfo });
+
+    return () => {
+      socket.off.ROOM_TITLE_INFO();
+    };
+  }, [roomTitleInfo]);
+
+  useEffect(() => {
+    socket.emit.ROOM_TITLE_INFO();
+  }, []);
 
   return (
-    <>
-      <section className={`game-background ${!isWaiting && 'game-filter'}`}></section>
-      <header className="game-header">
-        <span className="game-header-logo">Liar Game</span>
-        {buttons}
-        <span className="game-header-info">
-          ({clientNumber} / {max}) {title}
-        </span>
-      </header>
-      <section className="game-persons">
-        <GamePersons clients={client} />
-        {isWaiting && <GameChatBox clients={client} />}
-      </section>
-      <section className="game-content">
-        <GameContent action={action} />
-      </section>
-    </>
+    <span className="game-header-info">
+      ({usersAmount} / {maxUsers}) {roomTitle}
+    </span>
   );
 };
 
-export type roomInfoType = {
-  title: string;
-  password: string;
-  max: number;
-  client: { socketId: string; name: string; state: string }[];
-  cycle: number;
-  owner: string;
-  state: string;
-  chatHistory: string[];
-  speakerData: { speaker: string; timer: number };
-} | null;
-
 const Game = () => {
   const history = useHistory();
-  const { socket }: { socket: Socket } = useContext(globalContext);
-  const roomData = useRecoilValue(globalAtom.roomData);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const [user, setUser] = useRecoilState(globalAtom.user);
   const [client, setClient] = useRecoilState(globalAtom.client);
-  const [action, setAction]: [actionType & roomInfoType, React.Dispatch<React.SetStateAction<actionType & roomInfoType>>] = useState(null);
-  const [$, $dispatch] = useReducer($reducer, <></>);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
-      socket.emit(ROOM_MEESSAGE.EXIT, roomData.selectedRoomTitle);
+      socket.emit.ROOM_EXIT(); //수정필요
+      socket.emit(ROOM_MEESSAGE.EXIT, roomData.selectedRoomTitle); //수정필요
     } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }
@@ -193,12 +184,23 @@ const Game = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!action) return;
-    $dispatch(action);
-  }, [action]);
-
-  return <div id="game">{$}</div>;
+  return (
+    <div id="game">
+      <GameBackground socket={socket} />
+      <header className="game-header">
+        <span className="game-header-logo">Liar Game</span>
+        <GameButtons />
+        <GameTitleInfo socket={socket} />
+      </header>
+      <section className="game-persons">
+        <GamePersons />
+        <GameChatBox />
+      </section>
+      <section className="game-content">
+        <GameContent />
+      </section>
+    </div>
+  );
 };
 
 export default React.memo(Game);
