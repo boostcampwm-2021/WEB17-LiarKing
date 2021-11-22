@@ -19,8 +19,9 @@ const categoryList = [
   { category: '동물', include: true },
   { category: '음식', include: true },
   { category: '나라', include: true },
-  { category: '악기', include: true },
+  { category: '물건', include: true },
   { category: '스포츠', include: true },
+  { category: '셀러브리티', include: true },
 ];
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
