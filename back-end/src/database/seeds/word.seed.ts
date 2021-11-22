@@ -19,6 +19,7 @@ export default class CreateWords implements Seeder {
       });
     });
 
+    await connection.getRepository(Word).clear();
     await connection.getRepository(Word).save(wordParse);
   }
 }
