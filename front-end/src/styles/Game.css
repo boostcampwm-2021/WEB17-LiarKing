@@ -41,6 +41,7 @@
   box-sizing: border-box;
   padding: 30px;
   z-index: 4;
+  background-image: linear-gradient(to bottom, #6d80a6, #a7bdd9, #6d80a6);
 }
 
 .game-header-logo {
@@ -55,11 +56,12 @@
   font-family: Roboto;
   font-size: 36px;
   font-weight: 600;
-  text-shadow: 4px 6px 4px gray;
+  text-shadow: 3px 3px 3px gray;
   box-sizing: border-box;
   padding-bottom: 10px;
   margin-right: 10px;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
+  background-image: linear-gradient(to bottom, #a7bdd9, #6d80a6, #a7bdd9);
 }
 
 .game-header-buttons {
@@ -77,7 +79,6 @@
   min-width: fit-content;
   height: 50px;
   border: none;
-  background-color: #c4c4c4;
   border-radius: 13px;
   font-family: Roboto;
   font-size: 20px;
@@ -87,6 +88,7 @@
   text-shadow: 2px 3px 2px gray;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
   transition: filter 0.3s;
+  background-image: linear-gradient(to bottom, #c4c4c4, #aaa, #c4c4c4);
 }
 
 .game-header-button:hover {
@@ -94,13 +96,17 @@
 }
 
 .game-header-button-exit {
-  background-image: url('../images/exit.svg');
+  background-image: url('../images/exit2.svg');
   background-size: 100% 100%;
-  width: 50px;
-  min-width: 50px;
-  height: 50px;
+  width: 75px;
+  height: 60px;
   margin: 0 20px;
   cursor: pointer;
+  transition: filter 0.3s;
+}
+
+.game-header-button-exit:hover {
+  background-image: url('../images/exit3.svg');
 }
 
 .game-header-info {
@@ -108,7 +114,12 @@
   font-family: Roboto;
   font-size: 25px;
   font-weight: 600;
-  color: white;
+  text-shadow: 3px 3px 3px gray;
+  background-color: #a7bdd9;
+  padding: 10px 20px 15px;
+  border-radius: 15px;
+  box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
+  background-image: linear-gradient(to bottom, #a7bdd9, #6d80a6, #a7bdd9);
 }
 
 .game-persons {
@@ -190,6 +201,10 @@
   background-size: 100% 1100%;
 }
 
+.game-persons-user-chatacter-hidden {
+  display: none;
+}
+
 @keyframes gradient {
   0% {
     background-position: 0% 0%;
@@ -214,9 +229,14 @@
   font-family: Roboto;
   font-size: 13px;
   font-weight: 600;
-  color: white;
+  color: black;
   margin-bottom: 3px;
   text-shadow: 4px 6px 4px gray;
+  width: 100%;
+  flex-grow: 1;
+  background-color: aliceblue;
+  text-align: center;
+  border-bottom: 1px #000 solid;
 }
 
 .game-user-character {
@@ -224,6 +244,7 @@
   background-size: 100% 100%;
   width: 60px;
   height: 60px;
+  margin: 5px 0;
 }
 
 .game-persons-user-item {
@@ -260,7 +281,43 @@
   background-color: #6d80a6;
   border-radius: 20px;
   padding: 15px;
-  transform: translate(0, 45%);
+  transition: all 0.3s;
+  animation: cardAnimation 2s linear forwards;
+}
+
+@keyframes cardAnimation {
+  0% {
+    transform: translate(0, 45%) translate3d(0, 0, -500px) scale(0.5);
+  }
+  12.5% {
+    transform: translate(0, 45%) translate3d(-150px, 0, -437.5px) scale(0.5625) rotateY(180deg);
+  }
+  25% {
+    transform: translate(0, 45%) translate3d(-235px, 0, -375px) scale(0.625) rotateY(0deg);
+  }
+  37.5% {
+    transform: translate(0, 45%) translate3d(-280px, 0, -312.5px) scale(0.6875) rotateY(180deg);
+  }
+  50% {
+    transform: translate(0, 45%) translate3d(-300px, 0, -250px) scale(0.75) rotateY(0deg);
+  }
+  62.5% {
+    transform: translate(0, 45%) translate3d(-280px, 0, -187.5px) scale(0.8125) rotateY(180deg);
+  }
+  75% {
+    transform: translate(0, 45%) translate3d(-235px, 0, -125px) scale(0.875) rotateY(0deg);
+  }
+  87.5% {
+    transform: translate(0, 45%) translate3d(-150px, 0, -62.5px) scale(0.9375) rotateY(180deg);
+  }
+  100% {
+    transform: translate(0, 45%) translate3d(0, 0, 0) scale(1) rotateY(0deg);
+  }
+}
+
+.game-content-select-image {
+  width: 250px;
+  height: 250px;
 }
 
 .game-content-select-imgbox {

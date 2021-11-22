@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { voteInfo } from './store';
+import { voteInfo } from '../../utils/store';
+import GameTalk from './GameTalk';
 import voteBox from '../../images/voteBox.svg';
 import { socketUtilType } from '../../utils/socketUtil';
 import { globalContext } from '../../App';
@@ -38,7 +39,7 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
     return clients.map((v, i) => {
       return (
         <>
-          <div className="game-persons-user-character">
+          <div className={v.name ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
             <div className="game-user-id">{v.name ?? ''}</div>
             <div className={v.name ? 'game-user-character' : ''} />
           </div>

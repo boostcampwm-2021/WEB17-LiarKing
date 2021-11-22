@@ -89,7 +89,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
     const roomInfo = roomList.get(roomTitle);
     const socketInfo = socketDatas.get(socket.id);
 
-    if (!roomInfo || roomInfo.client.length === roomInfo.max) {
+    if (!roomInfo || roomInfo.client.length === roomInfo.max || roomInfo.state !== 'waiting') {
       socket.emit(ROOM_JOIN, { isEnter: false });
     } else {
       socket.emit(ROOM_JOIN, { isEnter: true });

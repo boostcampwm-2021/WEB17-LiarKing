@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useContext, useState } from 'react';
 import { globalContext } from '../../App';
+
 import { socketUtilType } from '../../utils/socketUtil';
+
+import globalAtom from '../../recoilStore/globalAtom';
+import { GAME_MESSAGE } from '../../utils/socketMsgConstants';
+import { clientType } from './GamePersons';
 
 const GameContentChatHistory = ({ socket }: { socket: socketUtilType }) => {
   type chatDataType = { ment: string; userName: string; color: string };
@@ -31,7 +36,8 @@ const GameContentChatBox = ({ socket }: { socket: socketUtilType }) => {
     if (messageBox.current.value !== '') {
       const message = messageBox.current.value;
 
-      socket.emit.CHAT_MESSAGE_DATA({ message });
+      socket.emit.CHAT_MESSAGE_DATA({ message }); //수정 필요
+      socket.emit(GAME_MESSAGE.CHAT_DATA, { message, roomTitle: roomData.selectedRoomTitle }); //수정 필요
 
       messageBox.current.value = '';
     }

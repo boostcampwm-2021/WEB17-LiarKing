@@ -130,6 +130,23 @@ const sendRoomExit = (socket: Socket, io: Server) => {
   });
 };
 
+/*
+ * 방장이 최대 플레이어수 변경 요청
+ */
+const sendSettingChange = (socket: Socket, io: Server) => {
+  socket.on('setting change', ({ category, max, cycle, title }) => {
+    const roomInfo = roomList.get(title);
+
+    if (roomInfo) {
+      roomInfo.max = max;
+      roomInfo.cycle = cycle;
+      roomList.set(title, roomInfo);
+      io.to(title).emit('room data', { roomInfo }); //수정필요
+      io.to('lobby').emit('room list', Array.from(roomList)); //수정필요
+    }
+  });
+};
+
 /**
  * 대기상태일 때의 주고받는 메세지를 전파한다.
  */
@@ -146,7 +163,7 @@ const gameStart = (socket: Socket, io: Server) => {
   const state = {
     select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
       const ROOM_STATE = 'select';
-      const WAITING_TIME = 3 * 1000;
+      const WAITING_TIME = 5 * 1000;
 
       const { title } = roomInfo;
 
@@ -226,8 +243,10 @@ const gameStart = (socket: Socket, io: Server) => {
  * 만약 그 방에 라이어인 경우에는 라이어를 보내준다.
  */
 const sendWords = (socket: Socket, io: Server) => {
+
   socket.on(REQUEST_SELECT_DATA, () => {
     const { roomTitle } = socketDatas.get(socket.id);
+
     const roomSecret = roomSecrets.get(roomTitle);
 
     const word = roomSecret.liar.socketId === socket.id ? '라이어' : roomSecret.answerWord;
@@ -268,11 +287,11 @@ const gameRoom = (socket: Socket, io: Server) => {
   sendIsUserOwner(socket);
   sendClientInfo(socket, io);
   sendUserReady(socket, io);
+
   sendRoomExit(socket, io);
   waitRoomMessage(socket, io);
-
   gameStart(socket, io);
-
+  sendSettingChange(socket, io);
   sendWords(socket, io);
   sendChat(socket, io);
 };

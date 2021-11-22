@@ -13,7 +13,9 @@ import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 import { modalPropsType } from '../public/Modal';
 import { roomType } from '../pages/Lobby';
-import { socketUtilType } from '../../utils/socketUtil';
+
+import { socketUtilType } from '../../utils/socketUtil'; //수정필요
+import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants'; //수정필요
 
 const ROOM_INFO_IDX = 1;
 
@@ -50,12 +52,16 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
         currentRoom.max = room[ROOM_INFO_IDX].max;
       }
     });
+    console.log(roomData);
     if (currentRoom.max === -1) {
       popModal({ type: 'alert', ment: '방을 선택해주세요.' });
     } else if (currentRoom.client.length === currentRoom.max) {
       popModal({ type: 'error', ment: '해당 방은 가득 차서 입장이 불가능합니다.' });
     } else if (roomPassword === '') {
-      socket.emit.ROOM_JOIN({ roomTitle });
+
+      socket.emit.ROOM_JOIN({ roomTitle }); //수정필요
+      socket.emit(ROOM_MEESSAGE.JOIN, roomTitle); //수정필요
+
     } else {
       const ModalOutLocation = <section className="modal-outter" onClick={offModal} key={0} />;
       setCreateModal([ModalOutLocation, <VerfiyPasswordModal offModal={offModal} key={1} />]);
@@ -73,12 +79,21 @@ const LobbyButtons = ({ rooms, setFilterWord }: { rooms: Array<roomType>; setFil
   };
 
   useEffect(() => {
+    //수정필요
     socket.on.ROOM_JOIN({
       success: () => history.push('/game'),
       error: () => popModal({ type: 'error', ment: '방에 입장을 할 수 없습니다.' }),
     });
-    return () => {
-      socket.off.ROOM_JOIN();
+    
+    //수정필요
+    socket.on(ROOM_MEESSAGE.JOIN, (isEnter) => {
+      if (isEnter) history.push('/game');
+      else popModal({ type: 'error', ment: '게임이 이미 진행 중인 방입니다.' });
+    });
+    
+    return () => {        
+      socket.off.ROOM_JOIN(); //수정필요
+      socket.off(ROOM_MEESSAGE.JOIN); //수정필요
     };
   }, []);
 

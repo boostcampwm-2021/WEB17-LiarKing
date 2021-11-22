@@ -54,6 +54,7 @@
 
 - [1주차 데모 영상](https://youtu.be/fc5xp2E2Q70)
 - [2주차 데모 영상](https://youtu.be/TXVOE76V43I)
+- [3주차 데모 영상](https://www.youtube.com/watch?v=Qj73PBukdAM)
 
 ### 📌 기타
 

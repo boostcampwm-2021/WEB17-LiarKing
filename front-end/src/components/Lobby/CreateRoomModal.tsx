@@ -3,12 +3,28 @@ import React, { useContext, useEffect, useState } from 'react';
 import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
 import { globalContext } from '../../App';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+
 import { socketUtilType } from '../../utils/socketUtil';
 import { useHistory } from 'react-router';
+
+import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
+
+const categoryList = [
+  { category: '과일', include: true },
+  { category: '탈것', include: true },
+  { category: '장소', include: true },
+  { category: '직업', include: true },
+  { category: '동물', include: true },
+  { category: '음식', include: true },
+  { category: '나라', include: true },
+  { category: '악기', include: true },
+  { category: '스포츠', include: true },
+];
+
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
@@ -23,6 +39,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const history = useHistory();
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
+  const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
@@ -60,8 +77,12 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     if (roomInfo.title === '') {
       popModal({ type: 'error', ment: '방 제목을 입력해주세요.' });
     } else {
-      socket.emit.CREATE_ROOM({ roomInfo });
+
+      socket.emit.CREATE_ROOM({ roomInfo });  //수정 필요
+      socket.emit(ROOM_MEESSAGE.CREATE, roomInfo); //수정 필요
+
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
+      setRoomSettings({ category: categoryList, max: roomInfo.max, cycle: roomInfo.cycle });
     }
   };
 

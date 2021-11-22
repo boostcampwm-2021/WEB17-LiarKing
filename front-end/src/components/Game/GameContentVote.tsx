@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { globalContext } from '../../App';
 import { socketUtilType } from '../../utils/socketUtil';
-import { voteInfo } from './store';
+import { voteInfo } from '../../utils/store';
 
 const GameContentVote = () => {
   const SECONDS = 1000;

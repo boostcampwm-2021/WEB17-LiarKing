@@ -50,6 +50,8 @@ const endVote = (socket: Socket, io: Server) => {
         voteResult: resultArray,
         roomInfo,
       });
+      voteResult[roomtitle] = {};
+      voteCount[roomtitle] = 0;
     }
   });
 };

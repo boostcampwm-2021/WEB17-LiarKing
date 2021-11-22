@@ -12,6 +12,10 @@ const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFil
     setSearchWord(e.target.value);
   };
 
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') searchRoom();
+  };
+
   const searchRoom = () => {
     if (searchWord === '') {
       popModal({ type: 'error', ment: '검색어를 입력해주세요.' });
@@ -25,7 +29,13 @@ const SearchRoomModal = ({ offModal, setFilterWord }: { offModal(): void; setFil
     <div id="search-room">
       <div className="search-room-header">방 검색하기</div>
       <div className="search-room-name">
-        <input className="sh-name sh-input-box" type="text" placeholder="검색할 단어를 입력해주세요 (최대 30자)" onInput={changeTitle}></input>
+        <input
+          className="sh-name sh-input-box"
+          type="text"
+          placeholder="검색할 단어를 입력해주세요 (최대 30자)"
+          onInput={changeTitle}
+          onKeyDown={sendIfEnter}
+        ></input>
       </div>
       <div className="search-room-buttons">
         <button className="search-room-do sh-button" onClick={searchRoom}>
