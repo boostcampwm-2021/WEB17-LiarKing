@@ -35,9 +35,11 @@ const LIAR_DATA = 'liar data'; //아직 미사용
  */
 const sendRoomTitleInfo = (socket: Socket, io: Server) => {
   socket.on(ROOM_TITLE_INFO, () => {
-    const { roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
 
-    if (roomTitle === null) return;
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { roomTitle } = socketInfo;
 
     const { client, max } = roomList.get(roomTitle);
 
@@ -50,9 +52,11 @@ const sendRoomTitleInfo = (socket: Socket, io: Server) => {
  */
 const sendIsUserOwner = (socket: Socket) => {
   socket.on(IS_USER_OWNER, () => {
-    const { name, roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
 
-    if (roomTitle === null) return;
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { name, roomTitle } = socketInfo;
 
     const { owner } = roomList.get(roomTitle);
 
@@ -65,9 +69,11 @@ const sendIsUserOwner = (socket: Socket) => {
  */
 const sendClientInfo = (socket: Socket, io: Server) => {
   socket.on(ROOM_CLIENTS_INFO, () => {
-    const { roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
 
-    if (roomTitle === null) return;
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { roomTitle } = socketInfo;
 
     io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomList.get(roomTitle).client });
   });
@@ -78,7 +84,12 @@ const sendClientInfo = (socket: Socket, io: Server) => {
  */
 const sendUserReady = (socket: Socket, io: Server) => {
   socket.on(ROOM_READY, () => {
-    const { name, roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { name, roomTitle } = socketInfo;
+
     const roomInfo = roomList.get(roomTitle);
 
     const clientInfo = roomInfo.client.find((v) => v.name === name);
@@ -138,7 +149,12 @@ const sendRoomExit = (socket: Socket, io: Server) => {
  */
 const sendSettingChange = (socket: Socket, io: Server) => {
   socket.on(SETTING_CHANGE, ({ roomSetting }: { roomSetting: { max: number; cycle: number } }) => {
-    const { roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { roomTitle } = socketInfo;
+
     const roomInfo = roomList.get(roomTitle);
     const { max, cycle } = roomSetting;
 
@@ -222,7 +238,12 @@ const gameStart = (socket: Socket, io: Server) => {
   };
 
   socket.on(GAME_START, async ({ categorys }: { categorys: string[] }) => {
-    const { roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { roomTitle } = socketInfo;
+
     const roomInfo = roomList.get(roomTitle);
     const roomSecret = roomSecrets.get(roomTitle);
 
