@@ -59,11 +59,8 @@ const Lobby = () => {
     socket.on('room list', (roomList) => {
       setRooms(roomList);
     });
-
     socket.emit('room list', null);
-
     socket.emit('lobby entered', user_id);
-
     setRoomData({ ...roomData, selectedRoomTitle: '' });
 
     return () => {
@@ -77,7 +74,7 @@ const Lobby = () => {
       <div className="lobby-center-items">
         <div className="lobby-header">Liar Game</div>
         <div className="lobby-rooms">
-          <RoomList rooms={filterRooms(rooms, filterWord)} filterWord={filterWord} setRooms={setRooms} />
+          <RoomList rooms={rooms} fRooms={filterRooms(rooms, filterWord)} filterWord={filterWord} setRooms={setRooms} />
         </div>
       </div>
       <div className="lobby-right-items">
