@@ -97,17 +97,11 @@ const GameChatBox = () => {
   useEffect(() => {
     socket.on.WAIT_ROOM_MESSAGE(setBubbleBox);
     socket.on.ROOM_CLIENTS_INFO({ setState: setClients });
+    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
 
     return () => {
       socket.off.WAIT_ROOM_MESSAGE();
       socket.off.ROOM_CLIENTS_INFO();
-    };
-  }, []);
-
-  useEffect(() => {
-    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
-
-    return () => {
       socket.off.IS_WAITING_STATE();
     };
   }, []);

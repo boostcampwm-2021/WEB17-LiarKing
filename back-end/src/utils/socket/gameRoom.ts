@@ -9,6 +9,7 @@ const LOBBY = 'lobby';
 const ROOM_TITLE_INFO = 'room title info';
 const ROOM_READY = 'room ready';
 const ROOM_EXIT = 'room exit';
+const SETTING_CHANGE = 'setting change';
 const IS_USER_OWNER = 'is user owner';
 const GAME_START = 'game start';
 const CHAT_MESSAGE_DATA = 'chat message data';
@@ -116,17 +117,6 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     }
 
     io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
-
-    // if (roomInfo && roomInfo.client.length > 1) {
-    //   const client = roomInfo.client.filter((user: { socketId: string; name: string }) => user.socketId !== socket.id);
-    //   roomList.set(title, { ...roomInfo, client });
-    //   io.to(title).emit('room data', { roomInfo: roomList.get(title), tag: 'room exit' });
-    // } else {
-    //   roomList.delete(title);
-    // }
-
-    // io.to(title).emit('room exit', { socketId: socket.id });
-    // io.to('lobby').emit('room list', Array.from(roomList));
   });
 };
 
@@ -134,16 +124,20 @@ const sendRoomExit = (socket: Socket, io: Server) => {
  * 방장이 최대 플레이어수 변경 요청
  */
 const sendSettingChange = (socket: Socket, io: Server) => {
-  socket.on('setting change', ({ category, max, cycle, title }) => {
-    const roomInfo = roomList.get(title);
+  socket.on(SETTING_CHANGE, ({ roomSetting }: { roomSetting: { max: number; cycle: number } }) => {
+    const { roomTitle } = socketDatas.get(socket.id);
+    const roomInfo = roomList.get(roomTitle);
+    const { max, cycle } = roomSetting;
 
-    if (roomInfo) {
-      roomInfo.max = max;
-      roomInfo.cycle = cycle;
-      roomList.set(title, roomInfo);
-      io.to(title).emit('room data', { roomInfo }); //수정필요
-      io.to('lobby').emit('room list', Array.from(roomList)); //수정필요
-    }
+    if (!roomInfo) return;
+
+    roomInfo.max = max;
+    roomInfo.cycle = cycle;
+
+    roomList.set(roomTitle, roomInfo);
+
+    io.to(roomTitle).emit(ROOM_TITLE_INFO, { maxUsers: max });
+    io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
   });
 };
 
@@ -243,7 +237,6 @@ const gameStart = (socket: Socket, io: Server) => {
  * 만약 그 방에 라이어인 경우에는 라이어를 보내준다.
  */
 const sendWords = (socket: Socket, io: Server) => {
-
   socket.on(REQUEST_SELECT_DATA, () => {
     const { roomTitle } = socketDatas.get(socket.id);
 

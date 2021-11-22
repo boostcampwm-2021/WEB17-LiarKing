@@ -29,7 +29,6 @@ const GameContentResult = () => {
         <span className="game-content-ment">
           <br />
           {totalResult}
-          {/* 라이어는 {liar} 입니다. {gameResult ? '시민이 라이어 검거에 성공했습니다!' : '시민이 라이어 검거에 실패하였습니다!'} */}
         </span>
       </div>
     </div>

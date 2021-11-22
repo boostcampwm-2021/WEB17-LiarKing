@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 const GameTalkAudio = ({ stream }: { stream: MediaStream }) => {
   const ref = useRef(null);

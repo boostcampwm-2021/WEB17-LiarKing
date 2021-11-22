@@ -1,12 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { globalContext } from '../../App';
 import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 
 import { socketUtilType } from '../../utils/socketUtil';
-import { GAME_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 import { modalPropsType } from '../public/Modal';
 import GameRoomSettings from './GameRoomSettings';
 
@@ -14,18 +13,12 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
   const [isAllReady, setIsAllReady] = useState(false);
   const [settingsModal, setSettingsModal] = useState([]);
 
-  const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
-  const { socket } = useContext(globalContext);
+  const roomSettings = useRecoilValue(globalAtom.roomSettings);
 
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
   const offModal = () => {
     setSettingsModal([]);
-  };
-
-  const exit = () => {
-    socket.emit(ROOM_MEESSAGE.EXIT, roomTitle);
-    history.replace('/lobby');
   };
 
   const roomSettingsUpdate = () => {
@@ -39,13 +32,13 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
       return;
     }
 
-    const category: string[] = roomSettings.category
+    const categorys: string[] = roomSettings.category
       .map(({ category, include }) => {
         if (include) return category;
       })
       .filter((category) => category !== undefined);
-    socket.emit(GAME_MESSAGE.WORD_SELECT, { category, roomTitle }); //수정필요
-    socket.emit.GAME_START({ categorys }); //수정필요
+
+    socket.emit.GAME_START({ categorys });
   };
 
   useEffect(() => {
@@ -122,17 +115,11 @@ const GameButtons = () => {
 
   useEffect(() => {
     socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
+    socket.on.REQUEST_USER_OWNER();
 
+    socket.emit.IS_USER_OWNER();
     return () => {
       socket.off.IS_WAITING_STATE();
-    };
-  }, []);
-
-  useEffect(() => {
-    socket.on.REQUEST_USER_OWNER();
-    socket.emit.IS_USER_OWNER();
-
-    return () => {
       socket.off.REQUEST_USER_OWNER();
     };
   }, []);

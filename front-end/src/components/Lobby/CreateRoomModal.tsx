@@ -11,8 +11,6 @@ import globalSelector from '../../recoilStore/globalSelector';
 import { socketUtilType } from '../../utils/socketUtil';
 import { useHistory } from 'react-router';
 
-import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
-
 const categoryList = [
   { category: '과일', include: true },
   { category: '탈것', include: true },
@@ -24,7 +22,6 @@ const categoryList = [
   { category: '악기', include: true },
   { category: '스포츠', include: true },
 ];
-
 
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
@@ -39,7 +36,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const history = useHistory();
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
-  const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
+  const setRoomSettings = useSetRecoilState(globalAtom.roomSettings);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
@@ -77,9 +74,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     if (roomInfo.title === '') {
       popModal({ type: 'error', ment: '방 제목을 입력해주세요.' });
     } else {
-
-      socket.emit.CREATE_ROOM({ roomInfo });  //수정 필요
-      socket.emit(ROOM_MEESSAGE.CREATE, roomInfo); //수정 필요
+      socket.emit.CREATE_ROOM({ roomInfo });
 
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
       setRoomSettings({ category: categoryList, max: roomInfo.max, cycle: roomInfo.cycle });

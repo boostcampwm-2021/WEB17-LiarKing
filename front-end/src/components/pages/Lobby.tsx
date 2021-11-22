@@ -8,12 +8,7 @@ import { globalContext } from '../../App';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 
-import { socketUtilType } from '../../utils/socketUtil'; //수정 필요
-
-import globalSelector from '../../recoilStore/globalSelector';
-import { modalPropsType } from '../public/Modal';
-import { LOBBY_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants'; //수정 필요
-
+import { socketUtilType } from '../../utils/socketUtil';
 
 const ROOM_TITLE_IDX = 0;
 
@@ -50,30 +45,16 @@ const Lobby = () => {
   };
 
   useEffect(() => {
-    //수정필요
     socket.emit.LOBBY_ENTERED({ userId: user_id });
 
     socket.on.ROOM_LIST({ setState: setRooms });
 
     socket.emit.ROOM_LIST();
 
-    //수정필요
-    socket.on(ROOM_MEESSAGE.LIST, (roomList) => {
-      setRooms(roomList);
-    });
-
-    socket.emit(ROOM_MEESSAGE.LIST, null);
-
-    socket.emit(LOBBY_MESSAGE.ENTER, user_id);
-
     setRoomData({ ...roomData, selectedRoomTitle: '' });
 
     return () => {
-      //수정필요
       socket.off.ROOM_LIST();
-      //수정필요
-      socket.off(ROOM_MEESSAGE.CREATE);
-      socket.off(ROOM_MEESSAGE.LIST);
     };
   }, []);
 

@@ -8,7 +8,6 @@ import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
 import { roomType } from '../pages/Lobby';
-import { ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
 
 let selectedRoom = -1;
 const ROOM_INFO_IDX = 1;
@@ -23,10 +22,7 @@ interface roomListInterface {
 
 const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) => {
   const [pageNumber, setPageNumber] = useState(1);
-
   const [filterRooms, setFilterRooms] = useState(rooms);
-  const { socket }: { socket: Socket } = useContext(globalContext);  //수정필요
-
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
 
@@ -70,19 +66,6 @@ const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) =>
   useEffect(() => {
     setFilterRooms(fRooms);
   }, [fRooms]);
-
-  useEffect(() => {
-    //수정필요
-    socket.on(ROOM_MEESSAGE.LIST, (roomList) => {
-      setRooms(roomList);
-    });
-
-    socket.emit(ROOM_MEESSAGE.LIST, null); //수정필요
-
-    return () => {
-      socket.off(ROOM_MEESSAGE.LIST); //수정필요
-    };
-  }, []);
 
   return (
     <>

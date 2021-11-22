@@ -39,6 +39,7 @@ const ROOM_EXIT = 'room exit';
 const ROOM_READY = 'room ready';
 const GAME_START = 'game start';
 const CHAT_MESSAGE_DATA = 'chat message data';
+const SETTING_CHANGE = 'setting change';
 
 type createRoomInfoType = {
   title: string;
@@ -54,6 +55,7 @@ type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type resultType = { results: string[]; totalResult: string };
 type liarType = { category: string[]; answer: number };
+type roomSettingType = { max: number; cycle: number };
 
 const on = {
   /**
@@ -299,6 +301,7 @@ const emit = {
   ROOM_STATE_INFO: () => socket.emit(ROOM_STATE_INFO, null),
   REQUEST_SELECT_DATA: () => socket.emit(REQUEST_SELECT_DATA, null),
   CHAT_MESSAGE_DATA: ({ message }: { message: string }) => socket.emit(CHAT_MESSAGE_DATA, { message }),
+  SETTING_CHANGE: ({ roomSetting }: { roomSetting: roomSettingType }) => socket.emit(SETTING_CHANGE, { roomSetting }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };
