@@ -235,7 +235,6 @@ const gameStart = (socket: Socket, io: Server) => {
       const ROOM_STATE = 'vote';
       const VOTE_TIME_OUT = 3; //20
       const SUB_TIME = 1;
-      const ROOM_STATE = 'vote';
 
       const { title, client } = roomInfo;
 
@@ -269,14 +268,14 @@ const gameStart = (socket: Socket, io: Server) => {
         FAIL: '라이어 검거에 실패하였습니다.',
       };
 
-      const isWin: boolean = vote[0].name === liar.name && vote[1].name === '기권' ? true : vote[0].count !== vote[1].count;
+      const isWin: boolean = vote[0].name === liar.name && (vote[1].name === '기권' ? true : vote[0].count !== vote[1].count);
 
       io.to(title).emit(RESULT_DATA, {
         resultData: { results: vote.map((v) => `${v.name} ${v.count}표`), totalResult: `${MENT.LIAR} ${isWin ? MENT.SUCCESS : MENT.FAIL}` },
       });
 
       client.forEach((v) => (v.state = ''));
-      
+
       io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
 
       await timer(WAIT_VOTE_RESULT * SECONDS);
