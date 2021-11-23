@@ -6,7 +6,6 @@ import 'reflect-metadata';
 import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { readFileSync } from 'fs';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
 
