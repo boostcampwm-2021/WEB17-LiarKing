@@ -53,7 +53,7 @@ const GameContentResult = () => {
       sendPoint = resultData.liarWins ? CONSTANTS.SUBTRACT_TEN : CONSTANTS.ADD_TEN;
       setPointComment(sendPoint);
     }
-    if (user.rank !== CONSTANTS.UNRANKED && !fetchLock) requestToServer();
+    if (resultData.liar && user.rank !== CONSTANTS.UNRANKED && !fetchLock) requestToServer();
     setFetchLock(false);
   }, [resultData]);
 

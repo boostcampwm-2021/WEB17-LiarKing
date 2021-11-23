@@ -30,8 +30,8 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   const [roomInfo, setRoomInfo] = useState({
     title: '',
     password: '',
-    max: 1,
-    cycle: 1,
+    max: 8,
+    cycle: 2,
     owner: user.user_id,
   });
   const history = useHistory();
@@ -54,7 +54,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   };
 
   const decreasePersons = () => {
-    if (roomInfo.max > 1) {
+    if (roomInfo.max > 2) {
       setRoomInfo({ ...roomInfo, max: roomInfo.max - 1 });
     }
   };
