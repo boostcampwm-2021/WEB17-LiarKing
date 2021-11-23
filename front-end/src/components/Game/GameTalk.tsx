@@ -5,42 +5,45 @@ import Peer from 'peerjs';
 import { useEffect, useRef, useState } from 'react';
 import socketUtil from '../../utils/socketUtil';
 import { socket } from '../../utils/socketUtil';
-const GameTalk = ({ clients }: { clients: clientsType[] }) => {
+const GameTalk = () => {
   let myPeer: Peer;
-  let peers: { [props: string]: Peer.MediaConnection } = {};
+  let myStream: MediaStream;
+  let peers: { [prop: string]: Peer.MediaConnection } = {};
   const localAudio = useRef(null);
   const [users, setUsers] = useState([]);
 
   const getUserMedia = async () => {
-    const myStream = await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
     });
-    localAudio.current.srcObject = myStream;
+    localAudio.current.srcObject = stream;
 
-    myPeer = new Peer();
+    myStream = stream;
 
-    socket.on('someone joined', (id) => {
-      connectToNewUser(id, myStream);
+    myPeer = new Peer(undefined, {
+      host: '/',
+      port: 5001,
     });
 
-    socket.on('peer-disconnect', (id) => {
-      if (peers[id]) peers[id].close();
+    myPeer.on('open', (id: string) => {
+      socket.emit('i joined', { id });
+    });
+
+    socket.on('someone joined', ({ id }) => {
+      connectToNewUser(id);
     });
 
     myPeer.on('call', (call) => {
+      console.log('recevie origin', call, myStream);
       call.answer(myStream);
       call.on('stream', (stream) => {
-        setUsers([...users, { id: stream.id, stream: stream }]);
+        setUsers([...users, { id: Math.random(), stream: stream }]);
       });
-    });
-
-    myPeer.on('open', (id) => {
-      socket.emit('i joined', id);
     });
   };
 
-  const connectToNewUser = (id: string, myStream: MediaStream) => {
+  const connectToNewUser = (id: string) => {
     const call = myPeer.call(id, myStream);
 
     call.on('stream', (stream) => {

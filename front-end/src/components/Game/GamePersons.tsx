@@ -60,7 +60,7 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
             </div>
           ))}
       </div>
-      <GameTalk clients={clients}></GameTalk>
+      <GameTalk></GameTalk>
       <div className="game-persons-right">
         {element
           .filter((v, i) => i >= 4)

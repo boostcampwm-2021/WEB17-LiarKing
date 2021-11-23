@@ -8,7 +8,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
-
+import { ExpressPeerServer, PeerServer } from 'peer';
 import userRouter from './route/userRouter';
 import indexRouter from './route/indexRouter';
 
@@ -26,6 +26,13 @@ const io = new Server(httpServer, {
   cors: { origin: '*' },
   path: '/socket',
 });
+
+const peerServer = PeerServer({
+  path: '/',
+  port: 5001,
+});
+
+peerServer.listen();
 
 socketUtil(io);
 
