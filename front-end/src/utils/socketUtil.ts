@@ -56,7 +56,7 @@ type clientType = { socketId: string; name: string; state: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type voteDataType = { name: string };
-type resultType = { results: string[]; totalResult: string };
+type resultType = { results: string[]; totalResult: string; liar: string; liarWins: boolean };
 type liarType = { category: string[]; answer: number };
 type roomSettingType = { max: number; cycle: number };
 

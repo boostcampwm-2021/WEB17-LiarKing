@@ -27,7 +27,7 @@ const CHAT_HISTORY_DATA = 'chat history data';
 const CHAT_SPEAKER_DATA = 'chat speaker data';
 const VOTE_TIMER_DATA = 'vote timer data';
 const END_VOTE = 'end vote';
-const RESULT_DATA = 'result data'; //아직 미사용
+const RESULT_DATA = 'result data';
 const LIAR_DATA = 'liar data'; //아직 미사용
 
 /**
@@ -190,7 +190,7 @@ const gameStart = (socket: Socket, io: Server) => {
   const state = {
     select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
       const ROOM_STATE = 'select';
-      const WAITING_TIME = 5 * 1000;
+      const WAITING_TIME = 1 * 1000;
 
       const { title } = roomInfo;
 
@@ -215,7 +215,7 @@ const gameStart = (socket: Socket, io: Server) => {
     },
     chat: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'chat';
-      const SPEAK_TIME = 3; //임시로, 원래 30 ~ 60
+      const SPEAK_TIME = 1; //임시로, 원래 30 ~ 60
       const SUB_TIME = 1;
 
       const { title } = roomInfo;
@@ -235,6 +235,7 @@ const gameStart = (socket: Socket, io: Server) => {
       const ROOM_STATE = 'vote';
       const VOTE_TIME_OUT = 3; //20
       const SUB_TIME = 1;
+      const ROOM_STATE = 'vote';
 
       const { title, client } = roomInfo;
 
@@ -275,10 +276,31 @@ const gameStart = (socket: Socket, io: Server) => {
       });
 
       client.forEach((v) => (v.state = ''));
-
+      
       io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
 
       await timer(WAIT_VOTE_RESULT * SECONDS);
+    },
+    result: async (roomInfo: roomInfoType, roomSecret: roomSecretType) => {
+      const ROOM_STATE = 'result';
+      const RESULT_TIMER = 5;
+      const SECONDS = 1000;
+      const { title } = roomInfo;
+
+      const liarVotes = 5;
+      const citizenVotes = 2;
+
+      let totalResult = `라이어는 ${roomSecret.liar.name} 입니다. 라이어가 승리하였습니다.`;
+      let liarWins = true;
+      if (liarVotes > citizenVotes) {
+        totalResult = `라이어는 ${roomSecret.liar.name} 입니다. 라이어가 패배하였습니다.`;
+        liarWins = false;
+      }
+
+      const tempData = { results: ['1번플레이어 1표', '기권 1표'], totalResult: totalResult, liar: roomSecret.liar.name, liarWins: liarWins };
+      io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+      io.to(title).emit(RESULT_DATA, { resultData: tempData });
+      await timer(RESULT_TIMER * SECONDS);
     },
   };
 
@@ -302,6 +324,7 @@ const gameStart = (socket: Socket, io: Server) => {
     await state.chat(roomInfo);
     await state.vote(roomInfo);
     await state.voteResult(roomInfo);
+    await state.result(roomInfo, roomSecret);
 
     roomInfo.client.forEach((v) => (v.state = ''));
     roomInfo.state = 'waiting';
