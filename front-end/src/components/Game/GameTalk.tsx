@@ -21,36 +21,36 @@ const GameTalk = () => {
 
     setMyStream(stream);
 
-    socket.emit('i joined', { id: myPeerIdRef.current });
+    socket.emit('i joined', { peerId: myPeerIdRef.current });
   };
 
   useEffect(() => {
-    const connectToNewUser = ({ id }: { id: string }) => {
+    const connectToNewUser = ({ peerId }: { peerId: string }) => {
       if (!myPeerRef.current) return;
 
-      const call = myPeerRef.current.call(id, myStream);
+      const call = myPeerRef.current.call(peerId, myStream);
 
       call.on('stream', (stream) => {
         setUsers((prev) => {
-          const result = prev.find((user) => user.id == id);
-          if (!result) {
-            return [...prev, { id, stream }];
+          const userObj = prev.find((user) => user.peerId == peerId);
+          if (!userObj) {
+            return [...prev, { peerId, stream, call, socketId: socket.id }];
           } else {
             return [...prev];
           }
         });
       });
-      // call.on('close', () => {
-      //   setUsers((prevUsers) => prevUsers.filter((user) => user.id != id));
-      // });
+      call.on('close', () => {
+        setUsers((prev) => [...prev.filter((user) => user.peerID != peerId)]);
+      });
     };
 
     const answerToUser = (call: Peer.MediaConnection) => {
       call.on('stream', (stream) => {
         setUsers((prev) => {
-          const result = prev.find((user) => user.id == call.peer);
-          if (!result) {
-            return [...prev, { id: call.peer, stream }];
+          const userObj = prev.find((user) => user.peerId == call.peer);
+          if (!userObj) {
+            return [...prev, { peerId: call.peer, stream, call, socketId: socket.id }];
           } else {
             return [...prev];
           }
@@ -78,12 +78,26 @@ const GameTalk = () => {
       myPeerIdRef.current = id;
       getUserMedia();
     });
+
+    socket.on('user exit', ({ socketId }) => {
+      console.log('user exit', users);
+      const findUser = users.find((user) => user.socketId == socketId);
+      if (findUser) {
+        findUser.call.close();
+        const newUsers = users.filter((user) => user.socketId !== socketId);
+        setUsers([...newUsers]);
+      }
+    });
+
+    return () => {
+      socket.off('user exit');
+    };
   }, []);
 
   return (
     <div className="game-talk">
       <div className="audio-wrap">
-        <video className="game-audio" playsInline autoPlay width="100" ref={localAudio}></video>
+        <video className="game-audio" playsInline autoPlay width="100" muted={true} ref={localAudio}></video>
         {users.map((user) => (
           <GameTalkAudio key={user.id} stream={user.stream} />
         ))}
