@@ -12,7 +12,7 @@ const CONSTANTS = {
 };
 
 const GameContentResult = () => {
-  type resultType = { results: string[]; totalResult: string; liar: string; liarWins: boolean };
+  type resultType = { results: string[]; totalResult: string; liar?: string; liarWins?: boolean };
 
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
@@ -21,8 +21,6 @@ const GameContentResult = () => {
   const [resultData, setResultData]: [resultType, React.Dispatch<React.SetStateAction<resultType>>] = useState({
     results: [],
     totalResult: '',
-    liar: '',
-    liarWins: null,
   });
   let sendPoint = pointComment;
 
@@ -72,7 +70,7 @@ const GameContentResult = () => {
           <br />
           {resultData.totalResult}
           <br />
-          {user.rank === CONSTANTS.UNRANKED ? '' : user.user_id + '님 점수에서 ' + pointComment + '됩니다.'}
+          {resultData.liar ? (user.rank === CONSTANTS.UNRANKED ? '' : user.user_id + '님 점수에서 ' + pointComment + '됩니다.') : ''}
         </span>
       </div>
     </div>
