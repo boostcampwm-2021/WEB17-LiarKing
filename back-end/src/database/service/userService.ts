@@ -41,8 +41,15 @@ async function getUsersRanks() {
   }
 }
 
+async function updateUserPoint(userData: User, point: number) {
+  const userRepository = getRepository(User);
+  userData.point = point;
+  await userRepository.manager.save(userData);
+}
+
 export default {
   signUpUser,
   getUserInfo,
   getUsersRanks,
+  updateUserPoint,
 };
