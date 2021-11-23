@@ -141,6 +141,7 @@ const sendRoomExit = (socket: Socket, io: Server) => {
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
       io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
+      io.to(roomTitle).emit('user exit', { socketId: socket.id });
     }
   });
 };
