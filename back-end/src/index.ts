@@ -14,12 +14,6 @@ import indexRouter from './route/indexRouter';
 
 dotenv.config();
 
-/*const keyOption = {
-  key: readFileSync(__dirname + '/../keys/private.pem'),
-  cert: readFileSync(__dirname + '/../keys/public.pem'),
-};
-*/
-
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -27,12 +21,10 @@ const io = new Server(httpServer, {
   path: '/socket',
 });
 
-const peerServer = PeerServer({
-  path: '/',
-  port: 5001,
+const peerServer = PeerServer({ port: 5001 });
+peerServer.listen(() => {
+  console.log('peer server start');
 });
-
-peerServer.listen();
 
 socketUtil(io);
 
