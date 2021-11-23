@@ -183,6 +183,8 @@ const waitRoomMessage = (socket: Socket, io: Server) => {
  * 방장이 게임을 시작한다.
  */
 const gameStart = (socket: Socket, io: Server) => {
+  const STATE_WAITING_TIME = 100;
+
   const state = {
     select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
       const ROOM_STATE = 'select';
@@ -191,6 +193,8 @@ const gameStart = (socket: Socket, io: Server) => {
       const { title } = roomInfo;
 
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+
+      await timer(STATE_WAITING_TIME);
 
       const categoryFix = shuffle(categorys, 1).pop();
       const words = await getRandomWords(categoryFix);
@@ -209,13 +213,15 @@ const gameStart = (socket: Socket, io: Server) => {
     },
     chat: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'chat';
-      const SPEAK_TIME = 10; //임시로, 원래 30 ~ 60
+      const SPEAK_TIME = 3; //임시로, 원래 30 ~ 60
       const SUB_TIME = 1;
       const SECONDS = 1000;
 
       const { title } = roomInfo;
 
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+
+      await timer(STATE_WAITING_TIME);
 
       const randomClients = shuffle(roomInfo.client, roomInfo.client.length);
 
@@ -225,7 +231,7 @@ const gameStart = (socket: Socket, io: Server) => {
       }
     },
     vote: async (roomInfo: roomInfoType) => {
-      const TIMER = 20;
+      const TIMER = 3; //20
       const SECONDS = 1000;
       const SUB_TIME = 1;
 
