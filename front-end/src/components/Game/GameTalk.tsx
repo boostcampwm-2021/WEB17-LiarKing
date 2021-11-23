@@ -34,15 +34,19 @@ const GameTalk = () => {
         setUsers((prev) => {
           const result = prev.find((user) => user.id == id);
           if (!result) {
-            return [...prev, { id, stream }];
+            return [...prev, { id, stream, call }];
           } else {
             return [...prev];
           }
         });
       });
-      // call.on('close', () => {
-      //   setUsers((prevUsers) => prevUsers.filter((user) => user.id != id));
-      // });
+      call.on('close', () => {
+        setUsers((prev) => {
+          const exitUser = prev.find((user) => user.id == id);
+          exitUser.call.close();
+          return [...prev.filter((user) => user.id != id)];
+        });
+      });
     };
 
     const answerToUser = (call: Peer.MediaConnection) => {
@@ -50,7 +54,7 @@ const GameTalk = () => {
         setUsers((prev) => {
           const result = prev.find((user) => user.id == call.peer);
           if (!result) {
-            return [...prev, { id: call.peer, stream }];
+            return [...prev, { id: call.peer, stream, call }];
           } else {
             return [...prev];
           }
