@@ -103,33 +103,39 @@ const GameChatBox = () => {
 
   return (
     <>
-      <div className="game-wait-chat-box">
-        <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onKeyDown={sendIfEnter}></input>
-        <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
-      </div>
-      {Object.values(modal).map((chat, i) => {
-        return i < CONSTANTS.ROW_MAX_CLIENT ? (
-          <div
-            className="game-wait-chat-bubble-box"
-            style={{
-              top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              left: CONSTANTS.CHATBOX_LEFT,
-            }}
-          >
-            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+      {isWaitingState ? (
+        <>
+          <div className="game-wait-chat-box">
+            <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onKeyDown={sendIfEnter}></input>
+            <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
           </div>
-        ) : (
-          <div
-            className="game-wait-chat-bubble-box"
-            style={{
-              top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              right: CONSTANTS.CHATBOX_RIGHT,
-            }}
-          >
-            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
-          </div>
-        );
-      })}
+          {Object.values(modal).map((chat, i) => {
+            return i < CONSTANTS.ROW_MAX_CLIENT ? (
+              <div
+                className="game-wait-chat-bubble-box"
+                style={{
+                  top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
+                  left: CONSTANTS.CHATBOX_LEFT,
+                }}
+              >
+                {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+              </div>
+            ) : (
+              <div
+                className="game-wait-chat-bubble-box"
+                style={{
+                  top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
+                  right: CONSTANTS.CHATBOX_RIGHT,
+                }}
+              >
+                {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

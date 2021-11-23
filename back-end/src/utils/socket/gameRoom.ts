@@ -26,6 +26,7 @@ const REQUEST_SELECT_DATA = 'request select data';
 const CHAT_HISTORY_DATA = 'chat history data';
 const CHAT_SPEAKER_DATA = 'chat speaker data';
 const VOTE_TIMER_DATA = 'vote timer data';
+const END_VOTE = 'end vote';
 const RESULT_DATA = 'result data';
 const LIAR_DATA = 'liar data'; //아직 미사용
 
@@ -184,6 +185,7 @@ const waitRoomMessage = (socket: Socket, io: Server) => {
  */
 const gameStart = (socket: Socket, io: Server) => {
   const STATE_WAITING_TIME = 100;
+  const SECONDS = 1000;
 
   const state = {
     select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
@@ -215,7 +217,6 @@ const gameStart = (socket: Socket, io: Server) => {
       const ROOM_STATE = 'chat';
       const SPEAK_TIME = 1; //임시로, 원래 30 ~ 60
       const SUB_TIME = 1;
-      const SECONDS = 1000;
 
       const { title } = roomInfo;
 
@@ -231,17 +232,54 @@ const gameStart = (socket: Socket, io: Server) => {
       }
     },
     vote: async (roomInfo: roomInfoType) => {
-      const TIMER = 1; //20
-      const SECONDS = 1000;
+      const ROOM_STATE = 'vote';
+      const VOTE_TIME_OUT = 3; //20
       const SUB_TIME = 1;
       const ROOM_STATE = 'vote';
 
-      const { title } = roomInfo;
+      const { title, client } = roomInfo;
 
-      io.to(title).emit(VOTE_TIMER_DATA, { timer: TIMER });
+      client.map((client: any) => (client.state = 'vote'));
+
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
 
-      await timer((TIMER + SUB_TIME) * SECONDS);
+      await timer(STATE_WAITING_TIME);
+
+      io.to(title).emit(VOTE_TIMER_DATA, { timer: VOTE_TIME_OUT });
+      io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
+
+      await timer((VOTE_TIME_OUT + SUB_TIME) * SECONDS);
+
+      io.to(title).emit(END_VOTE, null);
+    },
+    voteResult: async (roomInfo: roomInfoType) => {
+      const ROOM_STATE = 'result';
+      const WAIT_VOTE_RESULT = 5;
+
+      const { title, client } = roomInfo;
+      const { liar, vote } = roomSecrets.get(title);
+
+      io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+
+      await timer(STATE_WAITING_TIME);
+
+      const MENT = {
+        LIAR: `라이어는 ${liar.name} 였습니다.`,
+        SUCCESS: '라이어 검거에 성공하였습니다.',
+        FAIL: '라이어 검거에 실패하였습니다.',
+      };
+
+      const isWin: boolean = vote[0].name === liar.name && vote[1].name === '기권' ? true : vote[0].count !== vote[1].count;
+
+      io.to(title).emit(RESULT_DATA, {
+        resultData: { results: vote.map((v) => `${v.name} ${v.count}표`), totalResult: `${MENT.LIAR} ${isWin ? MENT.SUCCESS : MENT.FAIL}` },
+      });
+
+      client.forEach((v) => (v.state = ''));
+      
+      io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
+
+      await timer(WAIT_VOTE_RESULT * SECONDS);
     },
     result: async (roomInfo: roomInfoType, roomSecret: roomSecretType) => {
       const ROOM_STATE = 'result';
@@ -276,11 +314,7 @@ const gameStart = (socket: Socket, io: Server) => {
     const roomInfo = roomList.get(roomTitle);
     const roomSecret = roomSecrets.get(roomTitle);
 
-    roomInfo.client.map((v) => {
-      v.state = '';
-      return v;
-    });
-
+    roomInfo.client.forEach((v) => (v.state = ''));
     roomInfo.state = 'start';
 
     io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: false });
@@ -289,7 +323,14 @@ const gameStart = (socket: Socket, io: Server) => {
     await state.select(roomInfo, roomSecret, categorys);
     await state.chat(roomInfo);
     await state.vote(roomInfo);
+    await state.voteResult(roomInfo);
     await state.result(roomInfo, roomSecret);
+
+    roomInfo.client.forEach((v) => (v.state = ''));
+    roomInfo.state = 'waiting';
+
+    roomList.set(roomTitle, roomInfo);
+    roomSecrets.set(roomTitle, { liar: null, answerWord: '', vote: [], words: [] });
 
     io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: true });
     io.to(roomTitle).emit(ROOM_STATE_INFO, { roomState: 'waiting' });
