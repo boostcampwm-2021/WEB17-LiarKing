@@ -1,58 +1,24 @@
 import { Server, Socket } from 'socket.io';
-import { roomList, roomSecrets } from '../../store/store';
+import { roomSecrets, socketDatas } from '../../store/store';
 
-const voteResult = {};
-let voteCount = {};
+const VOTE_RESULT = 'vote result';
 
 const endVote = (socket: Socket, io: Server) => {
-  socket.on('vote result', (voteUser: any) => {
-    const { index, name, roomtitle } = voteUser;
-    const roomInfo = roomList.get(roomtitle);
-    const roomPeopleNum = roomInfo.client.length;
+  socket.on(VOTE_RESULT, ({ voteData }: { voteData: { name: string } }) => {
+    const { name } = voteData;
+    const { roomTitle } = socketDatas.get(socket.id);
+    const { vote } = roomSecrets.get(roomTitle);
 
-    if (!voteResult[roomtitle]) {
-      voteResult[roomtitle] = {};
-      voteCount[roomtitle] = 0;
-    }
-    voteCount[roomtitle] += 1;
-    if (!voteResult[roomtitle][name]) {
-      voteResult[roomtitle][name] = 1;
-    } else {
-      voteResult[roomtitle][name] += 1;
-    }
+    const candidate = vote.find((v) => v.name === name);
 
-    let maxCnt = 0;
-    let maxVal = -1;
-    let maxName = '';
-    for (let name in voteResult[roomtitle]) {
-      const val = voteResult[roomtitle][name];
-      if (name === '기권') continue;
-      if (val > maxVal) {
-        maxName = name;
-        maxVal = val;
-        maxCnt = 1;
-      } else if (val === maxVal) {
-        maxCnt += 1;
-      }
-    }
+    if (!!candidate) candidate.count++;
+    else vote.push({ name, count: 1 });
 
-    let gameResult;
-    if (maxCnt === 1 && roomSecrets.get(roomtitle).liar.name === maxName) gameResult = true;
-    else gameResult = false;
-    if (roomPeopleNum === voteCount[roomtitle]) {
-      let resultArray = [];
-      for (const [key, value] of Object.entries(voteResult[roomtitle])) {
-        resultArray.push(key + ' ' + value + '표');
-      }
-      io.to(roomtitle).emit('end vote', {
-        gameResult: gameResult,
-        liarName: roomSecrets.get(roomtitle).liar.name,
-        voteResult: resultArray,
-        roomInfo,
-      });
-      voteResult[roomtitle] = {};
-      voteCount[roomtitle] = 0;
-    }
+    vote.sort((o1, o2) => {
+      if (o1.name === '기권') return 1;
+      if (o2.name === '기권') return -1;
+      return o2.count - o1.count;
+    });
   });
 };
 

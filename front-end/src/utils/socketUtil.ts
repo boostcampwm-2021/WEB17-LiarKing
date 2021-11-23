@@ -25,6 +25,7 @@ const REQUEST_SELECT_DATA = 'request select data';
 const CHAT_HISTORY_DATA = 'chat history data';
 const CHAT_SPEAKER_DATA = 'chat speaker data';
 const VOTE_TIMER_DATA = 'vote timer data';
+const END_VOTE = 'end vote';
 const RESULT_DATA = 'result data';
 const LIAR_DATA = 'liar data';
 
@@ -40,6 +41,7 @@ const ROOM_READY = 'room ready';
 const GAME_START = 'game start';
 const CHAT_MESSAGE_DATA = 'chat message data';
 const SETTING_CHANGE = 'setting change';
+const VOTE_RESULT = 'vote result';
 
 type createRoomInfoType = {
   title: string;
@@ -53,6 +55,7 @@ type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: str
 type clientType = { socketId: string; name: string; state: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
+type voteDataType = { name: string };
 type resultType = { results: string[]; totalResult: string };
 type liarType = { category: string[]; answer: number };
 type roomSettingType = { max: number; cycle: number };
@@ -244,6 +247,15 @@ const on = {
     });
   },
   /**
+   * GameContentVote 컴포넌트에서 사용한다.
+   * 서버로부터 투표 제출 요구 데이터를 받아온다.
+   */
+  END_VOTE: ({ voteData }: { voteData: { name: string } }) => {
+    socket.on(END_VOTE, () => {
+      emit.VOTE_RESULT({ voteData });
+    });
+  },
+  /**
    * GameContentResult 컴포넌트에서 사용한다.
    * 서버로부터 결과 데이터를 받아온다.
    */
@@ -281,6 +293,7 @@ const off = {
   CHAT_HISTORY_DATA: () => socket.off(CHAT_HISTORY_DATA),
   CHAT_SPEAKER_DATA: () => socket.off(CHAT_SPEAKER_DATA),
   VOTE_TIMER_DATA: () => socket.off(VOTE_TIMER_DATA),
+  END_VOTE: () => socket.off(END_VOTE),
   RESULT_DATA: () => socket.off(RESULT_DATA),
   LIAR_DATA: () => socket.off(LIAR_DATA),
 };
@@ -302,6 +315,7 @@ const emit = {
   REQUEST_SELECT_DATA: () => socket.emit(REQUEST_SELECT_DATA, null),
   CHAT_MESSAGE_DATA: ({ message }: { message: string }) => socket.emit(CHAT_MESSAGE_DATA, { message }),
   SETTING_CHANGE: ({ roomSetting }: { roomSetting: roomSettingType }) => socket.emit(SETTING_CHANGE, { roomSetting }),
+  VOTE_RESULT: ({ voteData }: { voteData: voteDataType }) => socket.emit(VOTE_RESULT, { voteData }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };

@@ -4,11 +4,14 @@ import GameTalk from './GameTalk';
 import voteBox from '../../images/voteBox.svg';
 import { socketUtilType } from '../../utils/socketUtil';
 import { globalContext } from '../../App';
+import { useSetRecoilState } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 
 export type clientType = { name: string; state: string; socketId: string };
 
 const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
   const [selectedPerson, setVotePerson] = useState(-1);
+  const setVote = useSetRecoilState(globalAtom.vote);
 
   const getStateComponent = (state: string, idx: number) => {
     switch (state) {
@@ -18,13 +21,17 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
         return (
           <img
             className={idx === voteInfo.voteTo ? 'vote-box-select' : 'vote-box'}
-            src={clients[idx]?.state === 'vote' ? voteBox : ''}
+            src={voteBox}
             onClick={() => {
               if (idx !== voteInfo.voteTo && !voteInfo.isFixed) {
                 voteInfo.voteTo = idx;
+                voteInfo.name = clients[idx].name;
+                setVote(true);
                 setVotePerson(idx);
               } else if (!voteInfo.isFixed) {
                 voteInfo.voteTo = -1;
+                voteInfo.name = '기권';
+                setVote(false);
                 setVotePerson(-1);
               }
             }}

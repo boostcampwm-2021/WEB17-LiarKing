@@ -6,7 +6,7 @@ const GameContentResult = () => {
   type resultType = { results: string[]; totalResult: string };
 
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
-  const [resultData, setResultData]: [resultType, React.Dispatch<React.SetStateAction<resultType>>] = useState(null);
+  const [resultData, setResultData]: [resultType, React.Dispatch<React.SetStateAction<resultType>>] = useState({ results: [''], totalResult: '' });
   const { results, totalResult } = resultData;
 
   useEffect(() => {
