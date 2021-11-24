@@ -83,10 +83,16 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
 
 const GamePersons = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
-  const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState(null);
+  const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState([]);
+  const setRecoilClients = useSetRecoilState(globalAtom.client);
 
   useEffect(() => {
     socket.on.ROOM_CLIENTS_INFO({ setState: setClients });
+    setRecoilClients(
+      clients.filter((client) => {
+        return client.name !== null;
+      })
+    );
 
     return () => {
       socket.off.ROOM_CLIENTS_INFO();

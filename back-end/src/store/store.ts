@@ -28,15 +28,3 @@ export const roomSecrets: Map<string, roomSecretType> = new Map();
 
 //key: socket.id
 export const socketDatas: Map<string, { name: string; roomTitle: string }> = new Map();
-
-roomList.set('test', {
-  title: 'test',
-  password: '',
-  max: 2,
-  client: [{ socketId: '123456789', name: 'test_user', state: '' }],
-  cycle: 1,
-  owner: 'test_user',
-  state: 'waiting',
-  chatHistory: [],
-  speakerData: { speaker: '', timer: 0 },
-});
