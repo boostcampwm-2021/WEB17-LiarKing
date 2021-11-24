@@ -8,7 +8,6 @@ const LOBBY = 'lobby';
 
 const ROOM_TITLE_INFO = 'room title info';
 const ROOM_READY = 'room ready';
-const ROOM_EXIT = 'room exit';
 const SETTING_CHANGE = 'setting change';
 const IS_USER_OWNER = 'is user owner';
 const GAME_START = 'game start';
@@ -112,46 +111,6 @@ const sendUserReady = (socket: Socket, io: Server) => {
     });
 
     io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
-  });
-};
-
-/**
- * 유저가 방에서 나간다고 알림
- */
-const sendRoomExit = (socket: Socket, io: Server) => {
-  socket.on(ROOM_EXIT, () => {
-    const socketInfo = socketDatas.get(socket.id);
-
-    if (!socketInfo) return;
-
-    const { name, roomTitle } = socketInfo;
-
-    if (!roomList.get(roomTitle)) return;
-
-    const roomInfo = roomList.get(roomTitle);
-
-    socket.leave(roomTitle);
-    socket.join(LOBBY);
-
-    if (!!roomInfo && roomInfo.client.length === 1) {
-      roomList.delete(roomTitle);
-
-      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
-    } else if (!!roomInfo) {
-      if (roomInfo.owner === name) {
-        roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
-
-        io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
-      }
-
-      roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
-      roomList.set(roomTitle, roomInfo);
-
-      io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
-      io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
-      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
-      io.to(roomTitle).emit('user exit', { peerId: socketToPeer[socket.id] });
-    }
   });
 };
 
@@ -459,7 +418,6 @@ const gameRoom = (socket: Socket, io: Server) => {
   sendClientInfo(socket, io);
   sendUserReady(socket, io);
 
-  sendRoomExit(socket, io);
   waitRoomMessage(socket, io);
   gameStart(socket, io);
   sendSettingChange(socket, io);

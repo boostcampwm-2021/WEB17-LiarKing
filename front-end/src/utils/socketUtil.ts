@@ -36,7 +36,6 @@ const ROOM_JOIN = 'room join';
 const LOBBY_ENTERED = 'lobby entered';
 
 //game, room emit
-const ROOM_EXIT = 'room exit';
 const ROOM_READY = 'room ready';
 const GAME_START = 'game start';
 const CHAT_MESSAGE_DATA = 'chat message data';
@@ -62,7 +61,7 @@ type roomSettingType = { max: number; cycle: number };
 
 const on = {
   /**
-   * Lobby 컴포넌트에서 사용한다.
+   * CreateRoomModal 컴포넌트에서 사용한다.
    * 방이 제대로 만들어졌는지 서버에서 데이터를 받는다.
    * false일 경우 방제가 중복되어 만들어 지지 않았다.
    */
@@ -306,7 +305,6 @@ const emit = {
   LOBBY_ENTERED: ({ userId }: { userId: string }) => socket.emit(LOBBY_ENTERED, { userId }),
   IS_USER_OWNER: () => socket.emit(IS_USER_OWNER, null),
   LOBBY_LOGOUT: () => socket.emit(LOBBY_LOGOUT, null),
-  ROOM_EXIT: () => socket.emit(ROOM_EXIT, null),
   ROOM_READY: () => socket.emit(ROOM_READY, null),
   GAME_START: ({ categorys }: { categorys: string[] }) => socket.emit(GAME_START, { categorys }),
   ROOM_TITLE_INFO: () => socket.emit(ROOM_TITLE_INFO, null),

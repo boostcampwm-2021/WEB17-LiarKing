@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { roomList, socketDatas, roomSecrets, roomInfoType } from '../../store/store';
+import { roomList, socketDatas, roomSecrets, roomInfoType, socketToPeer } from '../../store/store';
 
 const LOBBY = 'lobby';
 
@@ -26,7 +26,7 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
   socket.on(LOBBY_ENTERED, ({ userId }: { userId: string }) => {
     const socketInfo = socketDatas.get(socket.id);
 
-    if (socketInfo) {
+    if (!!socketInfo && !!socketInfo.roomTitle) {
       const { name, roomTitle } = socketInfo;
       const roomInfo = roomList.get(roomTitle);
 
@@ -35,6 +35,7 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
 
       if (!!roomInfo && roomInfo.client.length === 1) {
         roomList.delete(roomTitle);
+        roomSecrets.delete(roomTitle);
 
         io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
       } else if (!!roomInfo) {
@@ -49,6 +50,7 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
 
         io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
         io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
+        io.to(roomTitle).emit('user exit', { peerId: socketToPeer[socket.id] });
         io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
       }
     }
@@ -167,6 +169,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
 
     if (!!roomInfo && roomInfo.client.length === 1) {
       roomList.delete(roomTitle);
+      roomSecrets.delete(roomTitle);
 
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     } else if (!!roomInfo) {

@@ -101,7 +101,6 @@ const GameButtons = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const exitRoom = () => {
-    socket.emit.ROOM_EXIT();
     history.replace('/lobby');
   };
 
