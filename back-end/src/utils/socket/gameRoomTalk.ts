@@ -7,7 +7,7 @@ const sendJoin = (socket: Socket, io: Server) => {
     if (!socketInfo) return;
     const roomTitle = socketInfo.roomTitle;
     socketToPeer[socket.id] = peerId;
-    socket.broadcast.to(roomTitle).emit('someone joined', { peerId, socketId: socket.id });
+    socket.broadcast.to(roomTitle).emit('someone joined', { peerId });
   });
 };
 

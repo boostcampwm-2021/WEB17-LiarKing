@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { roomList, socketDatas, roomSecrets, roomInfoType } from '../../store/store';
+import { roomList, socketDatas, roomSecrets, roomInfoType, socketToPeer } from '../../store/store';
 
 const LOBBY = 'lobby';
 
@@ -181,6 +181,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
 
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
       io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
+      io.to(roomTitle).emit('rtc disconnect', { peerId: socketToPeer[socket.id] });
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     }
 
