@@ -54,7 +54,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   };
 
   const decreasePersons = () => {
-    if (roomInfo.max > 2) {
+    if (roomInfo.max > 3) {
       setRoomInfo({ ...roomInfo, max: roomInfo.max - 1 });
     }
   };

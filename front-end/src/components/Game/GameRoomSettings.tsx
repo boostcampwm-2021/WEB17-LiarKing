@@ -47,7 +47,7 @@ const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
   };
 
   const decreasePersons = () => {
-    if (roomInfo.max > client.length) {
+    if (roomInfo.max > 3 && roomInfo.max > client.length) {
       setRoomInfo({ ...roomInfo, max: roomInfo.max - 1 });
     }
   };
