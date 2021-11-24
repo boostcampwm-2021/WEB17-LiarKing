@@ -59,7 +59,7 @@ const GameContentResult = () => {
 
   return (
     <div className="game-content-box">
-      <span className="game-content-title">투표 결과</span>
+      <span className="game-content-title">{resultData.liar ? '게임 결과' : '투표 결과'}</span>
       <div className="game-content-ment-box">
         {resultData.results.map((v, i) => (
           <span className="game-content-ment" key={i}>

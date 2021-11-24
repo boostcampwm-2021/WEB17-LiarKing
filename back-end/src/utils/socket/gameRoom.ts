@@ -193,7 +193,7 @@ const gameStart = (socket: Socket, io: Server) => {
   const state = {
     select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
       const ROOM_STATE = 'select';
-      const WAITING_TIME = 1 * 1000;
+      const WAITING_TIME = 5 * 1000;
 
       const { title } = roomInfo;
 
@@ -324,18 +324,25 @@ const gameStart = (socket: Socket, io: Server) => {
       const RESULT_TIMER = 5;
       const SECONDS = 1000;
       const { title } = roomInfo;
+      const { isWin, liarAnswer } = roomResultMap.get(title);
 
-      const liarVotes = 5;
-      const citizenVotes = 2;
-
-      let totalResult = `라이어는 ${roomSecret.liar.name} 입니다. 라이어가 승리하였습니다.`;
+      let results = [`정답: ${roomSecret.answerWord}`];
+      let totalResult = '라이어가 제시어를 맞춰서 승리하였습니다!';
       let liarWins = true;
-      if (liarVotes > citizenVotes) {
-        totalResult = `라이어는 ${roomSecret.liar.name} 입니다. 라이어가 패배하였습니다.`;
-        liarWins = false;
+      if (isWin) {
+        if (liarAnswer) {
+          results.unshift('라이어가 정답을 맞췄습니다!');
+        } else {
+          results.unshift('라이어가 정답을 맞추지 못했습니다!');
+          totalResult = '라이어가 제시어를 맞추지 못해서 패배하였습니다!';
+          liarWins = false;
+        }
+      } else {
+        results.unshift('라이어 검거에 실패하였으므로 라이어의 승리입니다!');
+        totalResult = `${roomSecret.liar.name}님의 승리입니다!`;
       }
 
-      const tempData = { results: ['1번플레이어 1표', '기권 1표'], totalResult: totalResult, liar: roomSecret.liar.name, liarWins: liarWins };
+      const tempData = { results: results, totalResult: totalResult, liar: roomSecret.liar.name, liarWins: liarWins };
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
       io.to(title).emit(RESULT_DATA, { resultData: tempData });
       await timer(RESULT_TIMER * SECONDS);
@@ -364,13 +371,12 @@ const gameStart = (socket: Socket, io: Server) => {
     await state.chat(roomInfo);
     await state.vote(roomInfo);
     await state.voteResult(roomInfo);
-
     if (roomResultMap.get(roomTitle).isWin) await state.liar(roomInfo, roomSecret);
-
     await state.result(roomInfo, roomSecret);
 
     roomInfo.client.forEach((v) => (v.state = ''));
     roomInfo.state = 'waiting';
+    roomInfo.chatHistory.length = 0;
 
     roomList.set(roomTitle, roomInfo);
     roomSecrets.set(roomTitle, { liar: null, answerWord: '', vote: [], words: [] });
@@ -417,7 +423,7 @@ const sendChat = (socket: Socket, io: Server) => {
     const client = roomInfo.client.find((v) => v.name === name);
     const { chatHistory } = roomInfo;
 
-    chatHistory.push({
+    chatHistory.unshift({
       userName: name,
       ment: message,
       color: COLORS[roomInfo.client.indexOf(client)],
