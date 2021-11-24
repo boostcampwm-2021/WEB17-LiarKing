@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 
@@ -15,7 +15,14 @@ const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
   const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
   const [roomInfo, setRoomInfo] = useState({ max: roomSettings.max, cycle: roomSettings.cycle, owner: user.user_id });
   const [categories, setCategory] = useState(roomSettings.category);
-  const client = useRecoilValue(globalAtom.client);
+  const [client, setClient] = useState([]);
+
+  useEffect(() => {
+    socket.on.ROOM_CLIENTS_INFO({ setState: setClient });
+    return () => {
+      socket.off.ROOM_CLIENTS_INFO();
+    };
+  }, [client]);
 
   const changeSettings = () => {
     const { max, cycle } = roomInfo;
