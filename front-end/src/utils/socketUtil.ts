@@ -57,7 +57,7 @@ type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type voteDataType = { name: string };
 type resultType = { results: string[]; totalResult: string; liar?: string; liarWins?: boolean };
-type liarType = { category: string[]; answer: number };
+type liarType = { category: string[]; answer: number; liar: string };
 type roomSettingType = { max: number; cycle: number };
 
 const on = {
@@ -270,6 +270,7 @@ const on = {
    */
   LIAR_DATA: ({ setState }: { setState: setStateType<liarType> }) => {
     socket.on(LIAR_DATA, ({ liarData }: { liarData: liarType }) => {
+      console.log(liarData);
       setState(liarData);
     });
   },
@@ -316,6 +317,7 @@ const emit = {
   CHAT_MESSAGE_DATA: ({ message }: { message: string }) => socket.emit(CHAT_MESSAGE_DATA, { message }),
   SETTING_CHANGE: ({ roomSetting }: { roomSetting: roomSettingType }) => socket.emit(SETTING_CHANGE, { roomSetting }),
   VOTE_RESULT: ({ voteData }: { voteData: voteDataType }) => socket.emit(VOTE_RESULT, { voteData }),
+  LIAR_DATA: ({ liarResult }: { liarResult: { isAnswer: boolean } }) => socket.emit(LIAR_DATA, { liarResult }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };

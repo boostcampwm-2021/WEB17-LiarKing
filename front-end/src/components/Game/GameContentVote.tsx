@@ -31,7 +31,7 @@ const GameContentVote = () => {
   }, [vote]);
 
   useEffect(() => {
-    if (!timer) return;
+    if (!timer.current) return;
 
     let time: number = timerData;
 

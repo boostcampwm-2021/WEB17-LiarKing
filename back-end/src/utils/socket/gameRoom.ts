@@ -180,6 +180,8 @@ const waitRoomMessage = (socket: Socket, io: Server) => {
   });
 };
 
+const roomResultMap: Map<string, { isWin: boolean; liarAnswer: boolean }> = new Map();
+
 /**
  * 방장이 게임을 시작한다.
  */
@@ -268,10 +270,15 @@ const gameStart = (socket: Socket, io: Server) => {
         FAIL: '라이어 검거에 실패하였습니다.',
       };
 
-      const isWin: boolean = vote[0].name === liar.name && (vote[1].name === '기권' ? true : vote[0].count !== vote[1].count);
+      const isWin = vote[0].name === liar.name && (vote[1].name === '기권' ? true : vote[0].count !== vote[1].count);
+
+      roomResultMap.set(title, { isWin, liarAnswer: null });
 
       io.to(title).emit(RESULT_DATA, {
-        resultData: { results: vote.map((v) => `${v.name} ${v.count}표`), totalResult: `${MENT.LIAR} ${isWin ? MENT.SUCCESS : MENT.FAIL}` },
+        resultData: {
+          results: vote.map((v) => `${v.name} ${v.count}표`),
+          totalResult: `${MENT.LIAR} ${isWin ? MENT.SUCCESS : MENT.FAIL}`,
+        },
       });
 
       client.forEach((v) => (v.state = ''));
@@ -279,6 +286,37 @@ const gameStart = (socket: Socket, io: Server) => {
       io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
 
       await timer(WAIT_VOTE_RESULT * SECONDS);
+    },
+    liar: async (roomInfo: roomInfoType, roomSecret: roomSecretType) => {
+      const ROOM_STATE = 'liar';
+      const WAIT_TIME = 10;
+
+      const { title } = roomInfo;
+
+      io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
+
+      await timer(STATE_WAITING_TIME);
+
+      const { answerWord, words, liar } = roomSecret;
+
+      const suffleWords = shuffle(words, words.length);
+
+      const answerNumber = suffleWords.indexOf(answerWord);
+
+      io.to(title).emit(LIAR_DATA, { liarData: { category: suffleWords, answer: answerNumber, liar: liar.name } });
+
+      await new Promise((resolve) => {
+        let count = WAIT_TIME - 1;
+
+        const waiting = setInterval(() => {
+          count--;
+
+          if (count <= 0 || roomResultMap.get(title).liarAnswer !== null) {
+            resolve(null);
+            clearInterval(waiting);
+          }
+        }, SECONDS);
+      });
     },
     result: async (roomInfo: roomInfoType, roomSecret: roomSecretType) => {
       const ROOM_STATE = 'result';
@@ -310,6 +348,8 @@ const gameStart = (socket: Socket, io: Server) => {
 
     const { roomTitle } = socketInfo;
 
+    roomResultMap.set(roomTitle, { isWin: null, liarAnswer: null });
+
     const roomInfo = roomList.get(roomTitle);
     const roomSecret = roomSecrets.get(roomTitle);
 
@@ -323,6 +363,9 @@ const gameStart = (socket: Socket, io: Server) => {
     await state.chat(roomInfo);
     await state.vote(roomInfo);
     await state.voteResult(roomInfo);
+
+    if (roomResultMap.get(roomTitle).isWin) await state.liar(roomInfo, roomSecret);
+
     await state.result(roomInfo, roomSecret);
 
     roomInfo.client.forEach((v) => (v.state = ''));
@@ -330,9 +373,18 @@ const gameStart = (socket: Socket, io: Server) => {
 
     roomList.set(roomTitle, roomInfo);
     roomSecrets.set(roomTitle, { liar: null, answerWord: '', vote: [], words: [] });
+    roomResultMap.delete(roomTitle);
 
     io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: true });
     io.to(roomTitle).emit(ROOM_STATE_INFO, { roomState: 'waiting' });
+  });
+
+  /**
+   * 게임방에서 라이어가 마지막에 단어를 골랐을 때 결과를 저장.
+   */
+  socket.on(LIAR_DATA, ({ liarResult }: { liarResult: { isAnswer: boolean } }) => {
+    const { roomTitle } = socketDatas.get(socket.id);
+    roomResultMap.set(roomTitle, { isWin: true, liarAnswer: liarResult.isAnswer });
   });
 };
 
