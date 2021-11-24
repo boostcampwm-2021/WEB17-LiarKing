@@ -68,29 +68,32 @@ const GameTalk = () => {
     };
   }, [myStream]);
 
+  const setPeerId = (id: string) => {
+    myPeerIdRef.current = id;
+    getUserMedia();
+  };
   useEffect(() => {
     myPeerRef.current = new Peer(undefined, {
       host: '/',
       port: 5001,
     });
 
-    myPeerRef.current.on('open', (id) => {
-      myPeerIdRef.current = id;
-      getUserMedia();
-    });
+    myPeerRef.current.on('open', setPeerId);
 
     socket.on('user exit', ({ socketId }) => {
-      console.log('user exit', users);
-      const findUser = users.find((user) => user.socketId == socketId);
-      if (findUser) {
-        findUser.call.close();
-        const newUsers = users.filter((user) => user.socketId !== socketId);
-        setUsers([...newUsers]);
-      }
+      setUsers((prev) => {
+        const findUser = prev.find((user) => user.socketId == socketId);
+        if (findUser) {
+          findUser.call.close();
+          const newUsers = users.filter((user) => user.socketId !== socketId);
+          return [...newUsers];
+        }
+      });
     });
 
     return () => {
       socket.off('user exit');
+      myPeerRef.current.off('open', setPeerId);
     };
   }, []);
 
