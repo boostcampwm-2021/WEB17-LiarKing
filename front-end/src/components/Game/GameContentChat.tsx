@@ -70,8 +70,10 @@ const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
     timer.current.innerText = `남은시간: ${time}초`;
 
     const activeTimer = setInterval(() => {
-      if (time <= 0) clearInterval(activeTimer);
-      else time--;
+      if (time <= 0 || !timer.current) {
+        clearInterval(activeTimer);
+        return;
+      } else time--;
 
       if (!!timer.current) timer.current.innerText = `남은시간: ${time}초`;
     }, SECONDS);

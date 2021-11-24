@@ -31,15 +31,17 @@ const GameContentVote = () => {
   }, [vote]);
 
   useEffect(() => {
-    if (!timer.current) return;
+    if (!timer) return;
 
     let time: number = timerData;
 
     timer.current.innerText = `남은시간: ${time}초`;
 
     const activeTimer = setInterval(() => {
-      if (time <= 0) clearInterval(activeTimer);
-      else time--;
+      if (time <= 0 || !timer.current) {
+        clearInterval(activeTimer);
+        return;
+      } else time--;
 
       timer.current.innerText = `남은시간: ${time}초`;
     }, SECONDS);
