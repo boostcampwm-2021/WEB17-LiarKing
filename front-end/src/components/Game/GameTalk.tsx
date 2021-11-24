@@ -21,7 +21,7 @@ const GameTalk = () => {
 
   const getUserMedia = async (peerId: string) => {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: false,
       audio: true,
     });
     myStream.current = stream;
@@ -120,7 +120,7 @@ const GameTalk = () => {
     <div className="game-talk">
       <div className="audio-wrap">
         {users.map((user) => (
-          <GameTalkAudio key={user.peerId} userId={user.peerId} stream={user.stream} isMe={user.isMe} />
+          <GameTalkAudio key={user.peerId} stream={user.stream} isMe={user.isMe} />
         ))}
       </div>
     </div>
