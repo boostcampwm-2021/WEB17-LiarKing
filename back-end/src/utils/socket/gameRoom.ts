@@ -42,6 +42,8 @@ const sendRoomTitleInfo = (socket: Socket, io: Server) => {
 
     const { roomTitle } = socketInfo;
 
+    if (!roomList.get(roomTitle)) return;
+
     const { client, max } = roomList.get(roomTitle);
 
     io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: client.length, maxUsers: max, roomTitle });
@@ -58,6 +60,8 @@ const sendIsUserOwner = (socket: Socket) => {
     if (!socketInfo || socketInfo.roomTitle === null) return;
 
     const { name, roomTitle } = socketInfo;
+
+    if (!roomList.get(roomTitle)) return;
 
     const { owner } = roomList.get(roomTitle);
 
@@ -91,6 +95,8 @@ const sendUserReady = (socket: Socket, io: Server) => {
 
     const { name, roomTitle } = socketInfo;
 
+    if (!roomList.get(roomTitle)) return;
+
     const roomInfo = roomList.get(roomTitle);
 
     const clientInfo = roomInfo.client.find((v) => v.name === name);
@@ -119,6 +125,9 @@ const sendRoomExit = (socket: Socket, io: Server) => {
     if (!socketInfo) return;
 
     const { name, roomTitle } = socketInfo;
+
+    if (!roomList.get(roomTitle)) return;
+
     const roomInfo = roomList.get(roomTitle);
 
     socket.leave(roomTitle);
@@ -156,6 +165,8 @@ const sendSettingChange = (socket: Socket, io: Server) => {
     if (!socketInfo || socketInfo.roomTitle === null) return;
 
     const { roomTitle } = socketInfo;
+
+    if (!roomList.get(roomTitle)) return;
 
     const roomInfo = roomList.get(roomTitle);
     const { max, cycle } = roomSetting;
@@ -218,7 +229,7 @@ const gameStart = (socket: Socket, io: Server) => {
     },
     chat: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'chat';
-      const SPEAK_TIME = 5; //임시로, 원래 30 ~ 60
+      const SPEAK_TIME = 15;
       const SUB_TIME = 1;
 
       const { title } = roomInfo;
@@ -237,7 +248,7 @@ const gameStart = (socket: Socket, io: Server) => {
     },
     vote: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'vote';
-      const VOTE_TIME_OUT = 3; //20
+      const VOTE_TIME_OUT = 3;
       const SUB_TIME = 1;
 
       const { title, client } = roomInfo;
@@ -255,6 +266,8 @@ const gameStart = (socket: Socket, io: Server) => {
       await timer((VOTE_TIME_OUT + SUB_TIME) * SECONDS);
 
       io.to(title).emit(END_VOTE, null);
+
+      await timer(SUB_TIME * SECONDS);
     },
     voteResult: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'result';

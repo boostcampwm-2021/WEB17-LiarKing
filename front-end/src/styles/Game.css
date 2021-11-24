@@ -376,13 +376,21 @@
   height: 4vh;
   box-shadow: 2px 3px 3px #585858;
   overflow: hidden;
+  opacity: 0.5;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 0;
+  -webkit-box-orient: vertical;
+  overflow-y: hidden;
+  line-height: 0;
 }
 
 .game-chat-box-white {
-  background-color: white;
+  background-color: #fff;
 }
 
 .game-chat-box-red {
+  color: #fff;
   background-color: red;
 }
 
@@ -395,18 +403,22 @@
 }
 
 .game-chat-box-green {
+  color: #fff;
   background-color: green;
 }
 
 .game-chat-box-blue {
+  color: #fff;
   background-color: blue;
 }
 
 .game-chat-box-navy {
+  color: #fff;
   background-color: navy;
 }
 
 .game-chat-box-purple {
+  color: #fff;
   background-color: purple;
 }
 
