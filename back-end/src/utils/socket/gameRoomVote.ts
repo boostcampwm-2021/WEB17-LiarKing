@@ -3,7 +3,7 @@ import { roomSecrets, socketDatas } from '../../store/store';
 
 const VOTE_RESULT = 'vote result';
 
-const endVote = (socket: Socket, io: Server) => {
+const endVote = (socket: Socket) => {
   socket.on(VOTE_RESULT, ({ voteData }: { voteData: { name: string } }) => {
     const { name } = voteData;
     const { roomTitle } = socketDatas.get(socket.id);
@@ -26,7 +26,7 @@ const endVote = (socket: Socket, io: Server) => {
  * 게임방 채팅에서 할 소켓 기능 모음
  */
 const gameRoomVote = (socket: Socket, io: Server) => {
-  endVote(socket, io);
+  endVote(socket);
 };
 
 export default gameRoomVote;

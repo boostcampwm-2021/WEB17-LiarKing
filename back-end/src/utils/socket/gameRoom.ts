@@ -255,6 +255,8 @@ const gameStart = (socket: Socket, io: Server) => {
       await timer((VOTE_TIME_OUT + SUB_TIME) * SECONDS);
 
       io.to(title).emit(END_VOTE, null);
+
+      await timer(SUB_TIME * SECONDS);
     },
     voteResult: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'result';
@@ -273,7 +275,7 @@ const gameStart = (socket: Socket, io: Server) => {
         FAIL: '라이어 검거에 실패하였습니다.',
       };
 
-      const isWin = vote[0].name === liar.name && (vote[1].name === '기권' ? true : vote[0].count !== vote[1].count);
+      const isWin = vote[0].name === liar.name && (!!vote[1] ? (vote[1].name === '기권' ? true : vote[0].count !== vote[1].count) : true);
 
       roomResultMap.set(title, { isWin, liarAnswer: null });
 
