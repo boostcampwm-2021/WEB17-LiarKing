@@ -28,3 +28,5 @@ export const roomSecrets: Map<string, roomSecretType> = new Map();
 
 //key: socket.id
 export const socketDatas: Map<string, { name: string; roomTitle: string }> = new Map();
+
+export const socketToPeer = {};
