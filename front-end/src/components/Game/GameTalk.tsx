@@ -28,7 +28,7 @@ const GameTalk = () => {
   };
 
   useEffect(() => {
-    const connectToNewUser = ({ peerId }: { peerId: string }) => {
+    const connectToNewUser = ({ peerId, socketId }: { peerId: string; socketId: string }) => {
       if (!myPeerRef.current) return;
 
       const call = myPeerRef.current.call(peerId, myStream);
@@ -37,14 +37,11 @@ const GameTalk = () => {
         setUsers((prev) => {
           const userObj = prev.find((user) => user.peerId == peerId);
           if (!userObj) {
-            return [...prev, { peerId, stream, call, socketId: socket.id }];
+            return [...prev, { peerId, stream, call }];
           } else {
             return [...prev];
           }
         });
-      });
-      call.on('close', () => {
-        setUsers((prev) => [...prev.filter((user) => user.peerID != peerId)]);
       });
     };
 
@@ -53,7 +50,7 @@ const GameTalk = () => {
         setUsers((prev) => {
           const userObj = prev.find((user) => user.peerId == call.peer);
           if (!userObj) {
-            return [...prev, { peerId: call.peer, stream, call, socketId: socket.id }];
+            return [...prev, { peerId: call.peer, stream, call }];
           } else {
             return [...prev];
           }
@@ -107,15 +104,19 @@ const GameTalk = () => {
 
     myPeerRef.current.on('open', setPeerId);
 
-    socket.on('user exit', ({ socketId }) => {
-      // setUsers((prev) => {
-      //   const findUser = prev.find((user) => user.socketId == socketId);
-      //   if (findUser) {
-      //     findUser.call.close();
-      //     const newUsers = users.filter((user) => user.socketId !== socketId);
-      //     return [...newUsers];
-      //   }
-      // });
+    socket.on('user exit', ({ peerId }) => {
+      setUsers((prev) => {
+        const findUser = prev.find((user) => {
+          return user.peerId === peerId;
+        });
+        if (findUser) {
+          findUser.call.close();
+          const newUsers = prev.filter((user) => user.peerId !== peerId);
+          return [...newUsers];
+        } else {
+          return [...prev];
+        }
+      });
     });
 
     return () => {
