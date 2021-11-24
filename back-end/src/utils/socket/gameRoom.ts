@@ -218,7 +218,7 @@ const gameStart = (socket: Socket, io: Server) => {
     },
     chat: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'chat';
-      const SPEAK_TIME = 1; //임시로, 원래 30 ~ 60
+      const SPEAK_TIME = 5; //임시로, 원래 30 ~ 60
       const SUB_TIME = 1;
 
       const { title } = roomInfo;
@@ -231,6 +231,7 @@ const gameStart = (socket: Socket, io: Server) => {
 
       for (let i = 0; i < randomClients.length; i++) {
         io.to(title).emit(CHAT_SPEAKER_DATA, { speakerData: { speaker: randomClients[i].name, timer: SPEAK_TIME } });
+        io.to(title).emit('current speaker', { speaker: randomClients[i].name });
         await timer((SPEAK_TIME + SUB_TIME) * SECONDS);
       }
     },
@@ -247,6 +248,7 @@ const gameStart = (socket: Socket, io: Server) => {
 
       await timer(STATE_WAITING_TIME);
 
+      io.to(title).emit('end speak');
       io.to(title).emit(VOTE_TIMER_DATA, { timer: VOTE_TIME_OUT });
       io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
 
