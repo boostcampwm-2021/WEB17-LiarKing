@@ -17,7 +17,7 @@ const GameContentChatHistory = ({ socket }: { socket: socketUtilType }) => {
     <div className="game-content-chat-history" ref={scroll} tabIndex={1}>
       {chatHistory?.map((v, i) => (
         <span className={`game-chat-box game-chat-box-read game-chat-box-font game-chat-box-${v.color}`} key={i}>
-          {v.userName}:{v.ment}
+          {v.userName + ' : ' + v.ment}
         </span>
       )) ?? <></>}
     </div>
