@@ -1,3 +1,4 @@
+import { SetterOrUpdater } from 'recoil';
 import { io } from 'socket.io-client';
 
 import { roomType } from '../components/pages/Lobby';
@@ -58,6 +59,8 @@ type voteDataType = { name: string };
 type resultType = { results: string[]; totalResult: string; liar?: string; liarWins?: boolean };
 type liarType = { category: string[]; answer: number; liar: string };
 type roomSettingType = { max: number; cycle: number };
+type roomSettingRecoilType = { category: any[]; max: number; cycle: number };
+type categoryType = { category: string; include: boolean };
 
 const on = {
   /**
@@ -111,6 +114,15 @@ const on = {
       if (isUserOwner !== state) {
         setState(isUserOwner);
       }
+    });
+  },
+  /**
+   * GameRoomSetting 컴포넌트에서 사용한다.
+   * 방장이 나갔을 때 다음 방장이 서버에서 현재 방의 설정값을 받아온다.
+   */
+  SETTING_CHANGE: ({ setState, category }: { setState: SetterOrUpdater<roomSettingRecoilType>; category: categoryType[] }) => {
+    socket.on(SETTING_CHANGE, ({ roomOwnerSetting }: { roomOwnerSetting: roomSettingType }) => {
+      setState({ category, ...roomOwnerSetting });
     });
   },
   /**
@@ -281,6 +293,7 @@ const off = {
   ROOM_JOIN: () => socket.off(ROOM_JOIN),
   IS_WAITING_STATE: () => socket.off(IS_WAITING_STATE),
   IS_USER_OWNER: () => socket.off(IS_USER_OWNER),
+  SETTING_CHANGE: () => socket.off(SETTING_CHANGE),
   REQUEST_USER_OWNER: () => socket.off(REQUEST_USER_OWNER),
   IS_USER_READY: () => socket.off(IS_USER_READY),
   IS_ALL_READY: () => socket.off(IS_ALL_READY),

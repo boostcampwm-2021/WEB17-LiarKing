@@ -6,12 +6,14 @@ import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 
 import { socketUtilType } from '../../utils/socketUtil';
+import { categoryList } from '../Lobby/CreateRoomModal';
 import { modalPropsType } from '../public/Modal';
 import GameRoomSettings from './GameRoomSettings';
 
 const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
   const [isAllReady, setIsAllReady] = useState(false);
   const [settingsModal, setSettingsModal] = useState([]);
+  const setRoomSettings = useSetRecoilState(globalAtom.roomSettings);
 
   const roomSettings = useRecoilValue(globalAtom.roomSettings);
 
@@ -48,6 +50,13 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
       socket.off.IS_ALL_READY();
     };
   }, [isAllReady]);
+
+  useEffect(() => {
+    socket.on.SETTING_CHANGE({ setState: setRoomSettings, category: categoryList });
+    return () => {
+      socket.off.SETTING_CHANGE();
+    };
+  }, []);
 
   return (
     <>

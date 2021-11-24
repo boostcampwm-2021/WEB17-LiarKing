@@ -57,7 +57,7 @@ const Game = () => {
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
-      socket.emit.ROOM_EXIT();
+      socket.emit.LOBBY_ENTERED({ userId: user.user_id });
     } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }

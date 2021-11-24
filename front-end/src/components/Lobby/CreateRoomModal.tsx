@@ -11,7 +11,7 @@ import globalSelector from '../../recoilStore/globalSelector';
 import { socketUtilType } from '../../utils/socketUtil';
 import { useHistory } from 'react-router';
 
-const categoryList = [
+export const categoryList = [
   { category: '과일', include: true },
   { category: '탈것', include: true },
   { category: '장소', include: true },

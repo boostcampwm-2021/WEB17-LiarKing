@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { roomInfoType, roomList, roomSecrets, roomSecretType, socketDatas, socketToPeer } from '../../store/store';
+import { roomInfoType, roomList, roomSecrets, roomSecretType, socketDatas } from '../../store/store';
 import shuffle from '../shuffle';
 import { getRandomWords } from '../../database/service/wordService';
 import timer from '../timer';
@@ -14,7 +14,6 @@ const GAME_START = 'game start';
 const CHAT_MESSAGE_DATA = 'chat message data';
 const IS_USER_READY = 'is user ready';
 const ROOM_LIST = 'room list';
-const REQUEST_USER_OWNER = 'request user owner';
 const IS_WAITING_STATE = 'is waiting state';
 const IS_ALL_READY = 'is all ready';
 const ROOM_CLIENTS_INFO = 'room clients info';
