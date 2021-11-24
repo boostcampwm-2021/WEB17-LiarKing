@@ -1,12 +1,14 @@
 const shuffle = <T>(arr: T[], count: number) => {
-  if (arr.length < count) count = arr.length;
+  const arrCopy = arr.slice(0);
 
-  for (let i = arr.length - 1; i > 0; i--) {
+  if (arrCopy.length < count) count = arrCopy.length;
+
+  for (let i = arrCopy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [arrCopy[i], arrCopy[j]] = [arrCopy[j], arrCopy[i]];
   }
 
-  return arr.slice(0, count);
+  return arrCopy.slice(0, count);
 };
 
 export default shuffle;
