@@ -278,7 +278,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #6d80a6;
+  background-color: #e2e5f4;
   border-radius: 20px;
   padding: 15px;
   transition: all 0.3s;
@@ -324,7 +324,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #a7bdd9;
+  background: repeating-linear-gradient(#fff, #a7bdd9);
+  border: 1px #000 solid;
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 15px;
@@ -346,14 +347,13 @@
 .game-content-chat {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
   transform: translate(0, 38%);
 }
 
 .game-content-chat-history {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   height: 55vh;
   overflow: overlay;
   padding-right: 3vw;
@@ -465,10 +465,24 @@
   min-width: 450px;
   min-height: 160px;
   border-radius: 30px;
-  background-color: #e2e5f4;
   box-sizing: border-box;
   padding: 20px;
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
   transform: translate(0, 50%);
+  background: radial-gradient(#fff, rgba(0, 0, 0, 0.2));
+  animation: boxAnimation 3s linear infinite;
+}
+
+@keyframes boxAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .game-content-title {
@@ -507,7 +521,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #a7bdd9;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 30px;
   width: 120px;
@@ -521,12 +536,16 @@
 .game-content-vote-submit {
   font-size: 17px;
   font-weight: bold;
-  background-color: #a7bdd9;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   margin-top: 10%;
   padding: 10%;
   padding-top: 5%;
   padding-bottom: 5%;
   cursor: pointer;
-  border: 2px solid black;
+}
+
+.game-content-vote-submit:hover {
+  scale: (1.2);
 }
