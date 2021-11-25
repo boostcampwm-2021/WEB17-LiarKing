@@ -10,6 +10,7 @@ import globalAtom from '../../recoilStore/globalAtom';
 export type clientType = { name: string; state: string; socketId: string };
 
 const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
+  const COLORS = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
   const [selectedPerson, setVotePerson] = useState(-1);
   const setVote = useSetRecoilState(globalAtom.vote);
 
@@ -47,7 +48,7 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
       return (
         <>
           <div className={v.name ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
-            <div className="game-user-id">{v.name ?? ''}</div>
+            <div className={'game-user-id game-user-' + COLORS[i]}>{v.name ?? ''}</div>
             <div className={v.name ? 'game-user-character' : ''} />
           </div>
           <div className="game-persons-user-item">{getStateComponent(v.state ?? '', i)}</div>
