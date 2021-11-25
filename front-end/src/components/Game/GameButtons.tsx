@@ -6,12 +6,16 @@ import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
 
 import { socketUtilType } from '../../utils/socketUtil';
+import { categoryList } from '../Lobby/CreateRoomModal';
 import { modalPropsType } from '../public/Modal';
 import GameRoomSettings from './GameRoomSettings';
 
 const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
   const [isAllReady, setIsAllReady] = useState(false);
   const [settingsModal, setSettingsModal] = useState([]);
+  const client = useRecoilValue(globalAtom.client);
+  const user = useRecoilValue(globalAtom.user);
+  const setRoomSettings = useSetRecoilState(globalAtom.roomSettings);
 
   const roomSettings = useRecoilValue(globalAtom.roomSettings);
 
@@ -30,6 +34,9 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
     if (!isAllReady) {
       popModal({ type: 'error', ment: '아직 준비가 되지않은 플레이어가 있습니다.' });
       return;
+    } else if (client.length < 3) {
+      popModal({ type: 'error', ment: '3명 미만은 플레이가 불가능 합니다.' });
+      return;
     }
 
     const categorys: string[] = roomSettings.category
@@ -42,12 +49,26 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
   };
 
   useEffect(() => {
+    const unReady = client.filter((v) => v.state === '');
+
+    if (!!unReady.find((v) => v.name !== user.user_id)) setIsAllReady(false);
+    else setIsAllReady(true);
+  }, [client]);
+
+  useEffect(() => {
     socket.on.IS_ALL_READY({ state: isAllReady, setState: setIsAllReady });
 
     return () => {
       socket.off.IS_ALL_READY();
     };
   }, [isAllReady]);
+
+  useEffect(() => {
+    socket.on.SETTING_CHANGE({ setState: setRoomSettings, category: categoryList });
+    return () => {
+      socket.off.SETTING_CHANGE();
+    };
+  }, []);
 
   return (
     <>
@@ -101,7 +122,6 @@ const GameButtons = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const exitRoom = () => {
-    socket.emit.ROOM_EXIT();
     history.replace('/lobby');
   };
 

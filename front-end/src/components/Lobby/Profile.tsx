@@ -1,14 +1,15 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import character from '../../images/mainChar2.svg';
 import { getUserData } from '../../utils/getDataUtil';
 import { useRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+import socketUtil, { socket } from '../../utils/socketUtil';
 
 const Profile = () => {
   const profileImage = useRef(null);
   const [user, setUser] = useRecoilState(globalAtom.user);
 
-  if (!user.user_id) getUserData(setUser);
+  if (!user.user_id || user.socketId !== socket.id) getUserData(setUser, socketUtil, user.socketId !== socket.id);
 
   if (profileImage.current) profileImage.current.src = character;
 

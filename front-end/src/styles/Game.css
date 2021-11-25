@@ -192,8 +192,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
+  min-width: 100px;
+  min-height: 100px;
   border: 3px #000 solid;
   background-color: #c1c1bd;
   background: linear-gradient(-45deg, #c1c1bd, #6d80a6, #c1c1bd, #6d80a6);
@@ -236,6 +236,7 @@
   overflow-x: hidden;
   white-space: nowrap;
   width: 100%;
+  opacity: 0.7;
   flex-grow: 1;
   background-color: aliceblue;
   text-align: center;
@@ -377,6 +378,8 @@
 .game-chat-box-read {
   width: 47vw;
   height: 4vh;
+  border-radius: 30px;
+  margin-top: 20px;
   box-shadow: 2px 3px 3px #585858;
   overflow: hidden;
   opacity: 0.5;
@@ -388,39 +391,39 @@
   line-height: 0;
 }
 
-.game-chat-box-white {
+.game-user-white {
   background-color: #fff;
 }
 
-.game-chat-box-red {
+.game-user-red {
   color: #fff;
   background-color: red;
 }
 
-.game-chat-box-orange {
+.game-user-orange {
   background-color: orange;
 }
 
-.game-chat-box-yellow {
+.game-user-yellow {
   background-color: yellow;
 }
 
-.game-chat-box-green {
+.game-user-green {
   color: #fff;
   background-color: green;
 }
 
-.game-chat-box-blue {
+.game-user-blue {
   color: #fff;
   background-color: blue;
 }
 
-.game-chat-box-navy {
+.game-user-navy {
   color: #fff;
   background-color: navy;
 }
 
-.game-chat-box-purple {
+.game-user-purple {
   color: #fff;
   background-color: purple;
 }

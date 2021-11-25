@@ -5,6 +5,7 @@ import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { socket } from '../../utils/socketUtil';
 
 const LoginModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '' });
@@ -44,7 +45,7 @@ const LoginModal = () => {
       return;
     }
 
-    setUser(userData.data);
+    setUser({ ...userData.data, socketId: socket.id });
     history.push('/lobby');
   };
 

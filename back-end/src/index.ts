@@ -8,7 +8,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
-import { ExpressPeerServer, PeerServer } from 'peer';
+import { ExpressPeerServer } from 'peer';
 import userRouter from './route/userRouter';
 import indexRouter from './route/indexRouter';
 
@@ -21,13 +21,9 @@ const io = new Server(httpServer, {
   path: '/socket',
 });
 
-const peerServer = PeerServer({ port: 5001 });
-peerServer.listen(() => {
-  console.log('peer server start');
-});
-
 socketUtil(io);
 
+app.use('/peerjs', ExpressPeerServer(httpServer));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
@@ -42,10 +38,8 @@ app.use(
     },
   })
 );
-
 app.use('/api/users', userRouter);
 app.use('/api', indexRouter);
-
 app.use(express.static(path.join(__dirname, '../build')));
 
 if (process.env.NODE_ENV !== 'test') {

@@ -25,7 +25,7 @@ const GameTalk = () => {
       audio: true,
     });
     myStream.current = stream;
-    myStream.current.getTracks().forEach((track) => {
+    myStream.current?.getTracks().forEach((track) => {
       track.enabled = false;
     });
 
@@ -35,7 +35,7 @@ const GameTalk = () => {
   };
 
   const onCall = (call: Peer.MediaConnection, peerId: string) => {
-    call.on('stream', (stream) => {
+    call?.on('stream', (stream) => {
       setUsers((prev) => {
         const user = prev.find((u) => u.peerId === peerId);
         if (!user) {
@@ -55,7 +55,7 @@ const GameTalk = () => {
   };
 
   const answerToUser = (call: Peer.MediaConnection) => {
-    call.answer(myStream.current);
+    call?.answer(myStream.current);
     onCall(call, call.peer);
   };
 
@@ -76,13 +76,13 @@ const GameTalk = () => {
   };
 
   const currentSpeaker = ({ speaker }: { speaker: string }) => {
-    myStream.current.getTracks().forEach((track) => {
+    myStream.current?.getTracks().forEach((track) => {
       myUser.user_id === speaker ? (track.enabled = true) : (track.enabled = false);
     });
   };
 
   const endSpeaker = () => {
-    myStream.current.getTracks().forEach((track) => {
+    myStream.current?.getTracks().forEach((track) => {
       track.enabled = false;
     });
   };
@@ -94,10 +94,19 @@ const GameTalk = () => {
     socket.on('current speaker', currentSpeaker);
     socket.on('end speak', endSpeaker);
 
-    myPeerRef.current = new Peer(undefined, {
-      host: '/',
-      port: 5001,
-    });
+    if (process.env.NODE_ENV === 'development') {
+      myPeerRef.current = new Peer(undefined, {
+        host: process.env.REACT_APP_PEER_HOST,
+        path: '/peerjs',
+        port: Number(process.env.REACT_APP_PEER_PORT),
+      });
+    } else {
+      myPeerRef.current = new Peer(undefined, {
+        host: process.env.REACT_APP_PEER_HOST,
+        path: '/peerjs',
+      });
+    }
+
     myPeerRef.current?.on('open', initRtc);
     myPeerRef.current?.on('call', answerToUser);
 
