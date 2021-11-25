@@ -374,13 +374,13 @@
 .game-chat-box-read {
   width: 47vw;
   height: 4vh;
+  margin-top: 20px;
+  border-radius: 30px;
   box-shadow: 2px 3px 3px #585858;
   overflow: hidden;
   opacity: 0.5;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 0;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   overflow-y: hidden;
   line-height: 0;
 }
