@@ -5,6 +5,7 @@ import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { socket } from '../../utils/socketUtil';
 
 const JoinModal = () => {
   const [userInfo, setUserInfo] = useState({ id: '', pwd: '', pwdCheck: '' });
@@ -51,7 +52,7 @@ const JoinModal = () => {
       return;
     }
 
-    setUser(userData);
+    setUser({ ...userData, socketId: socket.id });
     history.push('/lobby');
   };
 

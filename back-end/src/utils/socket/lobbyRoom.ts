@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { roomList, socketDatas, roomSecrets, roomInfoType, socketToPeer } from '../../store/store';
+import timer from '../timer';
 
 const LOBBY = 'lobby';
 
@@ -14,6 +15,7 @@ const ROOM_LIST = 'room list';
 const REQUEST_USER_OWNER = 'request user owner';
 const ROOM_CLIENTS_INFO = 'room clients info';
 const ROOM_TITLE_INFO = 'room title info';
+const SETTING_CHANGE = 'setting change';
 
 //emit unicast
 const IS_ROOM_CREATE = 'is room create';
@@ -23,10 +25,10 @@ const ROOM_JOIN = 'room join';
  * 유저가 로비에 입장했다고 알림
  */
 const sendLobbyEntered = (socket: Socket, io: Server) => {
-  socket.on(LOBBY_ENTERED, ({ userId }: { userId: string }) => {
+  socket.on(LOBBY_ENTERED, async ({ userId }: { userId: string }) => {
     const socketInfo = socketDatas.get(socket.id);
 
-    if (socketInfo) {
+    if (!!socketInfo && !!socketInfo.roomTitle) {
       const { name, roomTitle } = socketInfo;
       const roomInfo = roomList.get(roomTitle);
 
@@ -35,20 +37,30 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
 
       if (!!roomInfo && roomInfo.client.length === 1) {
         roomList.delete(roomTitle);
+        roomSecrets.delete(roomTitle);
 
         io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
       } else if (!!roomInfo) {
         if (roomInfo.owner === name) {
+          const WAITING_TIME = 100;
+          const { max, cycle } = roomInfo;
+
           roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
 
           io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
+
+          await timer(WAITING_TIME);
+
+          io.to(roomTitle).emit(SETTING_CHANGE, { roomOwnerSetting: { max, cycle } });
         }
 
         roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
+        roomInfo.state = 'waiting';
         roomList.set(roomTitle, roomInfo);
 
         io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
         io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
+        io.to(roomTitle).emit('rtc exit', { peerId: socketToPeer[socket.id] });
         io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
       }
     }
@@ -76,6 +88,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     max: number;
     cycle: number;
     owner: string;
+    category: [];
   };
 
   socket.on(CREATE_ROOM, ({ roomInfo }: { roomInfo: createRoomInfoType }) => {
@@ -167,6 +180,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
 
     if (!!roomInfo && roomInfo.client.length === 1) {
       roomList.delete(roomTitle);
+      roomSecrets.delete(roomTitle);
 
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     } else if (!!roomInfo) {
@@ -177,6 +191,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
       }
 
       roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
+      roomInfo.state = 'waiting';
       roomList.set(roomTitle, roomInfo);
 
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });

@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { roomInfoType, roomList, roomSecrets, roomSecretType, socketDatas, socketToPeer } from '../../store/store';
+import { roomInfoType, roomList, roomSecrets, roomSecretType, socketDatas } from '../../store/store';
 import shuffle from '../shuffle';
 import { getRandomWords } from '../../database/service/wordService';
 import timer from '../timer';
@@ -8,14 +8,12 @@ const LOBBY = 'lobby';
 
 const ROOM_TITLE_INFO = 'room title info';
 const ROOM_READY = 'room ready';
-const ROOM_EXIT = 'room exit';
 const SETTING_CHANGE = 'setting change';
 const IS_USER_OWNER = 'is user owner';
 const GAME_START = 'game start';
 const CHAT_MESSAGE_DATA = 'chat message data';
 const IS_USER_READY = 'is user ready';
 const ROOM_LIST = 'room list';
-const REQUEST_USER_OWNER = 'request user owner';
 const IS_WAITING_STATE = 'is waiting state';
 const IS_ALL_READY = 'is all ready';
 const ROOM_CLIENTS_INFO = 'room clients info';
@@ -115,46 +113,6 @@ const sendUserReady = (socket: Socket, io: Server) => {
   });
 };
 
-/**
- * 유저가 방에서 나간다고 알림
- */
-const sendRoomExit = (socket: Socket, io: Server) => {
-  socket.on(ROOM_EXIT, () => {
-    const socketInfo = socketDatas.get(socket.id);
-
-    if (!socketInfo) return;
-
-    const { name, roomTitle } = socketInfo;
-
-    if (!roomList.get(roomTitle)) return;
-
-    const roomInfo = roomList.get(roomTitle);
-
-    socket.leave(roomTitle);
-    socket.join(LOBBY);
-
-    if (!!roomInfo && roomInfo.client.length === 1) {
-      roomList.delete(roomTitle);
-
-      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
-    } else if (!!roomInfo) {
-      if (roomInfo.owner === name) {
-        roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
-
-        io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
-      }
-
-      roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
-      roomList.set(roomTitle, roomInfo);
-
-      io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
-      io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
-      io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
-      io.to(roomTitle).emit('rtc exit', { peerId: socketToPeer[socket.id] });
-    }
-  });
-};
-
 /*
  * 방장이 최대 플레이어수 변경 요청
  */
@@ -203,6 +161,8 @@ const gameStart = (socket: Socket, io: Server) => {
 
   const state = {
     select: async (roomInfo: roomInfoType, roomSecret: roomSecretType, categorys: string[]) => {
+      if (roomList.get(roomInfo.title)?.state !== 'start') return false;
+
       const ROOM_STATE = 'select';
       const WAITING_TIME = 5 * 1000;
 
@@ -226,8 +186,12 @@ const gameStart = (socket: Socket, io: Server) => {
       io.to(title).emit(REQUEST_SELECT_DATA, null);
 
       await timer(WAITING_TIME);
+
+      return true;
     },
     chat: async (roomInfo: roomInfoType) => {
+      if (roomList.get(roomInfo.title)?.state !== 'start') return false;
+
       const ROOM_STATE = 'chat';
       const SPEAK_TIME = 15;
       const SUB_TIME = 1;
@@ -245,8 +209,12 @@ const gameStart = (socket: Socket, io: Server) => {
         io.to(title).emit('current speaker', { speaker: randomClients[i].name });
         await timer((SPEAK_TIME + SUB_TIME) * SECONDS);
       }
+
+      return true;
     },
     vote: async (roomInfo: roomInfoType) => {
+      if (roomList.get(roomInfo.title)?.state !== 'start') return false;
+
       const ROOM_STATE = 'vote';
       const VOTE_TIME_OUT = 3;
       const SUB_TIME = 1;
@@ -268,6 +236,8 @@ const gameStart = (socket: Socket, io: Server) => {
       io.to(title).emit(END_VOTE, null);
 
       await timer(SUB_TIME * SECONDS);
+
+      return true;
     },
     voteResult: async (roomInfo: roomInfoType) => {
       const ROOM_STATE = 'result';
@@ -275,6 +245,8 @@ const gameStart = (socket: Socket, io: Server) => {
 
       const { title, client } = roomInfo;
       const { liar, vote } = roomSecrets.get(title);
+
+      if (roomList.get(roomInfo.title)?.state !== 'start') return false;
 
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
 
@@ -302,8 +274,12 @@ const gameStart = (socket: Socket, io: Server) => {
       io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
 
       await timer(WAIT_VOTE_RESULT * SECONDS);
+
+      return true;
     },
     liar: async (roomInfo: roomInfoType, roomSecret: roomSecretType) => {
+      if (roomList.get(roomInfo.title)?.state !== 'start') return false;
+
       const ROOM_STATE = 'liar';
       const WAIT_TIME = 10;
 
@@ -333,8 +309,12 @@ const gameStart = (socket: Socket, io: Server) => {
           }
         }, SECONDS);
       });
+
+      return true;
     },
     result: async (roomInfo: roomInfoType, roomSecret: roomSecretType) => {
+      if (roomList.get(roomInfo.title)?.state !== 'start') return false;
+
       const ROOM_STATE = 'result';
       const RESULT_TIMER = 5;
       const SECONDS = 1000;
@@ -361,6 +341,8 @@ const gameStart = (socket: Socket, io: Server) => {
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
       io.to(title).emit(RESULT_DATA, { resultData: tempData });
       await timer(RESULT_TIMER * SECONDS);
+
+      return true;
     },
   };
 
@@ -378,16 +360,18 @@ const gameStart = (socket: Socket, io: Server) => {
 
     roomInfo.client.forEach((v) => (v.state = ''));
     roomInfo.state = 'start';
+    roomList.set(roomTitle, roomInfo);
 
     io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: false });
     io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
 
-    await state.select(roomInfo, roomSecret, categorys);
-    await state.chat(roomInfo);
-    await state.vote(roomInfo);
-    await state.voteResult(roomInfo);
-    if (roomResultMap.get(roomTitle).isWin) await state.liar(roomInfo, roomSecret);
-    await state.result(roomInfo, roomSecret);
+    let isGamePlaying: boolean = true;
+    if (isGamePlaying) isGamePlaying = await state.select(roomInfo, roomSecret, categorys);
+    if (isGamePlaying) isGamePlaying = await state.chat(roomInfo);
+    if (isGamePlaying) isGamePlaying = await state.vote(roomInfo);
+    if (isGamePlaying) isGamePlaying = await state.voteResult(roomInfo);
+    if (roomResultMap.get(roomTitle).isWin && isGamePlaying) isGamePlaying = await state.liar(roomInfo, roomSecret);
+    if (isGamePlaying) isGamePlaying = await state.result(roomInfo, roomSecret);
 
     roomInfo.client.forEach((v) => (v.state = ''));
     roomInfo.state = 'waiting';
@@ -459,7 +443,6 @@ const gameRoom = (socket: Socket, io: Server) => {
   sendClientInfo(socket, io);
   sendUserReady(socket, io);
 
-  sendRoomExit(socket, io);
   waitRoomMessage(socket, io);
   gameStart(socket, io);
   sendSettingChange(socket, io);
