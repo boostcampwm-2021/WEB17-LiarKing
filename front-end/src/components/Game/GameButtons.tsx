@@ -13,6 +13,8 @@ import GameRoomSettings from './GameRoomSettings';
 const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
   const [isAllReady, setIsAllReady] = useState(false);
   const [settingsModal, setSettingsModal] = useState([]);
+  const client = useRecoilValue(globalAtom.client);
+  const user = useRecoilValue(globalAtom.user);
   const setRoomSettings = useSetRecoilState(globalAtom.roomSettings);
 
   const roomSettings = useRecoilValue(globalAtom.roomSettings);
@@ -32,6 +34,9 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
     if (!isAllReady) {
       popModal({ type: 'error', ment: '아직 준비가 되지않은 플레이어가 있습니다.' });
       return;
+    } else if (client.length < 3) {
+      popModal({ type: 'error', ment: '3명 미만은 플레이가 불가능 합니다.' });
+      return;
     }
 
     const categorys: string[] = roomSettings.category
@@ -42,6 +47,13 @@ const GameButtonsOwner = ({ socket }: { socket: socketUtilType }) => {
 
     socket.emit.GAME_START({ categorys });
   };
+
+  useEffect(() => {
+    const unReady = client.filter((v) => v.state === '');
+
+    if (!!unReady.find((v) => v.name !== user.user_id)) setIsAllReady(false);
+    else setIsAllReady(true);
+  }, [client]);
 
   useEffect(() => {
     socket.on.IS_ALL_READY({ state: isAllReady, setState: setIsAllReady });

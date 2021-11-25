@@ -5,6 +5,7 @@ import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { socket } from '../../utils/socketUtil';
 
 /**
  * 비로그인 모달 컴포넌트
@@ -39,7 +40,7 @@ const NoLoginModal = () => {
       return;
     }
 
-    setUser({ user_id: userInfo.nickname, point: 0, rank: 'unranked' });
+    setUser({ user_id: userInfo.nickname, point: 0, rank: 'unranked', socketId: socket.id });
     history.push('/lobby');
   };
 

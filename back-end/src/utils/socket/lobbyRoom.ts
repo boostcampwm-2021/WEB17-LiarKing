@@ -55,6 +55,7 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
         }
 
         roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
+        roomInfo.state = 'waiting';
         roomList.set(roomTitle, roomInfo);
 
         io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
@@ -190,6 +191,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
       }
 
       roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
+      roomInfo.state = 'waiting';
       roomList.set(roomTitle, roomInfo);
 
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });

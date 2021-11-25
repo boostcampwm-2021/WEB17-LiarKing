@@ -6,9 +6,12 @@ const VOTE_RESULT = 'vote result';
 const endVote = (socket: Socket) => {
   socket.on(VOTE_RESULT, ({ voteData }: { voteData: { name: string } }) => {
     const { name } = voteData;
-    const { roomTitle } = socketDatas.get(socket.id);
-    const { vote } = roomSecrets.get(roomTitle);
+    const socketInfo = socketDatas.get(socket.id);
+    const roomSecret = roomSecrets.get(socketInfo?.roomTitle);
 
+    if (!roomSecret) return;
+
+    const { vote } = roomSecret;
     const candidate = vote.find((v) => v.name === name);
 
     if (!!candidate) candidate.count++;

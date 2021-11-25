@@ -15,14 +15,7 @@ const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
   const [roomSettings, setRoomSettings] = useRecoilState(globalAtom.roomSettings);
   const [roomInfo, setRoomInfo] = useState({ max: roomSettings.max, cycle: roomSettings.cycle, owner: user.user_id });
   const [categories, setCategory] = useState(roomSettings.category);
-  const [client, setClient] = useState([]);
-
-  useEffect(() => {
-    socket.on.ROOM_CLIENTS_INFO({ setState: setClient });
-    return () => {
-      socket.off.ROOM_CLIENTS_INFO();
-    };
-  }, [client]);
+  const client = useRecoilValue(globalAtom.client);
 
   const changeSettings = () => {
     const { max, cycle } = roomInfo;
