@@ -218,7 +218,7 @@ const gameStart = (socket: Socket, io: Server) => {
       if (roomList.get(roomInfo.title)?.state !== 'start') return false;
 
       const ROOM_STATE = 'vote';
-      const VOTE_TIME_OUT = 3;
+      const VOTE_TIME_OUT = 10;
       const SUB_TIME = 1;
 
       const { title, client } = roomInfo;

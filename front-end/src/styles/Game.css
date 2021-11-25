@@ -194,6 +194,8 @@
   align-items: center;
   min-width: 100px;
   min-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
   border: 3px #000 solid;
   background-color: #c1c1bd;
   background: linear-gradient(-45deg, #c1c1bd, #6d80a6, #c1c1bd, #6d80a6);
@@ -384,10 +386,10 @@
   overflow: hidden;
   opacity: 0.5;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 0;
+  white-space: nowrap;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-  overflow-y: hidden;
+  overflow-x: hidden;
   line-height: 0;
 }
 
@@ -466,6 +468,11 @@
   font-weight: 600;
   color: aliceblue;
   margin: 20px 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .game-content-chat-timer {
