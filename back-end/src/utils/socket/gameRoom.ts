@@ -204,10 +204,12 @@ const gameStart = (socket: Socket, io: Server) => {
 
       const randomClients = shuffle(roomInfo.client, roomInfo.client.length);
 
-      for (let i = 0; i < randomClients.length; i++) {
-        io.to(title).emit(CHAT_SPEAKER_DATA, { speakerData: { speaker: randomClients[i].name, timer: SPEAK_TIME } });
-        io.to(title).emit('current speaker', { speaker: randomClients[i].name });
-        await timer((SPEAK_TIME + SUB_TIME) * SECONDS);
+      for (let j = 0; j < roomInfo.cycle; j++) {
+        for (let i = 0; i < randomClients.length; i++) {
+          io.to(title).emit(CHAT_SPEAKER_DATA, { speakerData: { speaker: randomClients[i].name, timer: SPEAK_TIME } });
+          io.to(title).emit('current speaker', { speaker: randomClients[i].name });
+          await timer((SPEAK_TIME + SUB_TIME) * SECONDS);
+        }
       }
 
       return true;
