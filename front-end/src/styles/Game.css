@@ -192,8 +192,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 100px;
-  min-height: 100px;
+  width: 100px;
+  height: 100px;
   border: 3px #000 solid;
   background-color: #c1c1bd;
   background: linear-gradient(-45deg, #c1c1bd, #6d80a6, #c1c1bd, #6d80a6);
@@ -232,6 +232,9 @@
   color: black;
   margin-bottom: 3px;
   text-shadow: 4px 6px 4px gray;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  white-space: nowrap;
   width: 100%;
   flex-grow: 1;
   background-color: aliceblue;
