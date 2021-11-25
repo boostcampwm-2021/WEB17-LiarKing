@@ -4,7 +4,6 @@ import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { globalContext } from '../../App';
 
-import { clientType } from './GamePersons';
 import '../../styles/GameChatBox.css';
 import { socketUtilType } from '../../utils/socketUtil';
 
@@ -38,11 +37,11 @@ let chatList: chatListType = {
 const GameChatBox = () => {
   const user = useRecoilValue(globalAtom.user);
   const roomData = useRecoilValue(globalAtom.roomData);
+  const clients = useRecoilValue(globalAtom.client);
 
   const [modal, setModal] = useState(chatList);
   const messageBox = useRef<HTMLInputElement>();
 
-  const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState([]);
   const [isWaitingState, setIsWaitingState] = useState(true);
 
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
@@ -91,12 +90,10 @@ const GameChatBox = () => {
 
   useEffect(() => {
     socket.on.WAIT_ROOM_MESSAGE(setBubbleBox);
-    socket.on.ROOM_CLIENTS_INFO({ setState: setClients });
     socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
 
     return () => {
       socket.off.WAIT_ROOM_MESSAGE();
-      socket.off.ROOM_CLIENTS_INFO();
       socket.off.IS_WAITING_STATE();
     };
   }, []);

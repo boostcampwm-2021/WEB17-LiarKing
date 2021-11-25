@@ -64,7 +64,6 @@ const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) =>
   }, [filterWord]);
 
   useEffect(() => {
-    console.log(rooms, fRooms);
     setFilterRooms(fRooms);
   }, [fRooms]);
 
