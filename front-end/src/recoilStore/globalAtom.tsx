@@ -6,6 +6,8 @@ const globalAtom = {
   modal: atom({ key: 'modal', default: <></> }),
   roomSettings: atom({ key: 'roomSettings', default: { category: [], max: 1, cycle: 1 } }),
   lobbyBulb: atom({ key: 'lobbyBulb', default: { bulbState: false } }),
+  client: atom({ key: 'client', default: [] }),
+  vote: atom({ key: 'vote', default: false }),
 };
 
 export default globalAtom;

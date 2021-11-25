@@ -1,185 +1,127 @@
-import React, { useState, useContext, useEffect, useRef, useCallback } from 'react';
-import { Socket } from 'socket.io-client';
-import { globalContext } from '../../App';
-import { RTC_MESSAGE, ROOM_MEESSAGE } from '../../utils/socketMsgConstants';
+import '../../styles/GameTalk.css';
+import Peer from 'peerjs';
 import GameTalkAudio from './GameTalkAudio';
-import { clientsType } from '../../utils/typeDefinitions';
+import { useEffect, useRef, useState } from 'react';
+import { socket } from '../../utils/socketUtil';
 import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import '../../styles/GameTalk.css';
 
-const GameTalk = ({ clients }: { clients: clientsType[] }) => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
-  const roomData = useRecoilValue(globalAtom.roomData);
+const GameTalk = () => {
+  const myPeerRef = useRef<Peer>();
+  const myPeerIdRef = useRef<string>();
+  const myStream = useRef<MediaStream>();
+  const calls = useRef<{ [peerId: string]: Peer.MediaConnection }>({});
   const [users, setUsers] = useState([]);
-  const localAudio = useRef<HTMLVideoElement>(null);
-  let localStream: MediaStream;
-  let peerConnections: { [prop: string]: RTCPeerConnection } = {};
-  const pcConfig = {
-    iceServers: [
-      {
-        urls: 'stun:stun.l.google.com:19302',
-      },
-      { urls: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' },
-    ],
+  const myUser = useRecoilValue(globalAtom.user);
+
+  const initRtc = (id: string) => {
+    myPeerIdRef.current = id;
+    getUserMedia(id);
   };
 
-  const initRTC = async () => {
-    await registerSocketHandler();
-
-    await setMyRTC();
-
-    await startPeerConnection();
-  };
-
-  const registerSocketHandler = async () => {
-    socket.on(RTC_MESSAGE.OFFER, async ({ sdp, fromSocketId }) => {
-      createPeerConnection(socket.id, fromSocketId);
-      await createAnswer(sdp, socket.id, fromSocketId);
-    });
-
-    socket.on(RTC_MESSAGE.ANSWER, async ({ sdp, fromSocketId }) => {
-      const pc: RTCPeerConnection = peerConnections[fromSocketId];
-      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-    });
-
-    socket.on(RTC_MESSAGE.CANDIDATE, async ({ candidate, fromSocketId }) => {
-      let pc: RTCPeerConnection = peerConnections[fromSocketId];
-      if (pc) {
-        await pc.addIceCandidate(new RTCIceCandidate(candidate));
-      }
-    });
-  };
-
-  const setMyRTC = async () => {
+  const getUserMedia = async (peerId: string) => {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: false,
       audio: true,
     });
+    myStream.current = stream;
+    myStream.current.getTracks().forEach((track) => {
+      track.enabled = false;
+    });
 
-    localAudio.current.srcObject = stream;
+    setUsers((prev) => [...prev, { peerId, stream, isMe: true }]);
 
-    localStream = stream;
+    socket.emit('i joined', { peerId: myPeerIdRef.current });
   };
 
-  const startPeerConnection = async () => {
-    const clientsExceptMe = clients.filter((c) => c.socketId != socket.id);
-
-    await Promise.all(
-      clientsExceptMe.map((c) => {
-        createPeerConnection(socket.id, c.socketId);
-        return createOffer(socket.id, c.socketId);
-      })
-    );
+  const onCall = (call: Peer.MediaConnection, peerId: string) => {
+    call.on('stream', (stream) => {
+      setUsers((prev) => {
+        const user = prev.find((u) => u.peerId === peerId);
+        if (!user) {
+          calls.current[peerId] = call;
+          return [...prev, { peerId, stream, call, isMe: false }];
+        } else {
+          return [...prev];
+        }
+      });
+    });
   };
 
-  const createPeerConnection = (fromSocketId: string, toSocketId: string) => {
-    const pc = new RTCPeerConnection(pcConfig);
+  const connectToNewUser = ({ peerId }: { peerId: string }) => {
+    if (!myPeerRef.current) return;
+    const call = myPeerRef.current.call(peerId, myStream.current);
+    onCall(call, peerId);
+  };
 
-    peerConnections[toSocketId] = pc;
+  const answerToUser = (call: Peer.MediaConnection) => {
+    call.answer(myStream.current);
+    onCall(call, call.peer);
+  };
 
-    pc.onicecandidate = (e) => {
-      if (e.candidate) {
-        socket.emit(RTC_MESSAGE.CANDIDATE, {
-          candidate: e.candidate,
-          fromSocketId,
-          toSocketId,
-        });
+  const removeUserRtc = ({ peerId }: { peerId: string }) => {
+    setUsers((prev) => {
+      const findUser = prev.find((user) => {
+        return user.peerId === peerId;
+      });
+      if (findUser) {
+        findUser.call.close();
+        const newUsers = prev.filter((user) => user.peerId !== peerId);
+        delete calls.current[peerId];
+        return [...newUsers];
+      } else {
+        return [...prev];
       }
-    };
-
-    pc.ontrack = (e) => {
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== toSocketId));
-      setUsers((prevUsers) => [...prevUsers, { id: toSocketId, stream: new MediaStream([e.track]) }]);
-    };
-
-    if (localStream) {
-      localStream.getTracks().forEach((track) => pc.addTrack(track));
-    }
+    });
   };
 
-  const createOffer = async (fromSocketId: string, toSocketId: string) => {
-    let pc: RTCPeerConnection = peerConnections[toSocketId];
-    if (pc) {
-      const sdpOffer = await pc.createOffer({
-        offerToReceiveVideo: true,
-        offerToReceiveAudio: true,
-      });
-      pc.setLocalDescription(new RTCSessionDescription(sdpOffer));
-      socket.emit(RTC_MESSAGE.OFFER, {
-        sdp: sdpOffer,
-        fromSocketId,
-        toSocketId,
-      });
-    }
+  const currentSpeaker = ({ speaker }: { speaker: string }) => {
+    myStream.current.getTracks().forEach((track) => {
+      myUser.user_id === speaker ? (track.enabled = true) : (track.enabled = false);
+    });
   };
 
-  const createAnswer = async (sdpOffer: RTCSessionDescription, fromSocketId: string, toSocketId: string) => {
-    let pc: RTCPeerConnection = peerConnections[toSocketId];
-    if (pc) {
-      await pc.setRemoteDescription(new RTCSessionDescription(sdpOffer));
-      const sdpAnswer = await pc.createAnswer({
-        offerToReceiveVideo: true,
-        offerToReceiveAudio: true,
-      });
-      pc.setLocalDescription(new RTCSessionDescription(sdpAnswer));
-      socket.emit(RTC_MESSAGE.ANSWER, {
-        sdp: sdpAnswer,
-        fromSocketId,
-        toSocketId,
-      });
-    }
-  };
-
-  const toggleAudio = useCallback(
-    (event: any) => {
-      localStream.getTracks().forEach((track) => {
-        track.enabled = !track.enabled;
-      });
-    },
-    [localStream]
-  );
-
-  const sendMyTurn = (event: any) => {
-    const roomTitle = roomData.selectedRoomTitle;
-    socket.emit('myturn', { roomTitle });
+  const endSpeaker = () => {
+    myStream.current.getTracks().forEach((track) => {
+      track.enabled = false;
+    });
   };
 
   useEffect(() => {
-    initRTC();
+    socket.on('someone joined', connectToNewUser);
+    socket.on('rtc exit', removeUserRtc);
+    socket.on('rtc disconnect', removeUserRtc);
+    socket.on('current speaker', currentSpeaker);
+    socket.on('end speak', endSpeaker);
 
-    socket.on(ROOM_MEESSAGE.EXIT, ({ socketId }) => {
-      if (peerConnections[socketId]) {
-        peerConnections[socketId].close();
-        delete peerConnections[socketId];
-      }
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== socketId));
+    myPeerRef.current = new Peer(undefined, {
+      host: '/',
+      port: 5001,
     });
-
-    socket.on('myturn', () => {
-      localStream.getTracks().forEach((track) => {
-        track.enabled = !track.enabled;
-      });
-    });
+    myPeerRef.current?.on('open', initRtc);
+    myPeerRef.current?.on('call', answerToUser);
 
     return () => {
-      socket.off(RTC_MESSAGE.OFFER);
-      socket.off(RTC_MESSAGE.ANSWER);
-      socket.off(RTC_MESSAGE.CANDIDATE);
-      socket.off(ROOM_MEESSAGE.EXIT);
-      socket.off('myturn');
+      socket.off('someone joined', connectToNewUser);
+      socket.off('rtc exit', removeUserRtc);
+      socket.off('rtc disconnect', removeUserRtc);
+      socket.off('current speaker', currentSpeaker);
+      socket.off('end speak', endSpeaker);
+
+      myPeerRef.current?.off('open', initRtc);
+      myPeerRef.current?.off('call', answerToUser);
+      Object.entries(calls.current).forEach(([peerId, call]) => {
+        call.close();
+      });
     };
   }, []);
 
   return (
     <div className="game-talk">
-      <button onClick={toggleAudio}>나만끄기</button>
-      <button onClick={sendMyTurn}>나빼고나머지꺼버리기</button>
       <div className="audio-wrap">
-        <video className="game-audio" playsInline autoPlay width="100" ref={localAudio}></video>
-        {users.map((user, index) => {
-          return <GameTalkAudio key={index} stream={user.stream}></GameTalkAudio>;
-        })}
+        {users.map((user) => (
+          <GameTalkAudio key={user.peerId} stream={user.stream} isMe={user.isMe} />
+        ))}
       </div>
     </div>
   );

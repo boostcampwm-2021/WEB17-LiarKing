@@ -1,13 +1,13 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
-const GameTalkAudio = ({ stream }: { stream: MediaStream }) => {
+const GameTalkAudio = ({ stream, isMe }: { stream: MediaStream; isMe: boolean }) => {
   const ref = useRef(null);
 
   useEffect(() => {
     if (ref.current) ref.current.srcObject = stream;
-  });
+  }, []);
 
-  return <video className="game-audio" ref={ref} autoPlay playsInline width="100"></video>;
+  return <video className="game-audio" ref={ref} muted={isMe} autoPlay playsInline width="0"></video>;
 };
 
 export default GameTalkAudio;

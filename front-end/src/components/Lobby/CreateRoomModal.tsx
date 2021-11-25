@@ -1,29 +1,43 @@
 import '../../styles/CreateRoomModal.css';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
-import { Socket } from 'socket.io-client';
 import { globalContext } from '../../App';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
 
+import { socketUtilType } from '../../utils/socketUtil';
+import { useHistory } from 'react-router';
+
+const categoryList = [
+  { category: '과일', include: true },
+  { category: '탈것', include: true },
+  { category: '장소', include: true },
+  { category: '직업', include: true },
+  { category: '동물', include: true },
+  { category: '음식', include: true },
+  { category: '나라', include: true },
+  { category: '물건', include: true },
+  { category: '스포츠', include: true },
+  { category: '셀러브리티', include: true },
+];
+
 const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
-  const { socket }: { socket: Socket } = useContext(globalContext);
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
   const user = useRecoilValue(globalAtom.user);
   const [roomInfo, setRoomInfo] = useState({
     title: '',
     password: '',
-    max: 1,
-    cycle: 1,
+    max: 8,
+    cycle: 2,
     owner: user.user_id,
-    state: 'waiting',
-    chatHistory: [],
-    speakerData: { speaker: '', timer: 0 },
   });
+  const history = useHistory();
   const popModal: (modalProps: modalPropsType) => void = useSetRecoilState(globalSelector.popModal);
   const setRoomDataState = useSetRecoilState(globalAtom.roomData);
+  const setRoomSettings = useSetRecoilState(globalAtom.roomSettings);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, title: e.target.value });
@@ -40,7 +54,7 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
   };
 
   const decreasePersons = () => {
-    if (roomInfo.max > 1) {
+    if (roomInfo.max > 3) {
       setRoomInfo({ ...roomInfo, max: roomInfo.max - 1 });
     }
   };
@@ -61,10 +75,23 @@ const CreateRoomModal = ({ offModal }: { offModal(): void }) => {
     if (roomInfo.title === '') {
       popModal({ type: 'error', ment: '방 제목을 입력해주세요.' });
     } else {
-      socket.emit('room create', roomInfo);
+      socket.emit.CREATE_ROOM({ roomInfo });
+
       setRoomDataState({ selectedRoomTitle: roomInfo.title, roomPassword: roomInfo.password });
+      setRoomSettings({ category: categoryList, max: roomInfo.max, cycle: roomInfo.cycle });
     }
   };
+
+  useEffect(() => {
+    socket.on.IS_ROOM_CREATE({
+      success: () => history.push('/game'),
+      error: () => popModal({ type: 'error', ment: '중복된 방제가 있습니다.' }),
+    });
+
+    return () => {
+      socket.off.IS_ROOM_CREATE();
+    };
+  }, []);
 
   return (
     <div id="create-room">

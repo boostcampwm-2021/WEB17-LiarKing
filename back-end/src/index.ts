@@ -6,26 +6,24 @@ import 'reflect-metadata';
 import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { readFileSync } from 'fs';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
-
+import { ExpressPeerServer, PeerServer } from 'peer';
 import userRouter from './route/userRouter';
 import indexRouter from './route/indexRouter';
 
 dotenv.config();
-
-/*const keyOption = {
-  key: readFileSync(__dirname + '/../keys/private.pem'),
-  cert: readFileSync(__dirname + '/../keys/public.pem'),
-};
-*/
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: { origin: '*' },
   path: '/socket',
+});
+
+const peerServer = PeerServer({ port: 5001 });
+peerServer.listen(() => {
+  console.log('peer server start');
 });
 
 socketUtil(io);

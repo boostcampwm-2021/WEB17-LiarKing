@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 
 import globalAtom from '../../recoilStore/globalAtom';
@@ -7,14 +6,16 @@ import { globalContext } from '../../App';
 
 import { clientType } from './GamePersons';
 import '../../styles/GameChatBox.css';
+import { socketUtilType } from '../../utils/socketUtil';
 
 const CONSTANTS = {
   INITIAL_CHATBOX_TOP: 23,
-  CHATBOX_LEFT: '15%',
-  CHATBOX_RIGHT: '68%',
+  CHATBOX_LEFT: '200px',
+  CHATBOX_RIGHT: '260px',
   CHATBOX_TOP_DIFF: 19,
   ROW_MAX_CLIENT: 4,
   CURRENT_CHAT_IDX: 0,
+  MSG_BOX_APPEAR_TIME: 3000,
 };
 
 type chatListType = {
@@ -34,30 +35,33 @@ let chatList: chatListType = {
   7: [hiddenElement],
 };
 
-const GameChatBox = ({ clients }: { clients: clientType[] }) => {
+const GameChatBox = () => {
   const user = useRecoilValue(globalAtom.user);
   const roomData = useRecoilValue(globalAtom.roomData);
 
-  const [message, setMessage] = useState('');
   const [modal, setModal] = useState(chatList);
   const messageBox = useRef<HTMLInputElement>();
-  const { socket }: { socket: Socket } = useContext(globalContext);
+
+  const [clients, setClients]: [clientType[], React.Dispatch<React.SetStateAction<clientType[]>>] = useState([]);
+  const [isWaitingState, setIsWaitingState] = useState(true);
+
+  const { socket }: { socket: socketUtilType } = useContext(globalContext);
 
   const myClassName = 'my-bubble-box';
   let clientIdx = clients.length;
+
   clients.map((client, i) => {
     if (client.name === user.user_id) clientIdx = i;
   });
 
-  const changeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+  const sendIfEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') sendMessage();
   };
 
   const sendMessage = () => {
     if (messageBox.current.value === '') return;
-    else if (messageBox.current.value.length > 50) messageBox.current.value = messageBox.current.value.substr(0, 50) + '...';
     const messageInfo = { userId: user.user_id, message: messageBox.current.value, title: roomData.selectedRoomTitle, clientIdx: clientIdx };
-    socket.emit('wait room message', messageInfo);
+    socket.emit.WAIT_ROOM_MESSAGE(messageInfo);
     messageBox.current.value = '';
   };
 
@@ -66,61 +70,72 @@ const GameChatBox = ({ clients }: { clients: clientType[] }) => {
     if (messageInfo.clientIdx >= CONSTANTS.ROW_MAX_CLIENT) {
       bubbleClassName = 'bubble-right';
     }
+
     const updateModal = (
       <div
         id="bubble-chat-box"
         className={bubbleClassName + ' ' + (messageInfo.clientIdx === clientIdx ? myClassName : '')}
         key={messageInfo.clientIdx}
       >
-        {messageInfo.message}
+        <div className="bubble-chat-box-msg">{messageInfo.message}</div>
       </div>
     );
+
     chatList[messageInfo.clientIdx].unshift(updateModal);
     setModal({ ...chatList });
     setTimeout(() => {
       chatList[messageInfo.clientIdx].splice(chatList[messageInfo.clientIdx].length - 2, 1);
       setModal({ ...chatList });
-    }, 3000);
+    }, CONSTANTS.MSG_BOX_APPEAR_TIME);
   };
 
   useEffect(() => {
-    socket.on('wait room message', (messageInfo: { userId: string; message: string; clientIdx: number }) => {
-      setBubbleBox(messageInfo);
-    });
+    socket.on.WAIT_ROOM_MESSAGE(setBubbleBox);
+    socket.on.ROOM_CLIENTS_INFO({ setState: setClients });
+    socket.on.IS_WAITING_STATE({ setState: setIsWaitingState });
+
     return () => {
-      socket.off('send message');
+      socket.off.WAIT_ROOM_MESSAGE();
+      socket.off.ROOM_CLIENTS_INFO();
+      socket.off.IS_WAITING_STATE();
     };
   }, []);
 
   return (
     <>
-      <div className="game-wait-chat-box">
-        <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onChange={changeMessage}></input>
-        <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
-      </div>
-      {Object.values(modal).map((chat, i) => {
-        return i < CONSTANTS.ROW_MAX_CLIENT ? (
-          <div
-            className="game-wait-chat-bubble-box"
-            style={{
-              top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              left: CONSTANTS.CHATBOX_LEFT,
-            }}
-          >
-            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+      {isWaitingState ? (
+        <>
+          <div className="game-wait-chat-box">
+            <input className="game-wait-chat-input" placeholder="chat..." ref={messageBox} onKeyDown={sendIfEnter}></input>
+            <button className="game-chat-send-button game-wait-send-button" onClick={sendMessage}></button>
           </div>
-        ) : (
-          <div
-            className="game-wait-chat-bubble-box"
-            style={{
-              top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
-              left: CONSTANTS.CHATBOX_RIGHT,
-            }}
-          >
-            {chat[CONSTANTS.CURRENT_CHAT_IDX]}
-          </div>
-        );
-      })}
+          {Object.values(modal).map((chat, i) => {
+            return i < CONSTANTS.ROW_MAX_CLIENT ? (
+              <div
+                className="game-wait-chat-bubble-box"
+                style={{
+                  top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
+                  left: CONSTANTS.CHATBOX_LEFT,
+                }}
+              >
+                {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+              </div>
+            ) : (
+              <div
+                className="game-wait-chat-bubble-box"
+                style={{
+                  top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
+                  right: CONSTANTS.CHATBOX_RIGHT,
+                }}
+              >
+                {chat[CONSTANTS.CURRENT_CHAT_IDX]}
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

@@ -20,6 +20,7 @@
     "@types/node": "^8.0.29",
     "@types/socket.io": "^3.0.2",
     "@types/supertest": "^2.0.11",
+    "@types/uuid": "^8.3.3",
     "cross-env": "^7.0.3",
     "jest": "^27.3.1",
     "supertest": "^6.1.6",
@@ -34,10 +35,12 @@
     "express-session": "^1.17.2",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.2",
+    "peer": "^0.6.1",
     "reflect-metadata": "^0.1.10",
     "session-file-store": "^1.5.0",
     "socket.io": "^4.3.1",
     "typeorm": "0.2.38",
-    "typeorm-seeding": "^1.6.1"
+    "typeorm-seeding": "^1.6.1",
+    "uuid": "^8.3.2"
   }
 }

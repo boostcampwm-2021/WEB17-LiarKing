@@ -6,13 +6,13 @@ import Error from './components/pages/Error';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { io, Socket } from 'socket.io-client';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import socket from './utils/socketUtil';
+import { useRecoilValue } from 'recoil';
 import globalAtom from './recoilStore/globalAtom';
 
 export const globalContext = React.createContext(null);
 
-const global = { socket: io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true }) };
+const global = { socket };
 
 function App() {
   const modal = useRecoilValue(globalAtom.modal);
