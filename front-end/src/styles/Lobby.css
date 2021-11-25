@@ -26,7 +26,7 @@
   justify-content: center;
   align-items: center;
   font-family: Roboto;
-  font-size: 32px;
+  font-size: 2vw;
   font-weight: 600;
   text-shadow: 4px 6px 4px gray;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
@@ -89,6 +89,7 @@
   margin-top: 2vh;
   width: 6vw;
   height: 4vh;
+  font-size: 0.75vw;
   font-weight: 600;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease 0s;
