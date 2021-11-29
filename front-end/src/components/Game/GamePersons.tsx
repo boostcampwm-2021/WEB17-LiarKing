@@ -8,7 +8,7 @@ import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import profileCharacter from '../../utils/profileCharacter';
 
-export type clientType = { name: string; state: string; socketId: string; rank: string };
+export type clientType = { name: string; state: string; socketId: string; rank: string; rtc: string };
 
 const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
   const COLORS = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
@@ -49,6 +49,7 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
       console.log(v);
       return (
         <>
+          <div className="game-persons-user-rtc">{v.rtc}</div>
           <div className={v.name ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
             <div className={'game-user-id game-user-' + COLORS[i]}>{v.name ?? ''}</div>
             {v.name ? <img src={profileCharacter(v.rank)} className="game-user-character" /> : ''}

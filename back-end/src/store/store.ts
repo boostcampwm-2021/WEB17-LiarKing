@@ -5,7 +5,7 @@ export type roomInfoType = {
   title: string;
   password: string;
   max: number;
-  client: { socketId: string; name: string; state: string; rank: string }[];
+  client: { socketId: string; name: string; state: string; rank: string; rtc: string }[];
   cycle: number;
   owner: string;
   state: string;

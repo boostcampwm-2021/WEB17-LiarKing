@@ -51,6 +51,7 @@ const RTC_DISCONNECT = 'rtc disconnect';
 const CURRENT_SPEAKER = 'current speaker';
 const END_SPEAK = 'end speak';
 const I_JOINED = 'i joined';
+const RTC_INFO = 'rtc info';
 
 type createRoomInfoType = {
   title: string;
@@ -61,7 +62,7 @@ type createRoomInfoType = {
 };
 type setStateType<T> = React.Dispatch<React.SetStateAction<T>>;
 type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: string };
-type clientType = { socketId: string; name: string; state: string; rank: string };
+type clientType = { socketId: string; name: string; state: string; rank: string; rtc: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type voteDataType = { name: string };
@@ -198,7 +199,7 @@ const on = {
   ROOM_CLIENTS_INFO: ({ setState }: { setState: setStateType<clientType[]> }) => {
     socket.on(ROOM_CLIENTS_INFO, ({ clients }: { clients: clientType[] }) => {
       while (clients.length < 8) {
-        clients.push({ socketId: null, name: null, state: null, rank: null });
+        clients.push({ socketId: null, name: null, state: null, rank: null, rtc: null });
       }
       setState(clients);
     });
@@ -369,6 +370,7 @@ const emit = {
   VOTE_RESULT: ({ voteData }: { voteData: voteDataType }) => socket.emit(VOTE_RESULT, { voteData }),
   LIAR_DATA: ({ liarResult }: { liarResult: { isAnswer: boolean } }) => socket.emit(LIAR_DATA, { liarResult }),
   I_JOINED: ({ peerId }: { peerId: string }) => socket.emit(I_JOINED, { peerId }),
+  RTC_INFO: ({ state }: { state: boolean }) => socket.emit(RTC_INFO, { state }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };
