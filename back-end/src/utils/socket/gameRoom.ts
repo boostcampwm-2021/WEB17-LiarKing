@@ -27,6 +27,8 @@ const VOTE_TIMER_DATA = 'vote timer data';
 const END_VOTE = 'end vote';
 const RESULT_DATA = 'result data';
 const LIAR_DATA = 'liar data'; //아직 미사용
+const CURRENT_SPEAKER = 'current speaker';
+const END_SPEAK = 'end speak';
 
 /**
  * 클라이언트에게 요청이오면 해당 방에 있는 모든 클라이언트에게
@@ -207,7 +209,7 @@ const gameStart = (socket: Socket, io: Server) => {
       for (let j = 0; j < roomInfo.cycle; j++) {
         for (let i = 0; i < randomClients.length; i++) {
           io.to(title).emit(CHAT_SPEAKER_DATA, { speakerData: { speaker: randomClients[i].name, timer: SPEAK_TIME } });
-          io.to(title).emit('current speaker', { speaker: randomClients[i].name });
+          io.to(title).emit(CURRENT_SPEAKER, { speaker: randomClients[i].name });
           await timer((SPEAK_TIME + SUB_TIME) * SECONDS);
         }
       }
@@ -229,7 +231,7 @@ const gameStart = (socket: Socket, io: Server) => {
 
       await timer(STATE_WAITING_TIME);
 
-      io.to(title).emit('end speak');
+      io.to(title).emit(END_SPEAK);
       io.to(title).emit(VOTE_TIMER_DATA, { timer: VOTE_TIME_OUT });
       io.to(title).emit(ROOM_CLIENTS_INFO, { clients: client });
 
