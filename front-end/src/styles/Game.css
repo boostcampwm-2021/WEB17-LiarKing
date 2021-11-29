@@ -37,9 +37,7 @@
   display: flex;
   width: 100vw;
   justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  padding: 30px;
+  padding: 3vh;
   z-index: 4;
   background-image: linear-gradient(to bottom, #6d80a6, #a7bdd9, #6d80a6);
 }
@@ -48,18 +46,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 300px;
-  min-width: 230px;
-  height: 80px;
+  width: 15vw;
+  height: 10vh;
   background-color: #a7bdd9;
-  border-radius: 30px;
+  border-radius: 3vh;
   font-family: Roboto;
-  font-size: 36px;
+  font-size: 3.6vh;
   font-weight: 600;
   text-shadow: 3px 3px 3px gray;
   box-sizing: border-box;
-  padding-bottom: 10px;
-  margin-right: 10px;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
   background-image: linear-gradient(to bottom, #a7bdd9, #6d80a6, #a7bdd9);
 }
@@ -77,14 +72,14 @@
 .game-header-button {
   width: auto;
   min-width: fit-content;
-  height: 50px;
+  height: 7.5vh;
   border: none;
-  border-radius: 13px;
+  margin: 0 1vw;
+  border-radius: 3vh;
   font-family: Roboto;
-  font-size: 20px;
+  font-size: 2.5vh;
   font-weight: 600;
-  padding: 0 20px 3px 20px;
-  margin: 0 20px;
+  padding: 0 2vw;
   text-shadow: 2px 3px 2px gray;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
   transition: filter 0.3s;
@@ -98,9 +93,9 @@
 .game-header-button-exit {
   background-image: url('../images/exit2.svg');
   background-size: 100% 100%;
-  width: 75px;
-  height: 60px;
-  margin: 0 20px;
+  width: 5vw;
+  height: 10vh;
+  margin: 0 1vw;
   cursor: pointer;
   transition: filter 0.3s;
 }
@@ -110,14 +105,20 @@
 }
 
 .game-header-info {
-  min-width: fit-content;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 10vh;
+  white-space: nowrap;
+  justify-content: center;
   font-family: Roboto;
-  font-size: 25px;
+  width: fit-content;
+  max-width: 25vw;
+  height: 10vh;
+  padding: 0 1.5vw;
+  font-size: 3.6vh;
   font-weight: 600;
   text-shadow: 3px 3px 3px gray;
-  background-color: #a7bdd9;
-  padding: 10px 20px 15px;
-  border-radius: 15px;
+  border-radius: 3vh;
   box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
   background-image: linear-gradient(to bottom, #a7bdd9, #6d80a6, #a7bdd9);
 }
@@ -129,18 +130,18 @@
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
-  padding: 80px;
+  padding: 8vh;
   z-index: 2;
 }
 
 .vote-box {
-  width: 40px;
+  width: 3vw;
   filter: opacity(0.3) invert(100%);
   cursor: pointer;
 }
 
 .vote-box-select {
-  width: 40px;
+  width: 3vw;
   filter: invert(100%);
   cursor: pointer;
 }
@@ -148,7 +149,7 @@
 .game-persons-left,
 .game-persons-right {
   display: flex;
-  height: 100%;
+  height: 99%;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
@@ -168,6 +169,7 @@
   width: 50vw;
   height: 4vh;
   padding: 0.2vh 1vw;
+  font-size: 1vh;
   border: none;
 }
 
@@ -179,8 +181,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  width: 200px;
-  height: 100px;
+  width: 10vw;
+  height: 10vh;
 }
 
 .game-persons-user-right {
@@ -192,12 +194,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 100px;
-  min-height: 100px;
-  max-width: 100px;
-  max-height: 100px;
+  min-width: 15vh;
+  min-height: 15vh;
+  max-width: 15vh;
+  max-height: 15vh;
   border: 3px #000 solid;
-  background-color: #c1c1bd;
   background: linear-gradient(-45deg, #c1c1bd, #6d80a6, #c1c1bd, #6d80a6);
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
@@ -228,19 +229,19 @@
 }
 
 .game-user-id {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 0.3vh;
   font-family: Roboto;
-  font-size: 13px;
+  font-size: 2vh;
   font-weight: 600;
   color: black;
-  margin-bottom: 3px;
-  text-shadow: 4px 6px 4px gray;
   text-overflow: ellipsis;
-  overflow-x: hidden;
+  overflow: hidden;
   white-space: nowrap;
   width: 100%;
   opacity: 0.7;
-  flex-grow: 1;
-  background-color: aliceblue;
   text-align: center;
   border-bottom: 1px #000 solid;
 }
@@ -248,9 +249,9 @@
 .game-user-character {
   background-image: url('../images/mainChar2.svg');
   background-size: 100% 100%;
-  width: 60px;
-  height: 60px;
-  margin: 5px 0;
+  width: 13vh;
+  height: 11vh;
+  margin: 0.5vh 0 0 0;
 }
 
 .game-persons-user-item {
@@ -262,7 +263,7 @@
 
 .game-persons-user-item > .persons-ready {
   font-family: Roboto;
-  font-size: 20px;
+  font-size: 3vh;
   font-weight: 600;
   color: #a7bdd9;
 }
@@ -285,45 +286,46 @@
   justify-content: center;
   align-items: center;
   background-color: #e2e5f4;
-  border-radius: 20px;
-  padding: 15px;
+  border-radius: 2vh;
+  padding: 3vh;
   transition: all 0.3s;
+  transform: translate(0, 40%);
   animation: cardAnimation 2s linear forwards;
 }
 
 @keyframes cardAnimation {
   0% {
-    transform: translate(0, 45%) translate3d(0, 0, -500px) scale(0.5);
+    transform: translate(0, 40%) translate3d(0, 0, -50vh) scale(0.5);
   }
   12.5% {
-    transform: translate(0, 45%) translate3d(-150px, 0, -437.5px) scale(0.5625) rotateY(180deg);
+    transform: translate(0, 40%) translate3d(-15vh, 0, -43.75vh) scale(0.5625) rotateY(180deg);
   }
   25% {
-    transform: translate(0, 45%) translate3d(-235px, 0, -375px) scale(0.625) rotateY(0deg);
+    transform: translate(0, 40%) translate3d(-23.5vh, 0, -37.5vh) scale(0.625) rotateY(0deg);
   }
   37.5% {
-    transform: translate(0, 45%) translate3d(-280px, 0, -312.5px) scale(0.6875) rotateY(180deg);
+    transform: translate(0, 40%) translate3d(-28vh, 0, -31.25vh) scale(0.6875) rotateY(180deg);
   }
   50% {
-    transform: translate(0, 45%) translate3d(-300px, 0, -250px) scale(0.75) rotateY(0deg);
+    transform: translate(0, 40%) translate3d(-30vh, 0, -25vh) scale(0.75) rotateY(0deg);
   }
   62.5% {
-    transform: translate(0, 45%) translate3d(-280px, 0, -187.5px) scale(0.8125) rotateY(180deg);
+    transform: translate(0, 40%) translate3d(-28vh, 0, -18.75vh) scale(0.8125) rotateY(180deg);
   }
   75% {
-    transform: translate(0, 45%) translate3d(-235px, 0, -125px) scale(0.875) rotateY(0deg);
+    transform: translate(0, 40%) translate3d(-23.5vh, 0, -12.5vh) scale(0.875) rotateY(0deg);
   }
   87.5% {
-    transform: translate(0, 45%) translate3d(-150px, 0, -62.5px) scale(0.9375) rotateY(180deg);
+    transform: translate(0, 40%) translate3d(-15vh, 0, -6.25vh) scale(0.9375) rotateY(180deg);
   }
   100% {
-    transform: translate(0, 45%) translate3d(0, 0, 0) scale(1) rotateY(0deg);
+    transform: translate(0, 40%) translate3d(0, 0, 0) scale(1) rotateY(0deg);
   }
 }
 
 .game-content-select-image {
-  width: 250px;
-  height: 250px;
+  width: 40vh;
+  height: 40vh;
 }
 
 .game-content-select-imgbox {
@@ -331,10 +333,12 @@
   justify-content: center;
   align-items: center;
   background: repeating-linear-gradient(#fff, #a7bdd9);
+  width: 45vh;
+  height: 45vh;
   border: 1px #000 solid;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 15px;
+  border-radius: 1vh;
+  padding: 3vh;
+  margin-bottom: 2.5vh;
 }
 
 .game-content-select-word {
@@ -342,7 +346,7 @@
   justify-content: center;
   align-items: center;
   font-family: Roboto;
-  font-size: 40px;
+  font-size: 4vh;
   font-weight: 600;
 }
 
@@ -370,21 +374,22 @@
   justify-content: flex-start;
   align-items: center;
   width: 50vw;
-  height: 45px;
-  border-radius: 30px;
+  height: 5vh;
+  border-radius: 3vh;
   box-sizing: border-box;
-  padding: 5px 20px;
-  margin-top: 20px;
+  padding: 1vh 1vw;
+  margin-top: 3vh;
 }
 
 .game-chat-box-read {
   width: 47vw;
   height: 4vh;
-  border-radius: 30px;
-  margin-top: 20px;
+  border-radius: 3vh;
+  padding: 2vh;
+  margin-top: 2vh;
   box-shadow: 2px 3px 3px #585858;
   overflow: hidden;
-  opacity: 0.5;
+  opacity: 0.7;
   text-overflow: ellipsis;
   white-space: nowrap;
   -webkit-line-clamp: 1;
@@ -440,15 +445,14 @@
 
 .game-chat-box-font {
   font-family: Roboto;
-  font-size: 20px;
-  padding: 20px;
+  font-size: 2vh;
   font-weight: 400;
   word-break: break-all;
 }
 
 .game-chat-send-input {
   width: 80%;
-  height: 80%;
+  height: 150%;
   background-color: rgba(0, 0, 0, 0);
   border: none;
 }
@@ -456,18 +460,18 @@
 .game-chat-send-button {
   background-image: url('../images/sendMsg.svg');
   background-size: 100% 100%;
-  width: 25px;
-  height: 25px;
+  width: 3.5vh;
+  height: 3.5vh;
   border: none;
   background-color: rgba(0, 0, 0, 0);
 }
 
 .game-content-chat-speaker {
   font-family: Roboto;
-  font-size: 50px;
+  font-size: 5vh;
   font-weight: 600;
   color: aliceblue;
-  margin: 20px 0;
+  margin: 2vh 0 1vh 0;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow-x: hidden;
@@ -477,7 +481,7 @@
 
 .game-content-chat-timer {
   font-family: Roboto;
-  font-size: 30px;
+  font-size: 3vh;
   font-weight: 500;
   color: aliceblue;
 }
@@ -487,11 +491,11 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  min-width: 450px;
-  min-height: 160px;
-  border-radius: 30px;
+  min-width: 25vw;
+  min-height: 16vh;
+  border-radius: 3vh;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 4.5vh;
   text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
   transform: translate(0, 50%);
   background: radial-gradient(#fff, rgba(0, 0, 0, 0.2));
@@ -512,7 +516,7 @@
 
 .game-content-title {
   font-family: Roboto;
-  font-size: 30px;
+  font-size: 4vh;
   font-weight: 500;
   margin-bottom: 20px;
 }
@@ -531,7 +535,7 @@
 
 .game-content-ment {
   font-family: Roboto;
-  font-size: 20px;
+  font-size: 2.5vh;
   font-weight: 400;
 }
 
@@ -549,17 +553,17 @@
   color: #fff;
   background-color: rgba(0, 0, 0, 0.5);
   border: none;
-  border-radius: 30px;
-  width: 120px;
+  border-radius: 3vh;
+  width: 12vw;
   font-family: Roboto;
-  font-size: 17px;
+  font-size: 2vh;
   font-weight: 400;
-  padding: 10px;
-  margin: 10px 10px;
+  padding: 1vh;
+  margin: 1vh 1vw;
 }
 
 .game-content-vote-submit {
-  font-size: 17px;
+  font-size: 2vh;
   font-weight: bold;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.3);
