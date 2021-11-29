@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 
@@ -94,10 +94,10 @@ const GameRoomSettings = ({ offModal }: { offModal(): void }) => {
         <img className="create-room-arrow" src={downArorw} onClick={decreaseRounds} alt={'room-round-down'}></img>
       </div>
       <div className="create-room-buttons">
-        <button className="create-room-do cr-button" onClick={changeSettings}>
+        <button className="create-room-do rs-button" onClick={changeSettings}>
           변경하기
         </button>
-        <button className="create-room-cancel cr-button" onClick={offModal}>
+        <button className="create-room-cancel rs-button" onClick={offModal}>
           닫기
         </button>
       </div>

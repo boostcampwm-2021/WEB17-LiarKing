@@ -9,8 +9,8 @@ import { socketUtilType } from '../../utils/socketUtil';
 
 const CONSTANTS = {
   INITIAL_CHATBOX_TOP: 23,
-  CHATBOX_LEFT: '200px',
-  CHATBOX_RIGHT: '260px',
+  CHATBOX_LEFT: '18vw',
+  CHATBOX_RIGHT: '18vw',
   CHATBOX_TOP_DIFF: 19,
   ROW_MAX_CLIENT: 4,
   CURRENT_CHAT_IDX: 0,
