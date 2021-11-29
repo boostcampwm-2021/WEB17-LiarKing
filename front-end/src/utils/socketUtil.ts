@@ -43,6 +43,13 @@ const CHAT_MESSAGE_DATA = 'chat message data';
 const SETTING_CHANGE = 'setting change';
 const VOTE_RESULT = 'vote result';
 
+//web RTC
+const SOMEONE_JOINED = 'someone joined';
+const RTC_DISCONNECT = 'rtc disconnect';
+const CURRENT_SPEAKER = 'current speaker';
+const END_SPEAK = 'end speak';
+const I_JOINED = 'i joined';
+
 type createRoomInfoType = {
   title: string;
   password: string;
@@ -281,8 +288,27 @@ const on = {
    */
   LIAR_DATA: ({ setState }: { setState: setStateType<liarType> }) => {
     socket.on(LIAR_DATA, ({ liarData }: { liarData: liarType }) => {
-      console.log(liarData);
       setState(liarData);
+    });
+  },
+  SOMEONE_JOINED: ({ fn }: { fn: ({ peerId }: { peerId: string }) => void }) => {
+    socket.on(SOMEONE_JOINED, ({ peerId }: { peerId: string }) => {
+      fn({ peerId });
+    });
+  },
+  RTC_DISCONNECT: ({ fn }: { fn: ({ peerId }: { peerId: string }) => void }) => {
+    socket.on(RTC_DISCONNECT, ({ peerId }: { peerId: string }) => {
+      fn({ peerId });
+    });
+  },
+  CURRENT_SPEAKER: ({ fn }: { fn: ({ speaker }: { speaker: string }) => void }) => {
+    socket.on(CURRENT_SPEAKER, ({ speaker }: { speaker: string }) => {
+      fn({ speaker });
+    });
+  },
+  END_SPEAK: ({ fn }: { fn: () => void }) => {
+    socket.on(END_SPEAK, () => {
+      fn();
     });
   },
 };
@@ -309,6 +335,10 @@ const off = {
   END_VOTE: () => socket.off(END_VOTE),
   RESULT_DATA: () => socket.off(RESULT_DATA),
   LIAR_DATA: () => socket.off(LIAR_DATA),
+  SOMEONE_JOINED: () => socket.off(SOMEONE_JOINED),
+  RTC_DISCONNECT: () => socket.off(RTC_DISCONNECT),
+  CURRENT_SPEAKER: () => socket.off(CURRENT_SPEAKER),
+  END_SPEAK: () => socket.off(END_SPEAK),
 };
 
 const emit = {
@@ -329,6 +359,7 @@ const emit = {
   SETTING_CHANGE: ({ roomSetting }: { roomSetting: roomSettingType }) => socket.emit(SETTING_CHANGE, { roomSetting }),
   VOTE_RESULT: ({ voteData }: { voteData: voteDataType }) => socket.emit(VOTE_RESULT, { voteData }),
   LIAR_DATA: ({ liarResult }: { liarResult: { isAnswer: boolean } }) => socket.emit(LIAR_DATA, { liarResult }),
+  I_JOINED: ({ peerId }: { peerId: string }) => socket.emit(I_JOINED, { peerId }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };
