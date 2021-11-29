@@ -89,7 +89,6 @@ const GameTalk = () => {
 
   useEffect(() => {
     socket.on('someone joined', connectToNewUser);
-    socket.on('rtc exit', removeUserRtc);
     socket.on('rtc disconnect', removeUserRtc);
     socket.on('current speaker', currentSpeaker);
     socket.on('end speak', endSpeaker);
@@ -112,7 +111,6 @@ const GameTalk = () => {
 
     return () => {
       socket.off('someone joined', connectToNewUser);
-      socket.off('rtc exit', removeUserRtc);
       socket.off('rtc disconnect', removeUserRtc);
       socket.off('current speaker', currentSpeaker);
       socket.off('end speak', endSpeaker);

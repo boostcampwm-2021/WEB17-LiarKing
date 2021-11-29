@@ -16,6 +16,7 @@ const REQUEST_USER_OWNER = 'request user owner';
 const ROOM_CLIENTS_INFO = 'room clients info';
 const ROOM_TITLE_INFO = 'room title info';
 const SETTING_CHANGE = 'setting change';
+const RTC_DISCONNECT = 'rtc disconnect';
 
 //emit unicast
 const IS_ROOM_CREATE = 'is room create';
@@ -60,7 +61,7 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
 
         io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
         io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
-        io.to(roomTitle).emit('rtc exit', { peerId: socketToPeer[socket.id] });
+        io.to(roomTitle).emit(RTC_DISCONNECT, { peerId: socketToPeer[socket.id] });
         io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
       }
     }
@@ -162,7 +163,7 @@ const userLogout = (socket: Socket, io: Server) => {
  * 유저 강제 종료
  */
 const sendDisconnect = (socket: Socket, io: Server) => {
-  socket.on(DISCONNECT, () => {
+  socket.on(DISCONNECT, async () => {
     const socketInfo = socketDatas.get(socket.id);
 
     //메인화면에서 강제종료 했을 때.
@@ -188,9 +189,16 @@ const sendDisconnect = (socket: Socket, io: Server) => {
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     } else if (!!roomInfo) {
       if (roomInfo.owner === name) {
+        const WAITING_TIME = 100;
+        const { max, cycle } = roomInfo;
+
         roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
 
         io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
+
+        await timer(WAITING_TIME);
+
+        io.to(roomTitle).emit(SETTING_CHANGE, { roomOwnerSetting: { max, cycle } });
       }
 
       roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
@@ -199,7 +207,7 @@ const sendDisconnect = (socket: Socket, io: Server) => {
 
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
       io.to(roomTitle).emit(ROOM_TITLE_INFO, { usersAmount: roomInfo.client.length });
-      io.to(roomTitle).emit('rtc disconnect', { peerId: socketToPeer[socket.id] });
+      io.to(roomTitle).emit(RTC_DISCONNECT, { peerId: socketToPeer[socket.id] });
       io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
     }
 
