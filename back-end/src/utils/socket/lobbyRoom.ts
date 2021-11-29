@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { roomList, socketDatas, roomSecrets, roomInfoType, socketToPeer } from '../../store/store';
+import { roomList, socketDatas, roomSecrets, roomInfoType, socketToPeer, idList, nicknameList } from '../../store/store';
 import timer from '../timer';
 
 const LOBBY = 'lobby';
@@ -167,6 +167,9 @@ const sendDisconnect = (socket: Socket, io: Server) => {
 
     //메인화면에서 강제종료 했을 때.
     if (!socketInfo) return;
+
+    idList.splice(idList.indexOf(socketInfo.name), idList.indexOf(socketInfo.name) + 1);
+    nicknameList.splice(nicknameList.indexOf(socketInfo.name), nicknameList.indexOf(socketInfo.name) + 1);
 
     //로비에서 강제종료 했을 때.
     if (socketInfo.roomTitle === '') {
