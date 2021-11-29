@@ -27,7 +27,7 @@ const ROOM_JOIN = 'room join';
  * 유저가 로비에 입장했다고 알림
  */
 const sendLobbyEntered = (socket: Socket, io: Server) => {
-  socket.on(LOBBY_ENTERED, async ({ userId }: { userId: string }) => {
+  socket.on(LOBBY_ENTERED, async ({ userId, rank }: { userId: string; rank: string }) => {
     const socketInfo = socketDatas.get(socket.id);
 
     if (!!socketInfo && !!socketInfo.roomTitle) {
@@ -67,7 +67,7 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
       }
     }
 
-    socketDatas.set(socket.id, { name: userId, roomTitle: null });
+    socketDatas.set(socket.id, { name: userId, roomTitle: null, rank });
   });
 };
 
@@ -106,7 +106,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
           state: 'waiting',
           chatHistory: [],
           speakerData: { speaker: '', timer: 0 },
-          client: [{ socketId: socket.id, name: socketInfo.name, state: '' }],
+          client: [{ socketId: socket.id, name: socketInfo.name, state: '', rank: socketInfo.rank }],
         }
       );
 
@@ -140,7 +140,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
       socket.leave(LOBBY);
       socket.join(roomTitle);
 
-      roomInfo.client = [...roomInfo.client, { socketId: socket.id, name: socketInfo.name, state: '' }];
+      roomInfo.client = [...roomInfo.client, { socketId: socket.id, name: socketInfo.name, state: '', rank: socketInfo.rank }];
 
       roomList.set(roomTitle, roomInfo);
       socketDatas.set(socket.id, { ...socketInfo, roomTitle });

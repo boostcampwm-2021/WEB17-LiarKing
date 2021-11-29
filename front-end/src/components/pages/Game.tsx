@@ -61,7 +61,7 @@ const Game = () => {
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
-      socketUtil.emit.LOBBY_ENTERED({ userId: user.user_id });
+      socketUtil.emit.LOBBY_ENTERED({ userId: user.user_id, rank: user.rank });
     } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }

@@ -6,8 +6,9 @@ import { socketUtilType } from '../../utils/socketUtil';
 import { globalContext } from '../../App';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
+import profileCharacter from '../../utils/profileCharacter';
 
-export type clientType = { name: string; state: string; socketId: string };
+export type clientType = { name: string; state: string; socketId: string; rank: string };
 
 const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
   const COLORS = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
@@ -45,11 +46,12 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
 
   const element = useMemo(() => {
     return clients.map((v, i) => {
+      console.log(v);
       return (
         <>
           <div className={v.name ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
             <div className={'game-user-id game-user-' + COLORS[i]}>{v.name ?? ''}</div>
-            <div className={v.name ? 'game-user-character' : ''} />
+            {v.name ? <img src={profileCharacter(v.rank)} className="game-user-character" /> : ''}
           </div>
           <div className="game-persons-user-item">{getStateComponent(v.state ?? '', i)}</div>
         </>

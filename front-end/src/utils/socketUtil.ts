@@ -61,7 +61,7 @@ type createRoomInfoType = {
 };
 type setStateType<T> = React.Dispatch<React.SetStateAction<T>>;
 type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: string };
-type clientType = { socketId: string; name: string; state: string };
+type clientType = { socketId: string; name: string; state: string; rank: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type voteDataType = { name: string };
@@ -198,7 +198,7 @@ const on = {
   ROOM_CLIENTS_INFO: ({ setState }: { setState: setStateType<clientType[]> }) => {
     socket.on(ROOM_CLIENTS_INFO, ({ clients }: { clients: clientType[] }) => {
       while (clients.length < 8) {
-        clients.push({ socketId: null, name: null, state: null });
+        clients.push({ socketId: null, name: null, state: null, rank: null });
       }
       setState(clients);
     });
@@ -354,7 +354,7 @@ const emit = {
   CREATE_ROOM: ({ roomInfo }: { roomInfo: createRoomInfoType }) => socket.emit(CREATE_ROOM, { roomInfo }),
   ROOM_LIST: () => socket.emit(ROOM_LIST, null),
   ROOM_JOIN: ({ roomTitle }: { roomTitle: string }) => socket.emit(ROOM_JOIN, { roomTitle }),
-  LOBBY_ENTERED: ({ userId }: { userId: string }) => socket.emit(LOBBY_ENTERED, { userId }),
+  LOBBY_ENTERED: ({ userId, rank }: { userId: string; rank: string }) => socket.emit(LOBBY_ENTERED, { userId, rank }),
   IS_USER_OWNER: () => socket.emit(IS_USER_OWNER, null),
   LOBBY_LOGOUT: () => socket.emit(LOBBY_LOGOUT, null),
   ROOM_READY: () => socket.emit(ROOM_READY, null),

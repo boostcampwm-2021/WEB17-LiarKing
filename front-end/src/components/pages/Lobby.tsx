@@ -27,7 +27,7 @@ const Lobby = () => {
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
-  const { user_id } = useRecoilValue(globalAtom.user);
+  const { user_id, rank } = useRecoilValue(globalAtom.user);
 
   const logout = async () => {
     const res = await fetch('/api/logout', {
@@ -45,7 +45,7 @@ const Lobby = () => {
   };
 
   useEffect(() => {
-    socket.emit.LOBBY_ENTERED({ userId: user_id });
+    socket.emit.LOBBY_ENTERED({ userId: user_id, rank });
 
     socket.on.ROOM_LIST({ setState: setRooms });
 
