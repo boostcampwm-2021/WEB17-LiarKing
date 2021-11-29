@@ -207,6 +207,11 @@
   display: none;
 }
 
+.game-persons-user-rtc {
+  margin: 0px 3px;
+  color: white;
+}
+
 @keyframes gradient {
   0% {
     background-position: 0% 0%;

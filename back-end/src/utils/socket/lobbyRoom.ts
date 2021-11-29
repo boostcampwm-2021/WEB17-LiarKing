@@ -106,7 +106,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
           state: 'waiting',
           chatHistory: [],
           speakerData: { speaker: '', timer: 0 },
-          client: [{ socketId: socket.id, name: socketInfo.name, state: '', rank: socketInfo.rank }],
+          client: [{ socketId: socket.id, name: socketInfo.name, state: '', rank: socketInfo.rank, rtc: 'off' }],
         }
       );
 
@@ -140,7 +140,7 @@ const sendRoomJoin = (socket: Socket, io: Server) => {
       socket.leave(LOBBY);
       socket.join(roomTitle);
 
-      roomInfo.client = [...roomInfo.client, { socketId: socket.id, name: socketInfo.name, state: '', rank: socketInfo.rank }];
+      roomInfo.client = [...roomInfo.client, { socketId: socket.id, name: socketInfo.name, state: '', rank: socketInfo.rank, rtc: 'off' }];
 
       roomList.set(roomTitle, roomInfo);
       socketDatas.set(socket.id, { ...socketInfo, roomTitle });

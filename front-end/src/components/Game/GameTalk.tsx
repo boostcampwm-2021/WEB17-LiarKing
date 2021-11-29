@@ -16,23 +16,28 @@ const GameTalk = () => {
 
   const initRtc = (id: string) => {
     myPeerIdRef.current = id;
-    console.log('@@@', id);
     getUserMedia(id);
   };
 
   const getUserMedia = async (peerId: string) => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: false,
-      audio: true,
-    });
-    myStream.current = stream;
-    myStream.current?.getTracks().forEach((track) => {
-      track.enabled = false;
-    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: true,
+      });
 
-    setUsers((prev) => [...prev, { peerId, stream, isMe: true }]);
+      myStream.current = stream;
+      myStream.current?.getTracks().forEach((track) => {
+        track.enabled = false;
+      });
 
-    socket.emit.I_JOINED({ peerId: myPeerIdRef.current });
+      setUsers((prev) => [...prev, { peerId, stream, isMe: true }]);
+
+      socket.emit.I_JOINED({ peerId: myPeerIdRef.current });
+      socket.emit.RTC_INFO({ state: true });
+    } catch (error) {
+      socket.emit.RTC_INFO({ state: false });
+    }
   };
 
   const onCall = (call: Peer.MediaConnection, peerId: string) => {
