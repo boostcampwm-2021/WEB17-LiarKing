@@ -1,7 +1,8 @@
-import { SetterOrUpdater } from 'recoil';
+import { RecoilState, SetterOrUpdater } from 'recoil';
 import { io } from 'socket.io-client';
 
 import { roomType } from '../components/pages/Lobby';
+import { modalPropsType } from '../components/public/Modal';
 
 export const socket = io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true });
 
@@ -29,6 +30,7 @@ const VOTE_TIMER_DATA = 'vote timer data';
 const END_VOTE = 'end vote';
 const RESULT_DATA = 'result data';
 const LIAR_DATA = 'liar data';
+const ROOM_GAME_DISCONNECT = 'room game disconnect';
 
 //lobby emit
 const CREATE_ROOM = 'create room';
@@ -291,6 +293,12 @@ const on = {
       setState(liarData);
     });
   },
+  ROOM_GAME_DISCONNECT: ({ popModal }: { popModal: (modalProps: modalPropsType) => void }) => {
+    socket.on(ROOM_GAME_DISCONNECT, ({ userId }: { userId: string }) => {
+      console.log('disconnect!');
+      popModal({ type: 'warning', ment: `${userId}님과 연결이 끊어졌습니다.\n잠시후 게임이 종료됩니다.` });
+    });
+  },
   SOMEONE_JOINED: ({ fn }: { fn: ({ peerId }: { peerId: string }) => void }) => {
     socket.on(SOMEONE_JOINED, ({ peerId }: { peerId: string }) => {
       fn({ peerId });
@@ -335,6 +343,7 @@ const off = {
   END_VOTE: () => socket.off(END_VOTE),
   RESULT_DATA: () => socket.off(RESULT_DATA),
   LIAR_DATA: () => socket.off(LIAR_DATA),
+  ROOM_GAME_DISCONNECT: () => socket.off(ROOM_GAME_DISCONNECT),
   SOMEONE_JOINED: () => socket.off(SOMEONE_JOINED),
   RTC_DISCONNECT: () => socket.off(RTC_DISCONNECT),
   CURRENT_SPEAKER: () => socket.off(CURRENT_SPEAKER),

@@ -17,6 +17,7 @@ const ROOM_CLIENTS_INFO = 'room clients info';
 const ROOM_TITLE_INFO = 'room title info';
 const SETTING_CHANGE = 'setting change';
 const RTC_DISCONNECT = 'rtc disconnect';
+const ROOM_GAME_DISCONNECT = 'room game disconnect';
 
 //emit unicast
 const IS_ROOM_CREATE = 'is room create';
@@ -201,8 +202,12 @@ const sendDisconnect = (socket: Socket, io: Server) => {
         io.to(roomTitle).emit(SETTING_CHANGE, { roomOwnerSetting: { max, cycle } });
       }
 
+      if (roomInfo.state === 'start') {
+        io.to(roomTitle).emit(ROOM_GAME_DISCONNECT, { userId: socketInfo.name });
+        roomInfo.state = 'waiting';
+      }
+
       roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
-      roomInfo.state = 'waiting';
       roomList.set(roomTitle, roomInfo);
 
       io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });

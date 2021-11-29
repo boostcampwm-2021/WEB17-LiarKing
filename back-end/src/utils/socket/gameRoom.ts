@@ -208,6 +208,7 @@ const gameStart = (socket: Socket, io: Server) => {
 
       for (let j = 0; j < roomInfo.cycle; j++) {
         for (let i = 0; i < randomClients.length; i++) {
+          if (roomList.get(roomInfo.title)?.state !== 'start') return false;
           io.to(title).emit(CHAT_SPEAKER_DATA, { speakerData: { speaker: randomClients[i].name, timer: SPEAK_TIME } });
           io.to(title).emit(CURRENT_SPEAKER, { speaker: randomClients[i].name });
           await timer((SPEAK_TIME + SUB_TIME) * SECONDS);

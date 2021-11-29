@@ -8,9 +8,10 @@ import { globalContext } from '../../App';
 import { getUserData } from '../../utils/getDataUtil';
 import GameChatBox from '../Game/GameChatBox';
 import globalAtom from '../../recoilStore/globalAtom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { socketUtilType } from '../../utils/socketUtil';
 import socketUtil, { socket } from '../../utils/socketUtil';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const GameBackground = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
@@ -56,6 +57,7 @@ const GameTitleInfo = () => {
 const Game = () => {
   const history = useHistory();
   const [user, setUser] = useRecoilState(globalAtom.user);
+  const popModal = useSetRecoilState(globalSelector.popModal);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -66,6 +68,13 @@ const Game = () => {
   };
 
   if (!user.user_id || user.socketId !== socket.id) getUserData(setUser, socketUtil, user.socketId !== socket.id);
+
+  useEffect(() => {
+    socketUtil.on.ROOM_GAME_DISCONNECT({ popModal });
+    return () => {
+      socketUtil.off.ROOM_GAME_DISCONNECT();
+    };
+  }, []);
 
   return (
     <div id="game">
