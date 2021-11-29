@@ -369,6 +369,7 @@ const gameStart = (socket: Socket, io: Server) => {
 
     io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: false });
     io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
+    io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
 
     let isGamePlaying: boolean = true;
     if (isGamePlaying) isGamePlaying = await state.select(roomInfo, roomSecret, categorys);
@@ -388,6 +389,7 @@ const gameStart = (socket: Socket, io: Server) => {
 
     io.to(roomTitle).emit(IS_WAITING_STATE, { isWaitingState: true });
     io.to(roomTitle).emit(ROOM_STATE_INFO, { roomState: 'waiting' });
+    io.to(LOBBY).emit(ROOM_LIST, { roomList: Array.from(roomList) });
   });
 
   /**

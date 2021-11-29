@@ -75,15 +75,16 @@ const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) =>
           .slice()
           .splice((pageNumber - 1) * MAX_ROOM_LIST, MAX_ROOM_LIST)
           .map((room: roomType, i: number) => {
-            const [title, client, max, selected] = [
+            const [title, client, max, selected, state] = [
               room[ROOM_INFO_IDX].title,
               room[ROOM_INFO_IDX].client,
               room[ROOM_INFO_IDX].max,
               room[ROOM_INFO_IDX].selected,
+              room[ROOM_INFO_IDX].state,
             ];
             return (
               <ul
-                className={`room-list${client.length === max ? ' room-full' : ''}${selected ? ' room-list-selected' : ''}`}
+                className={`room-list${client.length === max || state === 'start' ? ' room-full' : ''}${selected ? ' room-list-selected' : ''}`}
                 onClick={() => {
                   selectRoom((pageNumber - 1) * MAX_ROOM_LIST + i);
                 }}
