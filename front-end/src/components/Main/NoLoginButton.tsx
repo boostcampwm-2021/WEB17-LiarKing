@@ -35,8 +35,11 @@ const NoLoginModal = () => {
     }
 
     const idServerCheck = await requestToServer();
-    if (!idServerCheck) {
+    if (idServerCheck.state === 'non-user logged in') {
       popModal({ type: 'error', ment: '현재 사용중인 아이디 입니다.' });
+      return;
+    } else if (idServerCheck.state === 'user exist') {
+      popModal({ type: 'error', ment: '같은 아이디의 회원이 존재합니다.' });
       return;
     }
 
