@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { nicknameList, idList } from '../store/store';
 import loginService from '../database/service/loginService';
+import userService from '../database/service/userService';
 
 const indexRouter = Router();
 
@@ -29,12 +30,16 @@ indexRouter.post('/login', async (req: Request, res: Response, next: NextFunctio
 indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const nickname = req.body.nickname;
-    if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0) {
+    const result = await userService.getUserInfo(nickname);
+
+    if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0 && !result && !result) {
       req.session['nickname'] = nickname;
       nicknameList.push(nickname);
-      res.json(true);
+      res.json({ state: 'success' });
+    } else if (result) {
+      res.json({ state: 'user exist' });
     } else {
-      res.json(false);
+      res.json({ state: 'non-user logged in' });
     }
   } catch (error) {
     console.error(error);
