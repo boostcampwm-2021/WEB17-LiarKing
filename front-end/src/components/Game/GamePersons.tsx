@@ -7,6 +7,8 @@ import { globalContext } from '../../App';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import profileCharacter from '../../utils/profileCharacter';
+import micOn from '../../images/micOn.svg';
+import micOff from '../../images/micOff.svg';
 
 export type clientType = { name: string; state: string; socketId: string; rank: string; rtc: string };
 
@@ -46,10 +48,9 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
 
   const element = useMemo(() => {
     return clients.map((v, i) => {
-      console.log(v);
       return (
         <>
-          <div className="game-persons-user-rtc">{v.rtc}</div>
+          {v.rtc ? <img src={v.rtc === 'on' ? micOn : micOff} width="30" height="30" className="game-persons-user-rtc" /> : ''}
           <div className={v.name ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
             <div className={'game-user-id game-user-' + COLORS[i]}>{v.name ?? ''}</div>
             {v.name ? <img src={profileCharacter(v.rank)} className="game-user-character" /> : ''}
