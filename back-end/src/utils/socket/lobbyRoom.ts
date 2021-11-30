@@ -47,7 +47,9 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
           const WAITING_TIME = 100;
           const { max, cycle } = roomInfo;
 
-          roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
+          const client = roomInfo.client.find((v) => v.name !== name);
+          client.state = '';
+          roomInfo.owner = client.name;
 
           io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
 
@@ -56,8 +58,11 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
           io.to(roomTitle).emit(SETTING_CHANGE, { roomOwnerSetting: { max, cycle } });
         }
 
+        if (roomInfo.state === 'start') {
+          io.to(roomTitle).emit(ROOM_GAME_DISCONNECT, { userId: socketInfo.name });
+          roomInfo.state = 'waiting';
+        }
         roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
-        roomInfo.state = 'waiting';
         roomList.set(roomTitle, roomInfo);
 
         io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
@@ -98,7 +103,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     const socketInfo = socketDatas.get(socket.id);
     const isDuplicateRoom: boolean = !roomList.get(title);
 
-    if (isDuplicateRoom) {
+    if (isDuplicateRoom && !!socketInfo) {
       const createRoomInfo: roomInfoType = Object.assign(
         {},
         {
@@ -193,7 +198,10 @@ const sendDisconnect = (socket: Socket, io: Server) => {
         const WAITING_TIME = 100;
         const { max, cycle } = roomInfo;
 
-        roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
+        const client = roomInfo.client.find((v) => v.name !== name);
+
+        client.state = '';
+        roomInfo.owner = client.name;
 
         io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
 

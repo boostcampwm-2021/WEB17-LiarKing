@@ -12,6 +12,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { socketUtilType } from '../../utils/socketUtil';
 import socketUtil, { socket } from '../../utils/socketUtil';
 import globalSelector from '../../recoilStore/globalSelector';
+import { categoryList } from '../Lobby/CreateRoomModal';
 
 const GameBackground = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
@@ -54,6 +55,7 @@ const Game = () => {
   const history = useHistory();
   const [user, setUser] = useRecoilState(globalAtom.user);
   const popModal = useSetRecoilState(globalSelector.popModal);
+  const setRoomSettings = useSetRecoilState(globalAtom.roomSettings);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
@@ -67,8 +69,10 @@ const Game = () => {
 
   useEffect(() => {
     socketUtil.on.ROOM_GAME_DISCONNECT({ popModal });
+    socketUtil.on.SETTING_CHANGE({ setState: setRoomSettings, category: categoryList });
     return () => {
       socketUtil.off.ROOM_GAME_DISCONNECT();
+      socketUtil.off.SETTING_CHANGE();
     };
   }, []);
 

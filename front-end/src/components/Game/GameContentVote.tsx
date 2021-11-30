@@ -7,9 +7,10 @@ import { voteInfo } from '../../utils/store';
 
 const GameContentVote = () => {
   const SECONDS = 1000;
+  const INITIAL_TIME = 10;
 
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
-  const [timerData, setTimerData]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(null);
+  const [timerData, setTimerData]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(INITIAL_TIME);
   const [isFixed, setFixed] = useState(false);
   const vote = useRecoilValue(globalAtom.vote);
 

@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useContext, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import globalAtom from '../../recoilStore/globalAtom';
 import { globalContext } from '../../App';
 import { socketUtilType } from '../../utils/socketUtil';
 
@@ -47,11 +49,21 @@ const GameContentChatBox = ({ socket }: { socket: socketUtilType }) => {
   );
 };
 
+const GameSpeakerAlarm = ({ userId }: { userId: string }) => {
+  return (
+    <div className="game-content-box game-content-alarm">
+      <span className="game-content-title game-content-title-vote">{userId + '님! 설명할 차례입니다!'}</span>
+      <span className="game-content-ment">제시어에 대해 설명해주세요!</span>
+    </div>
+  );
+};
+
 const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
   type speackerDataType = { speaker: string; timer: number };
 
   const SECONDS = 1000;
-  const [speackerData, setSpeakerData]: [speackerDataType, React.Dispatch<React.SetStateAction<speackerDataType>>] = useState(null);
+  const [speakerData, setSpeakerData]: [speackerDataType, React.Dispatch<React.SetStateAction<speackerDataType>>] = useState(null);
+  const user = useRecoilValue(globalAtom.user);
 
   const timer = useRef<HTMLDivElement>();
 
@@ -64,9 +76,9 @@ const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
   }, []);
 
   useEffect(() => {
-    if (!speackerData) return;
+    if (!speakerData) return;
 
-    let time = speackerData.timer;
+    let time = speakerData.timer;
     timer.current.innerText = `남은시간: ${time}초`;
 
     const activeTimer = setInterval(() => {
@@ -81,11 +93,12 @@ const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
     return () => {
       clearInterval(activeTimer);
     };
-  }, [speackerData]);
+  }, [speakerData]);
 
   return (
     <>
-      <div className="game-content-chat-speaker">{!!speackerData ? `발언자: ${speackerData.speaker}` : ''}</div>
+      {speakerData && user.user_id === speakerData.speaker ? <GameSpeakerAlarm userId={user.user_id} /> : <></>}
+      <div className="game-content-chat-speaker">{!!speakerData ? `발언자: ${speakerData.speaker}` : ''}</div>
       <div className="game-content-chat-timer" ref={timer}></div>
     </>
   );
