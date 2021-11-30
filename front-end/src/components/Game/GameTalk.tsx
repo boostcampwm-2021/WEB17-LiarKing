@@ -123,9 +123,9 @@ const GameTalk = () => {
 
       myPeerRef.current?.off('open', initRtc);
       myPeerRef.current?.off('call', answerToUser);
-      Object.entries(calls.current).forEach(([peerId, call]) => {
-        call.close();
-      });
+      Object.values(calls.current).forEach((call) => call.close());
+
+      myStream.current.getTracks().forEach((track) => track.stop());
     };
   }, []);
 
