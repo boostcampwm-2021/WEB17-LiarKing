@@ -47,7 +47,9 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
           const WAITING_TIME = 100;
           const { max, cycle } = roomInfo;
 
-          roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
+          const client = roomInfo.client.find((v) => v.name !== name);
+          client.state = '';
+          roomInfo.owner = client.name;
 
           io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
 
@@ -193,7 +195,10 @@ const sendDisconnect = (socket: Socket, io: Server) => {
         const WAITING_TIME = 100;
         const { max, cycle } = roomInfo;
 
-        roomInfo.owner = roomInfo.client.find((v) => v.name !== name).name;
+        const client = roomInfo.client.find((v) => v.name !== name);
+
+        client.state = '';
+        roomInfo.owner = client.name;
 
         io.to(roomTitle).emit(REQUEST_USER_OWNER, null);
 
