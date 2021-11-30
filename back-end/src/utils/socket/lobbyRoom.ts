@@ -58,8 +58,11 @@ const sendLobbyEntered = (socket: Socket, io: Server) => {
           io.to(roomTitle).emit(SETTING_CHANGE, { roomOwnerSetting: { max, cycle } });
         }
 
+        if (roomInfo.state === 'start') {
+          io.to(roomTitle).emit(ROOM_GAME_DISCONNECT, { userId: socketInfo.name });
+          roomInfo.state = 'waiting';
+        }
         roomInfo.client = roomInfo.client.filter((v) => v.name !== name);
-        roomInfo.state = 'waiting';
         roomList.set(roomTitle, roomInfo);
 
         io.to(roomTitle).emit(ROOM_CLIENTS_INFO, { clients: roomInfo.client });
