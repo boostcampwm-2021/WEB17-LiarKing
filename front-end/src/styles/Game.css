@@ -36,8 +36,10 @@
 .game-header {
   display: flex;
   width: 100vw;
+  height: 15vh;
   justify-content: space-between;
-  padding: 3vh;
+  align-items: center;
+  padding: 0 3vh;
   z-index: 4;
   background-image: linear-gradient(to bottom, #6d80a6, #a7bdd9, #6d80a6);
 }
@@ -504,6 +506,10 @@
   transform: translate(0, 50%);
   background: radial-gradient(#fff, rgba(0, 0, 0, 0.2));
   animation: boxAnimation 3s linear infinite;
+}
+
+.game-content-alarm {
+  position: absolute;
 }
 
 @keyframes boxAnimation {
