@@ -6,9 +6,9 @@
   background: linear-gradient(-45deg, rgb(109, 119, 134), rgb(38, 50, 69), rgb(109, 119, 134), rgb(38, 50, 69));
   animation: gradient 15s linear infinite;
   background-size: 100% 1100%;
-  padding: 30px;
-  width: 450px;
-  height: 320px;
+  padding: 3vw;
+  width: 30vw;
+  height: 40vh;
   align-items: center;
   left: 50%;
   top: 50%;
@@ -17,32 +17,34 @@
 }
 
 .main-login-id-password:first-of-type {
-  margin-top: 50px;
-}
-
-.main-login-id-password {
-  width: 360px;
-  border: #000 1px solid;
-  margin: 5px 0;
-  padding: 10px 20px;
+  margin-top: 8vh;
 }
 
 .main-login-header {
   top: 10px;
-  margin: -5px;
+  margin: -15px;
   padding: 5px 15px;
   text-align: center;
   color: #fff;
-  font-size: 22px;
+  font-size: 1.5vw;
   text-shadow: 1px 2px 1px gray;
 }
 
+.main-login-id-password {
+  width: 23vw;
+  height: 5vh;
+  border: #000 1px solid;
+  margin: 0.5vh;
+  padding: 1vh 1vw;
+  font-size: 1vw;
+}
+
 .main-login-submit {
-  width: 250px;
+  width: 17vw;
   border: none;
-  border-radius: 20px;
-  margin: 15px auto;
-  padding: 15px 10px;
-  font-size: 20px;
+  border-radius: 2vw;
+  margin: 3vh;
+  padding: 2vh 1vw;
+  font-size: 1.2vw;
   cursor: pointer;
 }

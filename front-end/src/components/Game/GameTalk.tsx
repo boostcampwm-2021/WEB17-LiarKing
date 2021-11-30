@@ -2,7 +2,7 @@ import '../../styles/GameTalk.css';
 import Peer from 'peerjs';
 import GameTalkAudio from './GameTalkAudio';
 import { useEffect, useRef, useState } from 'react';
-import { socket } from '../../utils/socketUtil';
+import socket from '../../utils/socketUtil';
 import { useRecoilValue } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 
@@ -20,18 +20,24 @@ const GameTalk = () => {
   };
 
   const getUserMedia = async (peerId: string) => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: false,
-      audio: true,
-    });
-    myStream.current = stream;
-    myStream.current?.getTracks().forEach((track) => {
-      track.enabled = false;
-    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: true,
+      });
 
-    setUsers((prev) => [...prev, { peerId, stream, isMe: true }]);
+      myStream.current = stream;
+      myStream.current?.getTracks().forEach((track) => {
+        track.enabled = false;
+      });
 
-    socket.emit('i joined', { peerId: myPeerIdRef.current });
+      setUsers((prev) => [...prev, { peerId, stream, isMe: true }]);
+
+      socket.emit.I_JOINED({ peerId: myPeerIdRef.current });
+      socket.emit.RTC_INFO({ state: true });
+    } catch (error) {
+      socket.emit.RTC_INFO({ state: false });
+    }
   };
 
   const onCall = (call: Peer.MediaConnection, peerId: string) => {
@@ -88,11 +94,10 @@ const GameTalk = () => {
   };
 
   useEffect(() => {
-    socket.on('someone joined', connectToNewUser);
-    socket.on('rtc exit', removeUserRtc);
-    socket.on('rtc disconnect', removeUserRtc);
-    socket.on('current speaker', currentSpeaker);
-    socket.on('end speak', endSpeaker);
+    socket.on.SOMEONE_JOINED({ fn: connectToNewUser });
+    socket.on.RTC_DISCONNECT({ fn: removeUserRtc });
+    socket.on.CURRENT_SPEAKER({ fn: currentSpeaker });
+    socket.on.END_SPEAK({ fn: endSpeaker });
 
     if (process.env.NODE_ENV === 'development') {
       myPeerRef.current = new Peer(undefined, {
@@ -111,11 +116,10 @@ const GameTalk = () => {
     myPeerRef.current?.on('call', answerToUser);
 
     return () => {
-      socket.off('someone joined', connectToNewUser);
-      socket.off('rtc exit', removeUserRtc);
-      socket.off('rtc disconnect', removeUserRtc);
-      socket.off('current speaker', currentSpeaker);
-      socket.off('end speak', endSpeaker);
+      socket.off.SOMEONE_JOINED();
+      socket.off.RTC_DISCONNECT();
+      socket.off.CURRENT_SPEAKER();
+      socket.off.END_SPEAK();
 
       myPeerRef.current?.off('open', initRtc);
       myPeerRef.current?.off('call', answerToUser);

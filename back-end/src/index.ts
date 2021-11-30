@@ -23,7 +23,7 @@ const io = new Server(httpServer, {
 
 socketUtil(io);
 
-app.use('/peerjs', ExpressPeerServer(httpServer));
+if (process.env.NODE_ENV !== 'test') app.use('/peerjs', ExpressPeerServer(httpServer));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));

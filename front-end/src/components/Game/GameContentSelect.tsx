@@ -6,9 +6,9 @@ import questionMark from '../../images/questionMark.svg';
 const GameContentSelect = () => {
   const [select, setSelect] = useState({ word: '' });
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
+  socket.on.SELECT_DATA({ setState: setSelect });
 
   useEffect(() => {
-    socket.on.SELECT_DATA({ setState: setSelect });
     socket.on.REQUEST_SELECT_DATA();
 
     return () => {
@@ -17,14 +17,17 @@ const GameContentSelect = () => {
     };
   }, []);
 
+  useEffect(() => {
+    socket.on.SELECT_DATA({ setState: setSelect });
+  }, [select]);
+
   return (
     <div className="game-content-select">
       <div className="game-content-select-imgbox">
         <img
+          className="game-content-select-image"
           src={select.word === '' ? questionMark : `https://kr.object.ncloudstorage.com/liargame/images/${select.word}.svg`}
           alt={select.word}
-          width="250px"
-          height="250px"
         />
       </div>
       <div className={`game-content-select-word${select.word === '라이어' ? ' game-liar' : ''} `}>{select.word}</div>

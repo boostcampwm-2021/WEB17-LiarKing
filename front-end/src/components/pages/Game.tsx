@@ -8,9 +8,10 @@ import { globalContext } from '../../App';
 import { getUserData } from '../../utils/getDataUtil';
 import GameChatBox from '../Game/GameChatBox';
 import globalAtom from '../../recoilStore/globalAtom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { socketUtilType } from '../../utils/socketUtil';
 import socketUtil, { socket } from '../../utils/socketUtil';
+import globalSelector from '../../recoilStore/globalSelector';
 
 const GameBackground = () => {
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
@@ -46,26 +47,30 @@ const GameTitleInfo = () => {
     socket.emit.ROOM_TITLE_INFO();
   }, []);
 
-  return (
-    <span className="game-header-info">
-      ({usersAmount} / {maxUsers}) {roomTitle}
-    </span>
-  );
+  return <span className="game-header-info">{'(' + usersAmount + '/' + maxUsers + ') ' + roomTitle}</span>;
 };
 
 const Game = () => {
   const history = useHistory();
   const [user, setUser] = useRecoilState(globalAtom.user);
+  const popModal = useSetRecoilState(globalSelector.popModal);
 
   window.onpopstate = () => {
     if (window.location.pathname === '/lobby') {
-      socketUtil.emit.LOBBY_ENTERED({ userId: user.user_id });
+      socketUtil.emit.LOBBY_ENTERED({ userId: user.user_id, rank: user.rank });
     } else if (window.location.pathname === '/game') {
       history.replace('/lobby');
     }
   };
 
   if (!user.user_id || user.socketId !== socket.id) getUserData(setUser, socketUtil, user.socketId !== socket.id);
+
+  useEffect(() => {
+    socketUtil.on.ROOM_GAME_DISCONNECT({ popModal });
+    return () => {
+      socketUtil.off.ROOM_GAME_DISCONNECT();
+    };
+  }, []);
 
   return (
     <div id="game">

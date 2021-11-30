@@ -14,7 +14,7 @@ const ROOM_TITLE_IDX = 0;
 
 export type roomType = {
   0: string;
-  1: { client: Array<string>; cycle: number; max: number; owner: string; password: string; title: string; selected?: boolean };
+  1: { client: Array<string>; cycle: number; max: number; owner: string; password: string; title: string; selected?: boolean; state: string };
 };
 
 const filterRooms = (rooms: Array<roomType>, filterWord: string) => {
@@ -27,7 +27,7 @@ const Lobby = () => {
   const [rooms, setRooms] = useState([]);
   const [filterWord, setFilterWord] = useState('');
   const [roomData, setRoomData] = useRecoilState(globalAtom.roomData);
-  const { user_id } = useRecoilValue(globalAtom.user);
+  const { user_id, rank } = useRecoilValue(globalAtom.user);
 
   const logout = async () => {
     const res = await fetch('/api/logout', {
@@ -45,7 +45,7 @@ const Lobby = () => {
   };
 
   useEffect(() => {
-    socket.emit.LOBBY_ENTERED({ userId: user_id });
+    socket.emit.LOBBY_ENTERED({ userId: user_id, rank });
 
     socket.on.ROOM_LIST({ setState: setRooms });
 

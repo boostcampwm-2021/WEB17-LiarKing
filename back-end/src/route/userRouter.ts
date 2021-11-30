@@ -9,7 +9,7 @@ const CONSTANTS = {
   SUBTRACT_TEN: '10점 차감',
 };
 
-userRouter.post('/updatePoint', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/point', async (req: Request, res: Response, next: NextFunction) => {
   const userData = await userService.getUserInfo(req.body.id);
 
   let point;

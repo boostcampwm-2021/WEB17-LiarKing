@@ -12,12 +12,12 @@
   transform: translate(-50%, -50%);
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   border: #000 2px solid;
+  font-size: 5vh;
   z-index: 99;
   animation: fade-in ease-in 0.2s forwards;
 }
 
 .create-rank-header {
-  font-size: 30px;
   font-weight: 600;
   text-shadow: 2px 3px 3px gray;
 }
@@ -31,13 +31,13 @@
   border-radius: 20px;
   width: 35vw;
   height: 7vh;
-  margin-top: 20px;
+  margin-top: 2vh;
 }
 
 .create-rank-rank,
 .create-rank-name,
 .create-rank-point {
-  font-size: 30px;
+  font-size: 3vh;
   font-weight: 500;
 }
 

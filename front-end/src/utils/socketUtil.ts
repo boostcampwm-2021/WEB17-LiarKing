@@ -1,7 +1,8 @@
-import { SetterOrUpdater } from 'recoil';
+import { RecoilState, SetterOrUpdater } from 'recoil';
 import { io } from 'socket.io-client';
 
 import { roomType } from '../components/pages/Lobby';
+import { modalPropsType } from '../components/public/Modal';
 
 export const socket = io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true });
 
@@ -29,6 +30,7 @@ const VOTE_TIMER_DATA = 'vote timer data';
 const END_VOTE = 'end vote';
 const RESULT_DATA = 'result data';
 const LIAR_DATA = 'liar data';
+const ROOM_GAME_DISCONNECT = 'room game disconnect';
 
 //lobby emit
 const CREATE_ROOM = 'create room';
@@ -43,6 +45,14 @@ const CHAT_MESSAGE_DATA = 'chat message data';
 const SETTING_CHANGE = 'setting change';
 const VOTE_RESULT = 'vote result';
 
+//web RTC
+const SOMEONE_JOINED = 'someone joined';
+const RTC_DISCONNECT = 'rtc disconnect';
+const CURRENT_SPEAKER = 'current speaker';
+const END_SPEAK = 'end speak';
+const I_JOINED = 'i joined';
+const RTC_INFO = 'rtc info';
+
 type createRoomInfoType = {
   title: string;
   password: string;
@@ -52,7 +62,7 @@ type createRoomInfoType = {
 };
 type setStateType<T> = React.Dispatch<React.SetStateAction<T>>;
 type roomTitleInfoType = { usersAmount: number; maxUsers: number; roomTitle: string };
-type clientType = { socketId: string; name: string; state: string };
+type clientType = { socketId: string; name: string; state: string; rank: string; rtc: string };
 type chatDataType = { ment: string; userName: string; color: string };
 type speakerDataType = { speaker: string; timer: number };
 type voteDataType = { name: string };
@@ -189,7 +199,7 @@ const on = {
   ROOM_CLIENTS_INFO: ({ setState }: { setState: setStateType<clientType[]> }) => {
     socket.on(ROOM_CLIENTS_INFO, ({ clients }: { clients: clientType[] }) => {
       while (clients.length < 8) {
-        clients.push({ socketId: null, name: null, state: null });
+        clients.push({ socketId: null, name: null, state: null, rank: null, rtc: null });
       }
       setState(clients);
     });
@@ -219,6 +229,7 @@ const on = {
   SELECT_DATA: ({ setState }: { setState: setStateType<{ word: string }> }) => {
     socket.on(SELECT_DATA, ({ select }: { select: { word: string } }) => {
       setState(select);
+      socket.off(SELECT_DATA);
     });
   },
   /**
@@ -281,8 +292,33 @@ const on = {
    */
   LIAR_DATA: ({ setState }: { setState: setStateType<liarType> }) => {
     socket.on(LIAR_DATA, ({ liarData }: { liarData: liarType }) => {
-      console.log(liarData);
       setState(liarData);
+    });
+  },
+  ROOM_GAME_DISCONNECT: ({ popModal }: { popModal: (modalProps: modalPropsType) => void }) => {
+    socket.on(ROOM_GAME_DISCONNECT, ({ userId }: { userId: string }) => {
+      console.log('disconnect!');
+      popModal({ type: 'warning', ment: `${userId}님과 연결이 끊어졌습니다.\n잠시후 게임이 종료됩니다.` });
+    });
+  },
+  SOMEONE_JOINED: ({ fn }: { fn: ({ peerId }: { peerId: string }) => void }) => {
+    socket.on(SOMEONE_JOINED, ({ peerId }: { peerId: string }) => {
+      fn({ peerId });
+    });
+  },
+  RTC_DISCONNECT: ({ fn }: { fn: ({ peerId }: { peerId: string }) => void }) => {
+    socket.on(RTC_DISCONNECT, ({ peerId }: { peerId: string }) => {
+      fn({ peerId });
+    });
+  },
+  CURRENT_SPEAKER: ({ fn }: { fn: ({ speaker }: { speaker: string }) => void }) => {
+    socket.on(CURRENT_SPEAKER, ({ speaker }: { speaker: string }) => {
+      fn({ speaker });
+    });
+  },
+  END_SPEAK: ({ fn }: { fn: () => void }) => {
+    socket.on(END_SPEAK, () => {
+      fn();
     });
   },
 };
@@ -309,13 +345,18 @@ const off = {
   END_VOTE: () => socket.off(END_VOTE),
   RESULT_DATA: () => socket.off(RESULT_DATA),
   LIAR_DATA: () => socket.off(LIAR_DATA),
+  ROOM_GAME_DISCONNECT: () => socket.off(ROOM_GAME_DISCONNECT),
+  SOMEONE_JOINED: () => socket.off(SOMEONE_JOINED),
+  RTC_DISCONNECT: () => socket.off(RTC_DISCONNECT),
+  CURRENT_SPEAKER: () => socket.off(CURRENT_SPEAKER),
+  END_SPEAK: () => socket.off(END_SPEAK),
 };
 
 const emit = {
   CREATE_ROOM: ({ roomInfo }: { roomInfo: createRoomInfoType }) => socket.emit(CREATE_ROOM, { roomInfo }),
   ROOM_LIST: () => socket.emit(ROOM_LIST, null),
   ROOM_JOIN: ({ roomTitle }: { roomTitle: string }) => socket.emit(ROOM_JOIN, { roomTitle }),
-  LOBBY_ENTERED: ({ userId }: { userId: string }) => socket.emit(LOBBY_ENTERED, { userId }),
+  LOBBY_ENTERED: ({ userId, rank }: { userId: string; rank: string }) => socket.emit(LOBBY_ENTERED, { userId, rank }),
   IS_USER_OWNER: () => socket.emit(IS_USER_OWNER, null),
   LOBBY_LOGOUT: () => socket.emit(LOBBY_LOGOUT, null),
   ROOM_READY: () => socket.emit(ROOM_READY, null),
@@ -329,6 +370,8 @@ const emit = {
   SETTING_CHANGE: ({ roomSetting }: { roomSetting: roomSettingType }) => socket.emit(SETTING_CHANGE, { roomSetting }),
   VOTE_RESULT: ({ voteData }: { voteData: voteDataType }) => socket.emit(VOTE_RESULT, { voteData }),
   LIAR_DATA: ({ liarResult }: { liarResult: { isAnswer: boolean } }) => socket.emit(LIAR_DATA, { liarResult }),
+  I_JOINED: ({ peerId }: { peerId: string }) => socket.emit(I_JOINED, { peerId }),
+  RTC_INFO: ({ state }: { state: boolean }) => socket.emit(RTC_INFO, { state }),
 };
 
 export type socketUtilType = { on: typeof on; off: typeof off; emit: typeof emit };

@@ -5,7 +5,7 @@ export type roomInfoType = {
   title: string;
   password: string;
   max: number;
-  client: { socketId: string; name: string; state: string }[];
+  client: { socketId: string; name: string; state: string; rank: string; rtc: string }[];
   cycle: number;
   owner: string;
   state: string;
@@ -27,6 +27,6 @@ export const roomList: Map<string, roomInfoType> = new Map();
 export const roomSecrets: Map<string, roomSecretType> = new Map();
 
 //key: socket.id
-export const socketDatas: Map<string, { name: string; roomTitle: string }> = new Map();
+export const socketDatas: Map<string, { name: string; roomTitle: string; rank: string }> = new Map();
 
 export const socketToPeer = {};
