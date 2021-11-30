@@ -8,7 +8,7 @@
   background-size: 100% 1100%;
   padding: 3vw;
   width: 30vw;
-  height: 40vh;
+  height: 40%;
   align-items: center;
   left: 50%;
   top: 50%;
@@ -37,10 +37,10 @@
 
 .main-no-login-nickname {
   width: 23vw;
-  height: 5vh;
+  height: 10%;
   border: #000 1px solid;
-  margin: 10vh 0 1vh 0;
-  padding: 1vh 1vw;
+  margin: 25% 0 2.5% 0;
+  padding: 2.5% 1vw;
   font-size: 1vw;
 }
 
@@ -48,8 +48,8 @@
   width: 17vw;
   border: none;
   border-radius: 2vw;
-  margin: 5vh;
-  padding: 2vh 1vw;
+  margin: 12.5%;
+  padding: 5% 1vw;
   font-size: 1.2vw;
   cursor: pointer;
   background-color: #fff;
