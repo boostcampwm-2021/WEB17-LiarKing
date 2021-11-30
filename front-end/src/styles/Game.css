@@ -208,9 +208,10 @@
   display: none;
 }
 
-.game-persons-user-rtc {
+.game-persons-user-mic-img {
   margin: 0px 3px;
-  color: white;
+  width: 3vh;
+  height: 3vh;
 }
 
 @keyframes gradient {

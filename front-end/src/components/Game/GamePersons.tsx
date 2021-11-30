@@ -50,7 +50,7 @@ const GamePersonsElement = ({ clients }: { clients: clientType[] }) => {
     return clients.map((v, i) => {
       return (
         <>
-          {v.rtc ? <img src={v.rtc === 'on' ? micOn : micOff} width="30" height="30" className="game-persons-user-rtc" /> : ''}
+          {v.rtc ? <img src={v.rtc === 'on' ? micOn : micOff} className="game-persons-user-mic-img" /> : ''}
           <div className={v.name ? 'game-persons-user-character' : 'game-persons-user-character-hidden'}>
             <div className={'game-user-id game-user-' + COLORS[i]}>{v.name ?? ''}</div>
             {v.name ? <img src={profileCharacter(v.rank)} className="game-user-character" /> : ''}
