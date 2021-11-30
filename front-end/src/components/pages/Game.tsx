@@ -47,11 +47,7 @@ const GameTitleInfo = () => {
     socket.emit.ROOM_TITLE_INFO();
   }, []);
 
-  return (
-    <span className="game-header-info">
-      ({usersAmount} / {maxUsers}) {roomTitle}
-    </span>
-  );
+  return <span className="game-header-info">{'(' + usersAmount + '/' + maxUsers + ') ' + roomTitle}</span>;
 };
 
 const Game = () => {

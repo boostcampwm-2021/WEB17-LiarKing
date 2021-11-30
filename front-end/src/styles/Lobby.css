@@ -51,9 +51,9 @@
   flex-direction: column;
   align-items: center;
   background-color: #6d80a6;
-  border-radius: 30px;
-  width: 15vw;
-  height: 35vh;
+  border-radius: 2.5vw;
+  width: 16vw;
+  height: 38vh;
   margin: 20vh 0 0 5vw;
   font-weight: 600;
   box-shadow: 4px 8px 10px rgba(0, 0, 0, 0.5);
@@ -63,16 +63,29 @@
 }
 
 .profile-id {
-  font-size: 20px;
-  margin: 1vh 0;
+  display: flex;
+  font-size: 3vh;
+  margin: 0.5vh 0 0.25vh 0;
+  flex-grow: 1;
+  align-items: center;
+  font-weight: 700;
+}
+
+.profile-point {
+  font-size: 2vh;
+}
+
+.profile-rank {
+  font-size: 2vh;
+  margin-bottom: 1vh;
 }
 
 .profile-character {
   background-color: #a7bdd9;
-  width: 12vw;
-  height: 20vh;
+  width: 13vw;
+  height: 22vh;
   border: #000 2px solid;
-  border-radius: 25px;
+  border-radius: 2vw;
   margin-top: 2vh;
   padding-top: 1vh;
 }
@@ -81,15 +94,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 5vh 0 0 5vw;
+  margin: 3vh 0 0 5vw;
 }
 
 .lobby-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   margin-top: 2vh;
-  width: 6vw;
+  width: 10vw;
   height: 4vh;
-  font-size: 0.75vw;
+  font-size: 1vw;
   font-weight: 600;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease 0s;
@@ -106,8 +122,6 @@
 .lobby-logout {
   border: none;
   margin-top: 2vh;
-  width: 6vw;
-  height: 4vh;
   font-weight: 600;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease 0s;
@@ -130,8 +144,8 @@ ul {
   position: absolute;
   height: 3%;
   cursor: pointer;
-  margin-top: 1vh;
-  margin-left: 32vw;
+  margin-top: 2vh;
+  margin-left: 31vw;
   transition: transform 0.5s ease-in-out;
 }
 
@@ -145,7 +159,7 @@ ul {
   align-items: center;
   border: #000 solid 1px;
   border-radius: 10px;
-  padding: 0 2vw;
+  padding: 2vh 2vw;
   margin: 1vh 1vw;
   height: 3vh;
   cursor: pointer;
@@ -201,9 +215,8 @@ ul {
 .room-list-buttons {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  margin-bottom: 3vh;
-  flex-grow: 1;
+  align-items: center;
+  margin: auto 0 3vh 0;
 }
 
 .room-list-arrows {
@@ -219,7 +232,18 @@ ul {
 }
 
 .room-list-numbers {
-  height: 3vh;
-  vertical-align: middle;
+  display: flex;
+  font-size: 2vh;
   font-weight: 600;
+}
+
+.room-list-name {
+  width: 20vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-list-name,
+.room-list-persons {
+  font-size: 2vh;
 }

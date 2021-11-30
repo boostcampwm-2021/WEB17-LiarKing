@@ -1,6 +1,7 @@
 .explain-rule-explanation {
   margin: 3vh 5vw;
   text-align: center;
+  font-size: 2vh;
   font-weight: 600;
   word-break: keep-all;
 }

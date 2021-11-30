@@ -11,7 +11,7 @@ import { roomType } from '../pages/Lobby';
 
 let selectedRoom = -1;
 const ROOM_INFO_IDX = 1;
-const MAX_ROOM_LIST = 10;
+const MAX_ROOM_LIST = 8;
 
 interface roomListInterface {
   rooms: Array<roomType>;

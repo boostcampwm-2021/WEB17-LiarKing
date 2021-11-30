@@ -229,6 +229,7 @@ const on = {
   SELECT_DATA: ({ setState }: { setState: setStateType<{ word: string }> }) => {
     socket.on(SELECT_DATA, ({ select }: { select: { word: string } }) => {
       setState(select);
+      socket.off(SELECT_DATA);
     });
   },
   /**

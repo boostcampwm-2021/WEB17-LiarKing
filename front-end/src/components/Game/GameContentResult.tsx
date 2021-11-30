@@ -35,7 +35,7 @@ const GameContentResult = () => {
         point: sendPoint,
       }),
     };
-    await fetch('/api/users/updatePoint', options);
+    await fetch('/api/users/point', options);
   };
 
   useEffect(() => {

@@ -172,8 +172,6 @@ const gameStart = (socket: Socket, io: Server) => {
 
       io.to(title).emit(ROOM_STATE_INFO, { roomState: ROOM_STATE });
 
-      await timer(STATE_WAITING_TIME);
-
       const categoryFix = shuffle(categorys, 1).pop();
       const words = await getRandomWords(categoryFix);
       const answerWord = shuffle(words, 1).pop();
