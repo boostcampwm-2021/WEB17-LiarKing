@@ -100,7 +100,7 @@ const sendRoomCreate = (socket: Socket, io: Server) => {
     const socketInfo = socketDatas.get(socket.id);
     const isDuplicateRoom: boolean = !roomList.get(title);
 
-    if (isDuplicateRoom) {
+    if (isDuplicateRoom && !!socketInfo) {
       const createRoomInfo: roomInfoType = Object.assign(
         {},
         {
