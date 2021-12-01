@@ -17,17 +17,16 @@
 
 .light-bulb-wrapper {
   position: absolute;
-  width: 0;
-  height: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: transparent;
-  z-index: 0;
+  z-index: -1;
   transition: all ease-in 0.5s 0s;
 }
 
 .light-bulb-wrapper.off {
-  width: 1000vw;
-  height: 1000vh;
-  border-radius: 10%;
+  width: 100vw;
+  height: 100vh;
   background-color: #000;
   z-index: 199;
 }
