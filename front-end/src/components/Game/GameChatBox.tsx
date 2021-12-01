@@ -110,6 +110,7 @@ const GameChatBox = () => {
             return i < CONSTANTS.ROW_MAX_CLIENT ? (
               <div
                 className="game-wait-chat-bubble-box"
+                key={i}
                 style={{
                   top: CONSTANTS.INITIAL_CHATBOX_TOP + i * CONSTANTS.CHATBOX_TOP_DIFF + '%',
                   left: CONSTANTS.CHATBOX_LEFT,
@@ -120,6 +121,7 @@ const GameChatBox = () => {
             ) : (
               <div
                 className="game-wait-chat-bubble-box"
+                key={i}
                 style={{
                   top: CONSTANTS.INITIAL_CHATBOX_TOP + (i - 4) * CONSTANTS.CHATBOX_TOP_DIFF + '%',
                   right: CONSTANTS.CHATBOX_RIGHT,
