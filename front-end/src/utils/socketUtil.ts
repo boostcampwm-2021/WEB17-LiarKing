@@ -1,4 +1,4 @@
-import { RecoilState, SetterOrUpdater } from 'recoil';
+import { SetterOrUpdater } from 'recoil';
 import { io } from 'socket.io-client';
 
 import { roomType } from '../components/pages/Lobby';
