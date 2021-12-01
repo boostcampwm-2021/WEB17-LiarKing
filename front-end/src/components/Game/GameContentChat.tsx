@@ -59,10 +59,10 @@ const GameSpeakerAlarm = ({ userId }: { userId: string }) => {
 };
 
 const GameContentChatSpeaker = ({ socket }: { socket: socketUtilType }) => {
-  type speackerDataType = { speaker: string; timer: number };
+  type speakerDataType = { speaker: string; timer: number };
 
   const SECONDS = 1000;
-  const [speakerData, setSpeakerData]: [speackerDataType, React.Dispatch<React.SetStateAction<speackerDataType>>] = useState(null);
+  const [speakerData, setSpeakerData]: [speakerDataType, React.Dispatch<React.SetStateAction<speakerDataType>>] = useState(null);
   const user = useRecoilValue(globalAtom.user);
 
   const timer = useRef<HTMLDivElement>();

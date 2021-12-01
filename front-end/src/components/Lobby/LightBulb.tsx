@@ -6,6 +6,8 @@ import blinkingEyes from '../../images/blinkingEyes.gif';
 
 const CONSTANTS = {
   TOGGLE_CLASSNAME: 'off',
+  BULB_STATEMENT: 'Click me!',
+  EYE_INTERVAL_TIME: 3000,
 };
 
 const LightBulb = () => {
@@ -30,11 +32,11 @@ const LightBulb = () => {
     if (!bulbState.bulbState) bulbOnOff();
     setBulbState({ bulbState: changeBulbState });
 
-    setInterval(() => {
+    const eyeInterval = setInterval(() => {
       setEyePosition([Math.floor(Math.random() * 80), Math.floor(Math.random() * 80)]);
-    }, 3000);
+    }, CONSTANTS.EYE_INTERVAL_TIME);
     return () => {
-      clearInterval();
+      clearInterval(eyeInterval);
     };
   }, []);
 
@@ -43,7 +45,7 @@ const LightBulb = () => {
       <div className="light-bulb-wrapper" ref={wrapper}></div>
       <div className="light-bulb-container">
         <div className="light-bulb" ref={bulb} onClick={bulbOnOff}>
-          Click me!
+          {bulbState.bulbState ? '' : CONSTANTS.BULB_STATEMENT}
           <div className="light-bulb-filaments" ref={filaments}></div>
         </div>
       </div>

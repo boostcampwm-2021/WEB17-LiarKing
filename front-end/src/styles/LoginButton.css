@@ -8,7 +8,7 @@
   background-size: 100% 1100%;
   padding: 3vw;
   width: 30vw;
-  height: 40vh;
+  height: auto;
   align-items: center;
   left: 50%;
   top: 50%;
@@ -17,7 +17,7 @@
 }
 
 .main-login-id-password:first-of-type {
-  margin-top: 8vh;
+  margin-top: 5vh;
 }
 
 .main-login-header {
@@ -32,7 +32,7 @@
 
 .main-login-id-password {
   width: 23vw;
-  height: 5vh;
+  height: 4vh;
   border: #000 1px solid;
   margin: 0.5vh;
   padding: 1vh 1vw;
@@ -40,10 +40,11 @@
 }
 
 .main-login-submit {
+  align-items: center;
   width: 17vw;
   border: none;
   border-radius: 2vw;
-  margin: 3vh;
+  margin: 3vh 0 0.5vh;
   padding: 2vh 1vw;
   font-size: 1.2vw;
   cursor: pointer;
