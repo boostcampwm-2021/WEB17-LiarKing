@@ -10,7 +10,6 @@ const GameTalk = () => {
   const myPeerRef = useRef<Peer>();
   const myPeerIdRef = useRef<string>();
   const myStream = useRef<MediaStream>();
-  const calls = useRef<{ [peerId: string]: Peer.MediaConnection }>({});
   const [users, setUsers] = useState([]);
   const myUser = useRecoilValue(globalAtom.user);
 
@@ -25,7 +24,6 @@ const GameTalk = () => {
         video: false,
         audio: true,
       });
-
       myStream.current = stream;
       myStream.current?.getTracks().forEach((track) => {
         track.enabled = false;
@@ -41,11 +39,10 @@ const GameTalk = () => {
   };
 
   const onCall = (call: Peer.MediaConnection, peerId: string) => {
-    call?.on('stream', (stream) => {
+    call?.on('stream', (stream: MediaStream) => {
       setUsers((prev) => {
         const user = prev.find((u) => u.peerId === peerId);
         if (!user) {
-          calls.current[peerId] = call;
           return [...prev, { peerId, stream, call, isMe: false }];
         } else {
           return [...prev];
@@ -73,7 +70,6 @@ const GameTalk = () => {
       if (findUser) {
         findUser.call.close();
         const newUsers = prev.filter((user) => user.peerId !== peerId);
-        delete calls.current[peerId];
         return [...newUsers];
       } else {
         return [...prev];
@@ -123,7 +119,8 @@ const GameTalk = () => {
 
       myPeerRef.current?.off('open', initRtc);
       myPeerRef.current?.off('call', answerToUser);
-      Object.values(calls.current).forEach((call) => call.close());
+
+      myPeerRef.current.destroy();
 
       myStream.current.getTracks().forEach((track) => track.stop());
     };
