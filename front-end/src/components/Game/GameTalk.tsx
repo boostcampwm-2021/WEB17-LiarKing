@@ -122,7 +122,7 @@ const GameTalk = () => {
 
       myPeerRef.current.destroy();
 
-      myStream.current.getTracks().forEach((track) => track.stop());
+      myStream.current?.getTracks().forEach((track) => track.stop());
     };
   }, []);
 
