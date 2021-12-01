@@ -239,8 +239,7 @@
 .game-user-id {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding-bottom: 0.3vh;
+  padding-bottom: 0.5vh;
   font-family: Roboto;
   font-size: 2vh;
   font-weight: 600;
@@ -249,15 +248,17 @@
   overflow: hidden;
   white-space: nowrap;
   width: 100%;
+  flex-grow: 1;
   opacity: 0.7;
   text-align: center;
+  justify-content: center;
   border-bottom: 1px #000 solid;
 }
 
 .game-user-character {
   background-size: 100% 100%;
   width: 13vh;
-  height: 11vh;
+  height: 10.5vh;
   margin: 0.5vh 0 0 0;
 }
 
