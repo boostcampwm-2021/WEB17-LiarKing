@@ -425,7 +425,9 @@ const sendChat = (socket: Socket, io: Server) => {
   const COLORS = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
 
   socket.on(CHAT_MESSAGE_DATA, ({ message }: { message: string }) => {
-    const { name, roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+    if (!socketInfo) return;
+    const { name, roomTitle } = socketInfo;
     const roomInfo = roomList.get(roomTitle);
     const client = roomInfo.client.find((v) => v.name === name);
     const { chatHistory } = roomInfo;
