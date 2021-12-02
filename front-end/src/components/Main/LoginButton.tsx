@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
-import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
+import { modalPropsType } from '../public/Modal';
 import { socket } from '../../utils/socketUtil';
 
 const LoginModal = () => {
