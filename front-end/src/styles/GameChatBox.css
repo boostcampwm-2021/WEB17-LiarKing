@@ -3,7 +3,7 @@
   width: 18vw;
   height: 13vh;
   padding: 0.3vh 1vw;
-  background: #fff;
+  background-color: #fff;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 1.5vh;
@@ -51,6 +51,6 @@
   display: block;
   width: 0;
   z-index: 1;
-  right: -1.5px;
+  right: -1.5vh;
   top: 1vh;
 }

@@ -22,7 +22,7 @@
   left: 0;
   top: 0;
   width: 100vw;
-  height: 100vw;
+  height: 100vh;
   background-image: url('../images/game.png');
   background-repeat: no-repeat;
   background-size: 100vw 100vh;
