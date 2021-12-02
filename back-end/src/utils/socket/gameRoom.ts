@@ -397,7 +397,10 @@ const gameStart = (socket: Socket, io: Server) => {
    * 게임방에서 라이어가 마지막에 단어를 골랐을 때 결과를 저장.
    */
   socket.on(LIAR_DATA, ({ liarResult }: { liarResult: { isAnswer: boolean } }) => {
-    const { roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+    const { roomTitle } = socketInfo;
+
     roomResultMap.set(roomTitle, { isWin: true, liarAnswer: liarResult.isAnswer });
   });
 };
@@ -408,7 +411,9 @@ const gameStart = (socket: Socket, io: Server) => {
  */
 const sendWords = (socket: Socket, io: Server) => {
   socket.on(REQUEST_SELECT_DATA, () => {
-    const { roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+    const { roomTitle } = socketInfo;
 
     const roomSecret = roomSecrets.get(roomTitle);
 
@@ -425,7 +430,10 @@ const sendChat = (socket: Socket, io: Server) => {
   const COLORS = ['white', 'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple'];
 
   socket.on(CHAT_MESSAGE_DATA, ({ message }: { message: string }) => {
-    const { name, roomTitle } = socketDatas.get(socket.id);
+    const socketInfo = socketDatas.get(socket.id);
+    if (!socketInfo || socketInfo.roomTitle === null) return;
+
+    const { name, roomTitle } = socketInfo;
     const roomInfo = roomList.get(roomTitle);
     const client = roomInfo.client.find((v) => v.name === name);
     const { chatHistory } = roomInfo;
