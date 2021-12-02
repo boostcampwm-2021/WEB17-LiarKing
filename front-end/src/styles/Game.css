@@ -237,9 +237,6 @@
 }
 
 .game-user-id {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 0.5vh;
   font-family: Roboto;
   font-size: 2vh;
   font-weight: 600;
@@ -248,7 +245,7 @@
   overflow: hidden;
   white-space: nowrap;
   width: 100%;
-  flex-grow: 1;
+  line-height: 2.5vh;
   opacity: 0.7;
   text-align: center;
   justify-content: center;
@@ -260,6 +257,7 @@
   width: 13vh;
   height: 10.5vh;
   margin: 0.5vh 0 0 0;
+  flex-grow: 1;
 }
 
 .game-persons-user-item {
@@ -296,7 +294,6 @@
   background-color: #e2e5f4;
   border-radius: 2vh;
   padding: 3vh;
-  transition: all 0.3s;
   transform: translate(0, 40%);
   animation: cardAnimation 2s linear forwards;
 }

@@ -19,16 +19,17 @@
   position: absolute;
   width: 100vw;
   height: 100vh;
-  background-color: transparent;
+  background: #000;
   z-index: -1;
+  opacity: 0;
   transition: all ease-in 0.5s 0s;
 }
 
 .light-bulb-wrapper.off {
   width: 100vw;
   height: 100vh;
-  background-color: #000;
   z-index: 199;
+  opacity: 1;
 }
 
 .light-bulb {

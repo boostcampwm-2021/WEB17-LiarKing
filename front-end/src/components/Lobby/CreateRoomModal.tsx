@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import upArrow from '../../images/upArrow.svg';
 import downArorw from '../../images/downArrow.svg';
 import { globalContext } from '../../App';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import globalAtom from '../../recoilStore/globalAtom';
 import { modalPropsType } from '../public/Modal';
 import globalSelector from '../../recoilStore/globalSelector';
