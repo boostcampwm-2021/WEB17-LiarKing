@@ -8,10 +8,10 @@ import '../../styles/GameChatBox.css';
 import { socketUtilType } from '../../utils/socketUtil';
 
 const CONSTANTS = {
-  INITIAL_CHATBOX_TOP: 23,
+  INITIAL_CHATBOX_TOP: 20,
   CHATBOX_LEFT: '18vw',
   CHATBOX_RIGHT: '18vw',
-  CHATBOX_TOP_DIFF: 19,
+  CHATBOX_TOP_DIFF: 20,
   ROW_MAX_CLIENT: 4,
   CURRENT_CHAT_IDX: 0,
   MSG_BOX_APPEAR_TIME: 3000,
