@@ -98,7 +98,7 @@ const RoomList = ({ rooms, fRooms, filterWord, setRooms }: roomListInterface) =>
         <div className="room-list-buttons">
           <img className="room-list-arrows" src={leftArrow} onClick={decreasePage}></img>
           <div className="room-list-numbers">
-            {pageNumber + ' / ' + (filterRooms.length === 0 ? 1 : Math.ceil(filterRooms.length / MAX_ROOM_LIST))}
+            {pageNumber + ' / ' + (filterRooms.length === 0 ? 1 : Math.ceil(filterRooms.length / (MAX_ROOM_LIST - 1)))}
           </div>
           <img className="room-list-arrows" src={rightArrow} onClick={increasePage}></img>
         </div>

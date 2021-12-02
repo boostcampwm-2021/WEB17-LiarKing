@@ -296,7 +296,6 @@
   background-color: #e2e5f4;
   border-radius: 2vh;
   padding: 3vh;
-  transition: all 0.3s;
   transform: translate(0, 40%);
   animation: cardAnimation 2s linear forwards;
 }

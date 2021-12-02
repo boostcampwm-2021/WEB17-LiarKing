@@ -7,11 +7,10 @@ import GameContent from '../Game/GameContent';
 import { globalContext } from '../../App';
 import { getUserData } from '../../utils/getDataUtil';
 import GameChatBox from '../Game/GameChatBox';
-import globalAtom from '../../recoilStore/globalAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { socketUtilType } from '../../utils/socketUtil';
-import socketUtil, { socket } from '../../utils/socketUtil';
+import globalAtom from '../../recoilStore/globalAtom';
 import globalSelector from '../../recoilStore/globalSelector';
+import socketUtil, { socketUtilType, socket } from '../../utils/socketUtil';
 import { categoryList } from '../Lobby/CreateRoomModal';
 
 const GameBackground = () => {
