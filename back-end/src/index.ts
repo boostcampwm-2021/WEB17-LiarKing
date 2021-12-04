@@ -16,11 +16,12 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
+const io = new Server({
   cors: { origin: '*' },
   path: '/socket',
-  transports: ['polling'],
+  transports: ['websocket'],
 });
+io.listen(Number(process.env.SOCKET_PORT));
 
 socketUtil(io);
 
@@ -46,7 +47,7 @@ app.use(express.static(path.join(__dirname, '../build')));
 if (process.env.NODE_ENV !== 'test') {
   connection.create().then(() => {
     console.log('database connected');
-    httpServer.listen(5000, () => {
+    httpServer.listen(Number(process.env.EXPRESS_PORT), () => {
       console.log('server start');
     });
   });

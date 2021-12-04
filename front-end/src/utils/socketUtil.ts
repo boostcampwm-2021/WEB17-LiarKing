@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import { roomType } from '../components/pages/Lobby';
 import { modalPropsType } from '../components/public/Modal';
 
-export const socket = io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true, transports: ['polling'] });
+export const socket = io(process.env.REACT_APP_SOCKET_HOST, { path: '/socket', secure: true, transports: ['websocket'] });
 
 //lobby on
 const IS_ROOM_CREATE = 'is room create';
