@@ -9,8 +9,8 @@ import { socketUtilType } from '../../utils/socketUtil';
 
 const CONSTANTS = {
   INITIAL_CHATBOX_TOP: 20,
-  CHATBOX_LEFT: '18vw',
-  CHATBOX_RIGHT: '18vw',
+  CHATBOX_LEFT: '17em',
+  CHATBOX_RIGHT: '17em',
   CHATBOX_TOP_DIFF: 20,
   ROW_MAX_CLIENT: 4,
   CURRENT_CHAT_IDX: 0,
@@ -73,7 +73,7 @@ const GameChatBox = () => {
     const updateModal = (
       <div
         id="bubble-chat-box"
-        className={bubbleClassName + ' ' + (messageInfo.clientIdx === clientIdx ? myClassName : '')}
+        className={bubbleClassName + ' ' + (messageInfo.userId === user.user_id ? myClassName : '')}
         key={messageInfo.clientIdx}
       >
         <div className="bubble-chat-box-msg">{messageInfo.message}</div>
@@ -97,6 +97,16 @@ const GameChatBox = () => {
       socket.off.IS_WAITING_STATE();
     };
   }, []);
+
+  useEffect(() => {
+    if (window.innerHeight < 600) {
+      CONSTANTS.CHATBOX_LEFT = '17vw';
+      CONSTANTS.CHATBOX_RIGHT = '17vw';
+    } else {
+      CONSTANTS.CHATBOX_LEFT = '17em';
+      CONSTANTS.CHATBOX_RIGHT = '17em';
+    }
+  }, [modal]);
 
   return (
     <>

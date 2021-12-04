@@ -48,6 +48,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 165px;
   width: 15vw;
   height: 10vh;
   background-color: #a7bdd9;
