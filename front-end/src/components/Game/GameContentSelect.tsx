@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useLayoutEffect, useState } from 'react';
 import { globalContext } from '../../App';
 import { socketUtilType } from '../../utils/socketUtil';
 import questionMark from '../../images/questionMark.svg';
@@ -6,9 +6,9 @@ import questionMark from '../../images/questionMark.svg';
 const GameContentSelect = () => {
   const [select, setSelect] = useState({ word: '' });
   const { socket }: { socket: socketUtilType } = useContext(globalContext);
-  socket.on.SELECT_DATA({ setState: setSelect });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    socket.on.SELECT_DATA({ setState: setSelect });
     socket.on.REQUEST_SELECT_DATA();
 
     return () => {
@@ -16,10 +16,6 @@ const GameContentSelect = () => {
       socket.off.REQUEST_SELECT_DATA();
     };
   }, []);
-
-  useEffect(() => {
-    socket.on.SELECT_DATA({ setState: setSelect });
-  }, [select]);
 
   return (
     <div className="game-content-select">

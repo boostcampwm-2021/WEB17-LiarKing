@@ -166,7 +166,7 @@ const gameStart = (socket: Socket, io: Server) => {
       if (roomList.get(roomInfo.title)?.state !== 'start') return false;
 
       const ROOM_STATE = 'select';
-      const WAITING_TIME = 5 * 1000;
+      const WAITING_TIME = 5 * SECONDS;
 
       const { title } = roomInfo;
 
