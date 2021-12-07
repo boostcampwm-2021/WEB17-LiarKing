@@ -10,16 +10,16 @@ const nickname = 'test-nickname';
 describe('POST /user', () => {
   test('sign up', async () => {
     await getRepository(User).delete({ user_id: userId });
-    const response = await request(app).post('/api/user').send({
+    const response = await request(app).post('/api/users').send({
       id: userId,
       password: userPassword,
     });
-    expect(response['user_id']).toBe(userId);
+    expect(response.body['user_id']).toBe(userId);
   });
 });
 
 describe('POST /login', () => {
-  test('correct id and password)', async () => {
+  test('correct id and password', async () => {
     const response = await request(app).post('/api/login').send({
       id: userId,
       password: userPassword,
@@ -31,8 +31,8 @@ describe('POST /login', () => {
     const response = await request(app)
       .post('/api/login')
       .send({
-        id: userId,
-        password: userPassword + '111',
+        id: userId + '111',
+        password: userPassword,
       });
     expect(response.body.state).toBe('mismatch');
   });
