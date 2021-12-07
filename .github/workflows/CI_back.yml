@@ -1,0 +1,41 @@
+name: Server CI
+
+on:
+  pull_request:
+    branches: [dev]
+
+env:
+  directory-server: ./back-end
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: ${{env.directory-server}}
+        run: npm i
+
+      - name: Create .env
+          working-directory: ${{env.directory-server}}
+          run: |
+            touch.env
+            echo COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}\ >> .env
+            echo TYPEORM_HOST=${{ secrets.DB_HOST }}\ >> .env
+            echo TYPEORM_PORT=${{ secrets.DB_PORT }}\ >> .env
+            echo TYPEORM_USERNAME=${{ secrets.DB_USER }}\ >> .env
+            echo TYPEORM_PASSWORD=${{ secrets.DB_PASSWORD }}\ >> .env
+            echo TYPEORM_DATABASE=${{ secrets.DB_DATABASE }}\ >> .env
+            echo EXPRESS_PORT=${{ secrets.EXPRESS_PORT }}\ >> .env
+        
+      - name: Test
+        run: npm test
