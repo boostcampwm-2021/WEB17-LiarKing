@@ -14,9 +14,10 @@ jobs:
       mysql:
         image: mysql:8.0.27
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.TYPEORM_USERNAME }}
-          MYSQL_DATABSE: ${{ secrets.TYPEORM_DATABASE }}
-        ports: ${{ secrets.TYPEORM_PORT }}
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABSE: liargame
+        ports:
+          - 3306
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,10 +36,10 @@ jobs:
         working-directory: ${{env.directory-server}}
         run: npm test
         env:
-          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-          TYPEORM_HOST: ${{ secrets.TYPEORM_HOST }}
-          TYPEORM_PORT: ${{ secrets.TYPEORM_PORT }}
-          TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
-          TYPEORM_PASSWORD: ${{ secrets.TYPEORM_PASSWORD }}
-          TYPEORM_DATABASE: ${{ secrets.TYPEORM_DATABASE }}
+          COOKIE_SECRET: test
+          TYPEORM_HOST: localhost
+          TYPEORM_PORT: 3306
+          TYPEORM_USERNAME: root
+          TYPEORM_PASSWORD: root
+          TYPEORM_DATABASE: liargame
           EXPRESS_PORT: ${{ secrets.EXPRESS_PORT }}
