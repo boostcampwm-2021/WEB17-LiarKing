@@ -39,6 +39,10 @@ jobs:
           sudo service mysql start
           mysql -uroot -proot -e "CREATE DATABASE test"
 
+      - name: Seeding Database
+        working-directory: ${{env.directory-server}}
+        run: npm run seed
+
       - name: Test
         working-directory: ${{env.directory-server}}
         run: npm test
