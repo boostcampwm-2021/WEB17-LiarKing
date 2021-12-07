@@ -15,7 +15,7 @@ jobs:
         image: mysql:8.0.27
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABSE: liargame
+          MYSQL_DATABSE: test
         ports:
           - 3306
     steps:
@@ -32,6 +32,13 @@ jobs:
         working-directory: ${{env.directory-server}}
         run: npm i
 
+      - name: verify MySQL connection from host
+        run: |
+          mysql --version
+          sudo apt-get install -y mysql-client
+          sudo service mysql start
+          mysql -uroot -proot -e "CREATE DATABASE test"
+
       - name: Test
         working-directory: ${{env.directory-server}}
         run: npm test
@@ -41,5 +48,5 @@ jobs:
           TYPEORM_PORT: 3306
           TYPEORM_USERNAME: root
           TYPEORM_PASSWORD: root
-          TYPEORM_DATABASE: liargame
+          TYPEORM_DATABASE: test
           EXPRESS_PORT: ${{ secrets.EXPRESS_PORT }}
