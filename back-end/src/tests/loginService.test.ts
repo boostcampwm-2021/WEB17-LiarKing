@@ -1,17 +1,20 @@
 import loginService from '../database/service/loginService';
 
-describe('loginVerify test', () => {
-  test('success (correct id and password)', async () => {
-    const id: string = 'testid1';
-    const password: string = 'testpw1';
+const userId = 'testid1';
+const userPassword = 'testpw1';
+
+describe('loginVerify', () => {
+  test('success', async () => {
+    const id: string = userId;
+    const password: string = userPassword;
     const response = await loginService.loginVerify(id, password);
 
     expect(response).toBeTruthy();
   });
 
-  test('fail (incorrect id and password)', async () => {
-    const id: string = 'testid11111111';
-    const password: string = 'testpw1';
+  test('fail', async () => {
+    const id: string = userId;
+    const password: string = userPassword + '111';
     const response = await loginService.loginVerify(id, password);
 
     expect(response).toBeFalsy();
