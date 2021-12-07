@@ -16,8 +16,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.TYPEORM_USERNAME }}
           MYSQL_DATABSE: ${{ secrets.TYPEORM_DATABASE }}
-        ports:
-          - ${{ secrets.TYPEORM_PORT }}
+        ports: ${{ secrets.TYPEORM_PORT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
