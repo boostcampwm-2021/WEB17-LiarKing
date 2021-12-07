@@ -38,4 +38,5 @@ jobs:
           echo EXPRESS_PORT=${{ secrets.EXPRESS_PORT }}\ >> .env
 
       - name: Test
+        working-directory: ${{env.directory-server}}
         run: npm test
