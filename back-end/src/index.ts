@@ -21,7 +21,7 @@ const io = new Server({
   path: '/socket',
   transports: ['websocket'],
 });
-io.listen(Number(process.env.SOCKET_PORT));
+if (process.env.NODE_ENV !== 'test') io.listen(Number(process.env.SOCKET_PORT));
 
 socketUtil(io);
 

@@ -1,0 +1,52 @@
+name: Server CI
+
+on:
+  pull_request:
+    branches: [dev]
+
+env:
+  directory-server: ./back-end
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.27
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABSE: test
+        ports:
+          - 3306
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: ${{env.directory-server}}
+        run: npm i
+
+      - name: verify MySQL connection from host
+        run: |
+          mysql --version
+          sudo apt-get install -y mysql-client
+          sudo service mysql start
+          mysql -uroot -proot -e "CREATE DATABASE test"
+
+      - name: Test
+        working-directory: ${{env.directory-server}}
+        run: npm test
+        env:
+          COOKIE_SECRET: test
+          TYPEORM_HOST: localhost
+          TYPEORM_PORT: 3306
+          TYPEORM_USERNAME: root
+          TYPEORM_PASSWORD: root
+          TYPEORM_DATABASE: test
+          EXPRESS_PORT: ${{ secrets.EXPRESS_PORT }}
