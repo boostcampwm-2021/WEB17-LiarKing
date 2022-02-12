@@ -14,7 +14,7 @@
 
 ### 🖥 Deploy Link
 
-[https://liarking.kro.kr/](https://liarking.kro.kr/)
+[https://liarking.r-e.kr/](https://liarking.r-e.kr/)
 
 ### ⚔️ Liar Game?
 
